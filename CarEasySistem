@@ -1,0 +1,46 @@
+
+--Configuracion
+LIMIT_Y = 5 -- Altura minuma (si caen mas abajo de esta altura moriran)
+VELOCIDAD_DE_AVANCE = 0.2 -- Altura minuma (si caen mas abajo de esta altura moriran)
+
+
+
+
+
+
+CarSistemUpdate = function()
+    --Player Handler
+    local reta,num,players = World:getAllPlayers(1)
+	if reta == ErrorCode.OK then
+		for id = 1, #players  do --add tips to all players
+			local playerid = players[id]
+			local ret, x,y,z = Player:getPosition(playerid) --actual position
+			local ret, dirx, diry, dirz = Actor:getFaceDirection(playerid)
+			if ret == ErrorCode.OK then 
+				
+			
+				local result=Block:isSolidBlock(0,6,0)
+				if result==ErrorCode.OK then
+					local Airspeed = VELOCIDAD_DE_AVANCE/5
+					Actor:appendSpeed(playerid, dirx*Airspeed, 0, dirz*Airspeed)
+				else
+					Actor:appendSpeed(playerid, dirx*VELOCIDAD_DE_AVANCE, 0, dirz*VELOCIDAD_DE_AVANCE)
+				end
+							
+			
+			
+				--Dying
+				if y < LIMIT_Y  then  
+					Actor:killSelf(playerid)
+					local result,nick = Player:getNickname(playerid)
+					Chat:sendSystemMsg(nick.." falls into the abyss ☠",0)
+				end
+			end
+		end
+	end
+	
+
+	
+
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], CarSistemUpdate) 
