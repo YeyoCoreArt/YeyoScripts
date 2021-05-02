@@ -1,0 +1,173 @@
+----------------------------------------------------------------------
+--		SET UP
+----------------------------------------------------------------------
+BUFFTURBOSPACE = 6 -- Turbo buff (sprint lvl 1)
+TURBOFUEL = 70 -- max amount of turbo
+TURBOFUELMIN = 50 -- Min amount of turbo to cast turbo
+TURBOUSAGE = 1 -- how much turbo is used per tick when is activated
+TURBOREGEN = 0.2 -- how much turbo recharges per tick
+TURBOSPEEDMAX = 20 -- Max speed 
+
+--AD Ons
+BUFFTURBO = 4 --
+SKIN = true
+
+
+----------------------------------------------------------------------
+--		end of set up, DO NOT CHANGE ANITHING AFTER THIS LINE
+----------------------------------------------------------------------
+
+TURBOGAMESTATUS = "LOBBY"
+CarPlayerTurbo = {}
+CarPlayerTurboTime = {}
+CarPlayerTurboFuel = {}
+CarPlayerKeyTurbo = {}
+
+
+CarPlayerReg = function(e) 
+    if CarPlayerTurbo[e.eventobjid] ~= nil then return 0 end
+    local Ret,GameRuning = VarLib2:getGlobalVarByName(VARTYPE.NUMBER,"GameRuning")
+    if GameRuning ~= 1 then  return 0 end 
+    local playerid = e.eventobjid
+   
+    CarPlayerTurbo[playerid] = true
+    CarPlayerTurboTime[playerid] = 0
+    CarPlayerTurboFuel[playerid] = 70
+    CarPlayerKeyTurbo[playerid] = false
+
+    Player:setAttr(playerid,PLAYERATTR.WALK_SPEED,TURBOSPEEDMAX)
+    Player:setAttr(playerid,PLAYERATTR.RUN_SPEED,TURBOSPEEDMAX)
+    Player:setAttr(playerid,PLAYERATTR.SNEAK_SPEED,TURBOSPEEDMAX)
+    Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,0)
+	
+	--[[Change skin 
+    if PlayerHero[playerid] == nil and SKIN == true then 
+        PlayerHero[playerid] = 9
+        ItemBarSet(playerid,2,"ANT-RX") -- Set itam bar
+        buffadd(playerid,8,1,180)
+    end
+	]]--
+    
+
+    TURBOGAMESTATUS = "PLAYING" 
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], CarPlayerReg)
+
+
+CarPlayerReg = function(e) 
+    if CarPlayerTurbo[e.eventobjid] ~= nil then return 0 end
+    local Ret,GameRuning = VarLib2:getGlobalVarByName(VARTYPE.NUMBER,"GameRuning")
+    if GameRuning ~= 1 then  return 0 end 
+    local playerid = e.eventobjid
+   
+    CarPlayerTurbo[playerid] = true
+    CarPlayerTurboTime[playerid] = 0
+    CarPlayerTurboFuel[playerid] = 70
+    CarPlayerKeyTurbo[playerid] = false
+
+    Player:setAttr(playerid,PLAYERATTR.WALK_SPEED,TURBOSPEEDMAX)
+    Player:setAttr(playerid,PLAYERATTR.RUN_SPEED,TURBOSPEEDMAX)
+    Player:setAttr(playerid,PLAYERATTR.SNEAK_SPEED,TURBOSPEEDMAX)
+    Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,0)
+	
+	--Change skin 
+    if PlayerHero[playerid] == nil and SKIN == true then 
+        PlayerHero[playerid] = 9
+        ItemBarSet(playerid,2,"ANT-RX") -- Set itam bar
+        buffadd(playerid,8,1,180)
+    end
+    
+
+    TURBOGAMESTATUS = "PLAYING" 
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], CarPlayerReg)
+
+CarSistemUpdate = function()
+if TURBOGAMESTATUS ~= "PLAYING" then return 0 end
+local reta,num,players = World:getAllPlayers(1)
+if reta == ErrorCode.OK then
+	for id = 1, #players  do --add tips to all players
+		local playerid = players[id]
+		if CarPlayerTurbo[playerid] ~= nil then
+			
+			--TURBO
+			if CarPlayerTurboTime[playerid] > 0 then 
+				CarPlayerTurboFuel[playerid] = math.max(CarPlayerTurboFuel[playerid] - TURBOUSAGE, 1) 
+				if CarPlayerTurboFuel[playerid] <= 1 then 
+					CarPlayerTurboTime[playerid] = 0
+					Actor:removeBuff(playerid,BUFFTURBOSPACE)
+					CarPlayerTurboFuel[playerid] = 1
+					-- notify no fuel
+					Player:notifyGameInfo2Self(playerid, "#RNo more nitro")
+				end
+			else 
+				CarPlayerTurboFuel[playerid] = math.max(CarPlayerTurboFuel[playerid] + TURBOREGEN, 1)
+				CarPlayerTurboFuel[playerid] = math.min(CarPlayerTurboFuel[playerid] , TURBOFUEL)
+			end
+			local turboFuel = math.floor(CarPlayerTurboFuel[playerid])
+			Player:setAttr(playerid,PLAYERATTR.CUR_HUNGER,turboFuel)
+
+
+		end
+	end
+end
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], CarSistemUpdate) 
+
+ComboKeyPress = function(e)
+    if TURBOGAMESTATUS ~= "PLAYING" then return 0 end
+	if CarPlayerTurbo[e.eventobjid] == nil then return 0 end
+
+	if e.vkey == "SPACE" then 
+		CarPlayerKeyTurbo[e.eventobjid] = true
+		if CarPlayerTurboFuel[e.eventobjid] < 51 then 
+		    local nitroneeded = TURBOFUELMIN - CarPlayerTurboFuel[e.eventobjid]
+		    nitroneeded = math.floor(nitroneeded)
+		    Player:notifyGameInfo2Self(e.eventobjid, "#RNeed #G["..nitroneeded.."]#n #Rmore nitro!")
+		    return 0 
+		end
+		
+		CarPlayerTurboTime[e.eventobjid] = 1
+		Actor:addBuff(e.eventobjid,BUFFTURBOSPACE,1,0)
+		local result=Player:isMainPlayer(e.eventobjid)
+        if result==0 then UI:ShowScreenEffect(1,false,0.1,e.eventobjid) end
+	
+	end
+end
+ScriptSupportEvent:registerEvent([=[Player.InputKeyDown]=], ComboKeyPress)
+
+ComboKeysRelease = function(e)
+	if CarPlayerTurbo[e.eventobjid] == nil then return 0 end
+
+	if e.vkey == "SPACE" then 
+		CarPlayerKeyTurbo[e.eventobjid] = false
+		return 0 
+	end
+end
+ScriptSupportEvent:registerEvent([=[Player.InputKeyUp]=], ComboKeysRelease)
+
+
+
+CarTurboBuff = function(e)
+	if CarPlayerTurbo[e.eventobjid] == nil then return 0 end
+	if e.buffid ~= BUFFTURBO then return 0 end
+	
+	local result=Player:isMainPlayer(e.eventobjid)
+    if result==0 then
+        UI:ShowScreenEffect(1,false,0.1,e.eventobjid)
+    end
+	
+end
+ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], CarTurboBuff)
+
+
+CarTurboBuffRemove = function(e)
+	if CarPlayerTurbo[e.eventobjid] == nil then return 0 end
+	if e.buffid ~= BUFFTURBO then return 0 end
+
+end
+ScriptSupportEvent:registerEvent([=[Player.RemoveBuff]=], CarTurboBuffRemove)
+
+
+
+
