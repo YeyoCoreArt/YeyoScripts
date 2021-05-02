@@ -1,0 +1,338 @@
+----------------------------------------------------------------------------
+                --Test system 1.0
+                -- By YeyoCore UID 2769323
+				
+	--Provide you tools to test your map with text feed back and aslo allow you to use test commands
+	-- you cant shoot off test mode to stop receiving text feed back
+	-- you cant filter, turn on/off text feedback with specific channels to test only a group of text feedback 
+	-- you have simple commands to helpyou test your scripts on gameplay
+	
+    --  /!\  Requieres  /!\ : 
+	--none
+
+	--Instructions >
+	
+		-- TURN ON/OFF TEST SISTEM
+			-- Change value of "TESTMODE" variable on  INI SET UPS section
+			-- Test mode will be automatic turned off if you are on multiplayer, to change this set "TESTAUTOFF" to false on INI SET UPS section
+			
+			-- GLOBAL COMMANDS
+				--	"-teston"		turn ON the sistem in game
+				--	"-testoff"		turn OFF the sistem in game
+
+			
+		-- TEXT FEEDBACK
+		
+			-- Simple text feedback: add into your scripts this line with the info you want to test
+				--test_msg("text "..variable) 
+				
+			-- Channel feedback: use as same as simple text. allow you to select an specific channel
+				--test_msgch("text "..variable,channel) 	
+			
+			-- Adding a new channel
+				-- simply add one scrolling down on this section on INI SET UPS section	
+			
+			--FEEDBACK COMMANDS
+			--	"-feedon"		Turning ON all text feedback
+			--	"-feedoff"		Turning OF all text feedback	
+			
+			--	"-chnone"		Turning OFF all channels feedback, simple text will keep on		
+			--	"-chall"		Turning ON all channels feedback, simple text will keep on
+			
+			--	"-choffxx"		Turning OFF a spefific channel feedback, replace "xx" with the channel number.
+			--	"-chonxx"		Turning OFF a spefific channel feedback,replace "xx" with the channel number.
+			--	"-cholyxx"		Receive text feedback only from an specific channel,replace "xx" with the channel number.
+			--	"-chtestxx"		Testing an specific channel,replace "xx" with the channel number.
+			
+		-- EXTA COMMANDS
+			-- "-itemid": Send you a chat with the Itemid number of the item that you hold on the hand
+			-- "-dummy": Spawns a pacific dummy on your aim location
+			-- "-dummy2": Spawns an agresive dummy on your aim location
+			-- "-tpxxxyyyzzz": teleport you to target location, replace xxx,yyy and zzz with the cordinate (010 = 10, 300 = 300, 009 = 9),
+			
+-------------------------------------------
+--            INISET UPS
+-------------------------------------------
+-- Change the value for starting conditions
+
+TESTMODE = true -- Test mode activaded?
+TESTAUTOFF = true -- auto turn off test mode when you are playing on multiplayer? 
+TESTPLAYER = "YeyoCore" -- Exact name of the Creators nick name (Must match Upercase, lowercase and symbols)
+TESTDUMMYID = 3101 -- Example: 3101 -- pacific Test dummy id, type -1 to turn off this feature
+TESTDUMMYATTACKID = 3400 -- Example: 3101 -- Agressive Test dummy id, type -1 to turn off this feature
+
+--TEXT FEEDBACK SET UP
+TESTFEEDBACK = true -- Receive text feedback on game?
+TESTCHANNELINI = 3 -- How many channels you are going to use at mapstart.
+TESTCHANNEL = {}; -- hold the channels (do not modify)
+
+--Initial OFF Channels
+TESTCHANNEL[3] = false -- channeles at start are going to be off
+
+
+-- Chanels are groups of text feedback that can be turn on or off depending of wich group of features you want to test
+--You can add more channels and activate/disable channel with commands 
+
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+ 
+-------------------------------------------
+--            Initial values
+-------------------------------------------
+
+testIni = function() 
+	local result,num,players = World:getAllPlayers(-1)
+	if num > 1  and TESTAUTOFF == true then
+		TESTMODE = 0
+	end 
+
+	for i = 1, TESTCHANNELINI, 1 do
+		
+		if TESTCHANNEL[i] == nil then
+			TESTCHANNEL[i] = true
+			Chat:sendSystemMsg('#B[SYS] Ch add '..i, 1)
+		end
+
+	end 
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=], testIni)
+
+-------------------------------------------
+--            LOG TEXT
+-------------------------------------------
+
+-- Normal text, if TESTMODE is activated, sends text feedback via chat
+test_msg = function(text) 
+    if TESTMODE == false  or TESTFEEDBACK == false then return 0 end
+    Chat:sendSystemMsg('#B[SYS] '..text, 1)
+
+end
+
+test_msgch = function(text,channel) 
+    if TESTMODE == false or TESTFEEDBACK == false  then return 0 end
+	if TESTCHANNEL[channel] ~= true then return 0 end
+    --Chat:sendSystemMsg("#B[SYS_ch"..channel.."] "..text, 1)
+
+end
+
+
+-------------------------------------------
+--            Test commands
+-------------------------------------------
+testmodeonoff = function(event_args)
+	local playerid = event_args['eventobjid']
+	local ret, nick = Player:getNickname(playerid)
+    if nick ~= TESTPLAYER then return 0 end
+    local content = event_args['content']
+	
+	if content == '-teston' then 
+		TESTMODE = 1
+		Chat:sendSystemMsg('#Gsys_TEST MODE SWITCHED ON', 0)
+		return 1 
+
+	elseif content == '-testoff' then
+		TESTMODE = 0
+		Chat:sendSystemMsg('#G_sys_TEST MODE SWITCHED OFF', 0)
+		return 1 
+	end
+	
+	
+	
+	if TESTMODE == 0 then return 0 end
+	-------------------------------------------
+	--            TEXT COMMAND BASICS
+	-------------------------------------------
+
+	local commandstart,commandend = string.find(content, "-",1)
+	if commandstart ~= 1 or commandend ~= 1 then return 0 end  --Check if is a command
+	local PRTEXT = '#G[CMD] '
+	
+	--Get item id
+	if content == "-itemid" then
+        local result,id = Player:getCurToolID(player)
+        Chat:sendSystemMsg(PRTEXT..id, 1)
+        return 1 
+	end
+	
+    ---Creates a dummy mob
+    if content == "-dummy" then
+	
+		if TESTDUMMYID == -1 then -- Check  if feature is available
+			Chat:sendSystemMsg("#R_sys: feature ("..content..") is unavailable#n. To activate this feature please, please open test script and set up new TESTDUMMYID", 0)
+			return 0 
+		 end
+        
+        local result,x,y,z = Player:getAimPos(playerid)
+        local result,objids=World:spawnCreature(x,y,z,TESTDUMMYID,1)
+        for i=1,#objids do
+        	Actor:shownickname(objids[i], true)
+        	Actor:setnickname(objids[i], "TestDummy")
+        end
+		Chat:sendSystemMsg(PRTEXT.."Pacific Dummy Spawn", 1)
+        return 1 
+    end
+    
+
+    ---Creates a dummy mob that shoots
+    if content == "-dummy2" then
+		 if TESTDUMMYATTACKID == -1 then -- Check  if feature is available
+			Chat:sendSystemMsg("#R_sys: feature ("..content..") is unavailable", 0)
+			Chat:sendSystemMsg("To activate this feature please, please open test script and set up new TESTDUMMYATTACKID", 0)
+			return 0 
+		 end
+		
+        local result,x,y,z = Player:getAimPos(playerid)
+        local result,objids=World:spawnCreature(x,y,z,TESTDUMMYATTACKID,1)
+        for i=1,#objids do
+        	Actor:shownickname(objids[i], true)
+        	Actor:setnickname(objids[i], "TestDummy Attack")
+        end
+        Chat:sendSystemMsg(PRTEXT.."Agressive Dummy Spawn", 1)		
+        return 1
+		
+    end
+    
+	
+
+	--------------------------------------------------------------
+    -- CHANNELS and TEXT FEEDBACK
+    --------------------------------------------------------------
+	local commandstart,commandend = 1,1
+	
+	--Turn ON all feedback, buit keep testmode on
+	if content == "-feedon" then
+		TESTFEEDBACK = true
+		
+		Chat:sendSystemMsg(PRTEXT.."#nTurning #G#bON FEEDBACK#n", 1)
+        return 1 
+        
+	end
+	
+	
+	--Turn OFF all feedback , buit keep testmode on
+	if content == "-feedoff" then
+		TESTFEEDBACK = false
+		
+		Chat:sendSystemMsg(PRTEXT.."#nTurning #R#bOFF FEEDBACK#n", 1)
+        return 1 
+        
+	end
+	
+	--Turn on all channeles
+	if content == "-chall" then
+	   
+		for i = 1, #TESTCHANNEL, 1 do
+			TESTCHANNEL[i] = true
+		end 
+        
+		Chat:sendSystemMsg(PRTEXT.."#nTurning #R#bON#n all channels", 1)
+        return 1 
+        
+	end
+	
+	--Turn off all channeles
+	if content == "-chnone" then
+	    
+		for i = 1, #TESTCHANNEL, 1 do
+			TESTCHANNEL[i] = false
+		end 
+        
+		Chat:sendSystemMsg(PRTEXT.."#nTurning #R#bOFF#n all channels", 1)
+        return 1 
+        
+	end
+	
+    --Turn off all channeles exept the mentioned
+	local commandstart,commandend = string.find(content, "chonly")
+    if commandstart == 2 then
+	    local number = tonumber(string.sub(content,commandend+1,commandend+2))
+	    
+		for i = 1, #TESTCHANNEL, 1 do
+			TESTCHANNEL[i] = false
+		end 
+        
+		TESTCHANNEL[number] = true
+		
+		Chat:sendSystemMsg(PRTEXT.."#nTurning #R#bOFF#n all channels except channel #R#b"..number, 1)
+        return 1 
+        
+    end
+
+    --Turn ON a Channel
+	commandstart,commandend = string.find(content, "chon")
+    if commandstart == 2 then
+	    local number = tonumber(string.sub(content,commandend+1,commandend+2))
+	    
+        TESTCHANNEL[number] = true
+		Chat:sendSystemMsg(PRTEXT.."#nTurning #G#bON#n Channel #G#b"..number, 1)
+
+        return 1 
+        
+    end
+
+    --Turn OFF Channel
+	commandstart,commandend = string.find(content, "choff")
+    if commandstart == 2 then
+	    local number = tonumber(string.sub(content,commandend+1,commandend+2))
+	    
+        TESTCHANNEL[number] = false
+		Chat:sendSystemMsg(PRTEXT.."#nTurning #R#bOFF#n Channel #R#b"..number, 1)
+		
+        return 1 
+        
+    end
+
+	--Channel test, check if channel its working
+	commandstart,commandend = string.find(content, "chtest")
+    if commandstart == 2 then
+	    local number = tonumber(string.sub(content,commandend+1,commandend+2))
+	    
+	    if TESTCHANNEL[number] == nil then 
+	        Chat:sendSystemMsg(PRTEXT.."#nChannel #R#b"..number.."#n Does not exist", 1) 
+	        
+	    elseif TESTCHANNEL[number] == true then
+		    test_msgch("Testing channel #GSuccess",number) 
+		    
+		else 
+		    Chat:sendSystemMsg(PRTEXT.."#nChannel #R#b"..number.."#n it's #R#bOFF#n", 1)
+		    
+		end
+		    
+        return 1 
+	end
+	
+	
+	--------------------------------------------------------------
+    -- Advanced commands
+    --------------------------------------------------------------
+    --Teleport Player
+	commandstart,commandend = string.find(content, "tp")
+    if commandstart == 2 then
+	    local x = tonumber(string.sub(content,commandend+1,commandend+3))
+		local y = tonumber(string.sub(content,commandend+4,commandend+6))
+		local z = tonumber(string.sub(content,commandend+7,commandend+9))
+	    Chat:sendSystemMsg("x "..x, 1)
+		Chat:sendSystemMsg("y "..y, 1)
+		Chat:sendSystemMsg("z "..z, 1)
+		
+		
+		Player:setPosition(playerid,x,y,z)
+        return 1 
+        
+    end
+    --------------------------------------------------------------
+    -- Wrong Command
+    --------------------------------------------------------------
+    
+    Chat:sendSystemMsg("#R#b("..content..")#n #Rthis command doesn't exist")
+	
+end
+ScriptSupportEvent:registerEvent([=[Player.NewInputContent]=],testmodeonoff)
+
+  
