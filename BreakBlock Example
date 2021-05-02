@@ -1,0 +1,27 @@
+BreakDirtBlock = function( parameters )
+    player = parameters.eventobjid
+    block = parameters.blockid
+
+    if block == 101 then 
+        Chat:sendSystemMsg("#GYou Break a soil block")
+    end
+    
+
+end 
+ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],BreakDirtBlock)
+
+
+
+BreakDirtBlock = function( parameters )
+    local player = parameters.eventobjid
+    local block = parameters.blockid
+
+    if block == 101 then 
+        Chat:sendSystemMsg("#GYou hit a soil block")
+    elseif  block == 101 then 
+        Chat:sendSystemMsg("#RYou hit a grass block")
+    end
+    
+
+end 
+ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],BreakDirtBlock)
