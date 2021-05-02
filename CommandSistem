@@ -1,0 +1,433 @@
+------------------------------------------------------------------------------
+ --Comand sistem 1.0
+ -- By YeyoCore UID 2769323
+ 
+	-- Provide you a sistem to create custom commands based on text chats
+
+ -- /!\ Requieres /!\ : 
+	--CommandSistemExe
+
+	--Instructions >
+	
+ 
+ -- How to set up
+ -- "+demo2": simple test commands, does not require an argument
+ -- "+demo xx": argumented command, requires 1 argument with 2 digits
+ -- "+tp xxx xxx xxx": multi argumented, requieres at max 3 numbers per argument
+ -- "+catchplayer xxxxxx": text argumented, requieres only 1 argument on strings
+ 
+-------------------------------------------
+-- INISET UPS
+-------------------------------------------
+-- Change the value for starting conditions
+COMMANDS = {};
+
+-- General
+COMMANDMODE = true -- Test mode activaded?
+COMMANDS_ADMIN = "YeyoCore" -- Exact name of the Creators nick name (Must match Upercase, lowercase and symbols)
+COMMANDSMODEPREFIX = "+" -- Wich prefix you are going to use before commands
+
+-- Integrations 
+COMMANDSCUSTOM = false -- if your are going to use custom commands, please set to true
+LIB_AUTHSISTEM = false -- Integration with AUTH sistem
+
+
+------------------------------------------------------------------------------
+-- /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ 
+
+-- DO NOT MODIFY ANYTHING BELOW THIS TEXT
+
+-- /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ 
+------------------------------------------------------------------------------
+ 
+-------------------------------------------
+-- Initial values
+-------------------------------------------
+
+
+
+-------------------------------------------
+-- Register
+-------------------------------------------
+
+-- Normal text, if TESTMODE is activated, sends text feedback via chat
+CommandReg = function(userlevel,command,arguments,isString)
+    local ci = 0
+    if #COMMANDS == nil then  
+        ci = 1
+    else
+        ci = #COMMANDS + 1
+    end
+    
+    COMMANDS[ci] = {} -- Create Hash
+    COMMANDS[ci][1] = ci -- Command id
+    COMMANDS[ci][2] = userlevel -- access level: 1 = user, 2 = premium, 3 = host, 4 admin
+    COMMANDS[ci][3] = command -- Comand code
+    COMMANDS[ci][4] = arguments -- in how many arguments is going to be splited the code (Each one separated by space)
+   
+    return ErrorCode.OK
+end 
+
+
+-------------------------------------------
+-- Test commands
+-------------------------------------------
+commands_chat = function(event_args)
+    if COMMANDMODE == false then return ErrorCode.FAILED end -- Safe Exit
+    local content = event_args['content']
+    
+    local commandstart,commandend = string.find(content, COMMANDSMODEPREFIX,1)
+    if commandstart ~= 1 or commandend ~= 1 then return ErrorCode.FAILED end --Check if is a command
+	-- Get Basic vars
+    local PRTEXT = '#G[CMD] '
+    local playerid = event_args['eventobjid']
+    local stringSize = string.len(content) -- Chat:sendChat("Command z "..stringSize,0)
+    local commandstart2,commandend2 = string.find(content, " ",1) -- Get position of space
+    local commandTyped = "FAILED"
+	local commandClassSimple = false
+	
+	--Check if is a simple command
+    if commandend2 == nil then  
+        commandTyped = string.sub(content,2)  --simple
+		commandClassSimple = true
+    else  -- is a composed command, has parameters
+        commandstart = commandstart2
+        commandend = commandend2
+        commandTyped = string.sub(content,2,commandend - 1) 
+    end
+ 
+	--Get command info from  databse key
+    local CommandKey = commands_chat_check(commandTyped) -- loop to find command id key
+    if CommandKey == ErrorCode.FAILED then -- -- If not code found, Exit and notify
+        Chat:sendSystemMsg("#R#b("..commandTyped..")#n #Rthis command doesn't exist",playerid)
+        return ErrorCode.FAILED
+    end
+    local Cuserlevel = COMMANDS[CommandKey][2]-- access level: 1 = user, 2 = premium, 3 = host, 4 admin
+    local Carguments = COMMANDS[CommandKey][4] -- in how many arguments is going to be splited the code
+
+    
+	--Check Permisions
+	local CAuth = commands_check_permisions(playerid,Cuserlevel,commandTyped)
+	if CAuth ~= ErrorCode.OK then return ErrorCode.FAILED end
+	
+	--Corrections
+	if commandClassSimple == true and Carguments >= 1 then  -- Typing simply command for a parameter command
+		Chat:sendSystemMsg("#R#b("..commandTyped..")#n #Rthis command requiere "..Carguments.." arguments separated by a space",playerid)
+        return ErrorCode.FAILED
+	end
+	
+	if commandClassSimple == false and Carguments == 0 then  -- Typing parameter command for a simply command, fixing it to avoid errors
+		Chat:sendSystemMsg("#R#b("..commandTyped..")#n #Ythis command does not  require any parameter",playerid)
+        content = commandTyped
+		commandClassSimple = true
+	end
+	
+	
+	--Simply Command Execution
+	if commandClassSimple == true then 
+		local codework = commands_Exe_Simple(commandTyped,playerid)
+		return codework
+	end
+    
+	--Excute composed commands
+	local CommandParameterInput = string.sub(content,commandend + 1 ,stringSize) --Paramether Command   
+	local argumentsTotal, ArgumentTable = SplitString(CommandParameterInput) --Split arguments
+	local arg1 = -1
+	local arg2 = -1
+	local arg3 = -1
+	local arg4 = -1
+	local arg5 = -1
+	if argumentsTotal >= 1 then arg1 = ArgumentTable[1] end
+	if argumentsTotal >= 2 then arg2 = ArgumentTable[2] end
+	if argumentsTotal >= 3 then arg3 = ArgumentTable[3] end
+	if argumentsTotal >= 4 then arg4 = ArgumentTable[4] end
+	if argumentsTotal >= 5 then arg5 = ArgumentTable[5] end
+
+	local codework = commands_Exe_Argument(commandTyped,playerid,arg1,arg2,arg3,arg4,arg5)
+	return codework
+
+
+end
+ScriptSupportEvent:registerEvent([=[Player.NewInputContent]=],commands_chat)
+
+ 
+
+commands_chat_check = function(CommandToCheck)
+    local CommandIndexText = "Error"
+    for key,value in ipairs(COMMANDS) do
+        CommandIndexText = COMMANDS[key][3]
+        if CommandToCheck == CommandIndexText then return key end
+    end
+    return 1001
+end
+
+
+commands_check_permisions = function(playerid,Cuserlevel,commandTyped)
+    -- Check Rights
+    if Cuserlevel == 3 then
+        local result,hostuin = Player:getHostUin()
+        if hostuin ~= playerid then
+		    Chat:sendSystemMsg("#R#b("..commandTyped..")#n #ROnly the host can use this command",playerid)
+		    return ErrorCode.FAILED
+		end
+	end 
+    
+	--if Cuserlevel == 2 then
+	    --local premiumMebership = false -- Player is premium
+	    --if premiumMebership == false then
+    		--Chat:sendSystemMsg("#R#b("..commandTyped..")#n #ROnly premium users can use this command")
+    		--return ErrorCode.FAILED 
+        --end
+	--end
+	
+    if Cuserlevel == 4 then
+        local ret, adminnick = Player:getNickname(playerid)
+        if adminnick ~= COMMANDS_ADMIN then
+            --Chat:sendSystemMsg("#R**"..adminnick.."** // #G**"..COMMANDS_ADMIN.."**" )
+    		Chat:sendSystemMsg("#R#b("..commandTyped..")#n #ROnly the Admin can use this command",playerid)
+    		return ErrorCode.FAILED 
+        end
+    end
+    
+    
+	return ErrorCode.OK
+end
+
+SplitString = function(inputString, splitCharacterr) -- separate string by space or any other character. return separation number and a table with ech separated string
+	if splitCharacterr == nil then splitCharacterr = "%s" end
+	local sparations = 0
+	local t = {}
+	for i in string.gmatch(inputString, "([^"..splitCharacterr.."]+)") do
+		table.insert(t, i)
+		sparations = sparations + 1
+	end
+	return sparations, t
+end
+
+
+------------------------------------------------------------------------------
+ --Comand sistem Exe 1.0
+ -- By YeyoCore UID 2769323
+	-- Here you set up the custom Commands 
+
+ -- /!\ Requieres /!\ : 
+	-- CommandSitem
+
+	--Instructions >
+		--  scroll down and insert the command register, this is goin to Create a new command, teplate CommandReg(authlevel,"command",Arguments,isString)
+			--AuthLevel: wich players can use it
+			--Command: the string players is going to type to execute this command
+			--Arguments: How many arguments is going to check, as example -tp 125 25 22 is going to use 3 max amout 5
+			
+		--TO ADD A NEW COMMAND 
+			--add the comand registration on commands_ini: CommandReg(authlevel,"commandtext",numberOfArguments,isString)
+			
+			--if your command DOES NOT requiere any argument:
+				-- scroll down until commands_Exe_Simple
+				--create a condition: if commandTyped == "yourcommand" then end
+				-- add your code to execute that command
+				
+				--Simple command example +clean
+		
+			--if your command NEEDS requiere arguments:
+				-- scroll down until commands_Exe_Argument
+				--create a condition: if commandTyped == "yourcommand" then end
+				-- add your code to execute that command
+				-- you can use up to 5 arguments, the variable name for the arguments are: arg1,arg2,arg3,arg4,arg5
+				-- when player type the command, separate the arguments by a SPACE
+				
+				--Argument command example: +tp xxx xxx xxx 
+------------------------------------------------------------------------------
+
+
+--                  Register commands below
+
+
+------------------------------------------------------------------------------
+
+commands_ini = function() 
+    --insert below all User Commands using this function call CommandReg(authlevel,"commandtext",numberOfArguments,isString)
+	-- access level: 1 = user, 2 = premium, 3 = host, 4 admin
+	
+	--Demo commands
+    	CommandReg(1,"demo",1) -- counts from 1 to the number imputed
+    	CommandReg(1,"demo2",0) -- show a simple mensaje to player
+	
+	--Free commands
+	    CommandReg(1,"xyz",0) -- shows current coordinates
+	    CommandReg(1,"clean",0) -- show player actual coordinates
+	    CommandReg(4,"tp",3) -- teleports admin to target coordinate
+	    CommandReg(4,"catchplayer",1) -- teleports target player to admin
+	    CommandReg(4,"tpplayer",1) -- teleports target player to admin
+    
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=], commands_ini)
+
+
+------------------------------------------------------------------------------
+
+
+--              Execute here your commands 
+
+
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+--  Simple commands: those does not require any argument
+------------------------------------------------------------------------------
+commands_Exe_Simple = function(commandTyped,playerid)
+
+	--User demo, check if the sistem works
+	if commandTyped == "demo2" then 
+		Chat:sendSystemMsg("this simple command #G works :) ",playerid)
+		return ErrorCode.OK 
+	end
+	
+	--Show player his location coordenades
+	if commandTyped == "xyz" then
+	    local result,x,y,z=Actor:getPosition(playerid)
+	    x = math.floor(x)
+	    y = math.floor(y)
+	    z = math.floor(z)
+	    
+		Chat:sendSystemMsg("your coordenades are: ",playerid)
+		Chat:sendSystemMsg("#GX:#n "..x.." - #BY:#n "..y.." - #RZ:#n "..z   ,playerid)
+		
+		return ErrorCode.OK 
+	end
+	
+	
+	--CleanScreenCoordinates
+	if commandTyped == "clean" then
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+    	Chat:sendSystemMsg("                       ",playerid)
+		Chat:sendSystemMsg("screen clean up",playerid)
+		return ErrorCode.OK 
+	end
+	
+	
+	
+	
+	
+	-----------------------------
+    -- Error 405 = register command does not match with Exe simple comand
+	Chat:sendSystemMsg("#b("..commandTyped..") Error 405#n #R- Command registered does not match with commands_exe_simple",playerid)
+	return ErrorCode.FAILED
+	-----------------------------
+	
+end
+
+
+------------------------------------------------------------------------------
+--  Argument commands: those require aleast 1 argument
+------------------------------------------------------------------------------
+commands_Exe_Argument = function(commandTyped,playerid,arg1,arg2,arg3,arg4,arg5)
+
+	--User demo, shows the number that player cast
+	if commandTyped == "demo" then 
+		Chat:sendSystemMsg("#b("..commandTyped..")#n: Lets count from 1 to  "..arg1,playerid)
+		for i=1, arg1 do
+            Chat:sendSystemMsg("    Counting #G"..i.."#n!",playerid)
+        end
+
+		return ErrorCode.OK 
+	end
+	
+	--Teleports admin to target coordinates
+	if commandTyped == "tp" then
+	    --Chat:sendSystemMsg("Teleporting...",playerid)
+	    Player:setPosition(playerid,arg1,arg2,arg3)
+	    Chat:sendSystemMsg("Teleporting to #GX:#n "..arg1.." - #BY:#n "..arg2.." - #RZ:#n "..arg3   ,playerid)
+	     
+	    return ErrorCode.OK 
+	end
+	
+
+	--Teleports target PLAYER to target ADMIN, requieres player name
+	if commandTyped == "catchplayer" then
+        local argnink = string.gsub(arg1,"-"," ")
+	    local success = false
+	    local target = -1
+	    local result,num,players = World:getAllPlayers(-1)
+        for i,a in ipairs(players) do
+            target = players[i]
+            local result,nickkname=Player:getNickname(target)
+            if nickkname == argnink then
+                success = true
+                break;
+            end
+        end
+        
+        if success == false then
+            Chat:sendSystemMsg("#b("..commandTyped..")#n - player does not exist",playerid)
+            return ErrorCode.FAILED
+        end
+        	    
+	    local result,x,y,z=Actor:getPosition(playerid)
+	    x = math.floor(x)
+	    y = math.floor(y)
+	    z = math.floor(z)
+	    Player:setPosition(target,x,y+2,z)
+	    Chat:sendSystemMsg("Teleporting "..argnink.." to your position",playerid)
+	    Chat:sendSystemMsg("You had been Teleported by the admin",target)
+	     
+	    return ErrorCode.OK 
+	end
+	
+
+
+    	--Teleports admin to target coordinates
+	if commandTyped == "tp" then
+	    --Chat:sendSystemMsg("Teleporting...",playerid)
+	    Player:setPosition(playerid,arg1,arg2,arg3)
+	    Chat:sendSystemMsg("Teleporting to #GX:#n "..arg1.." - #BY:#n "..arg2.." - #RZ:#n "..arg3   ,playerid)
+	     
+	    return ErrorCode.OK 
+	end
+	
+
+	--Teleports Admin to target PLAYER, requieres player name
+	if commandTyped == "tpplayer" then
+        local argnink = string.gsub(arg1,"-"," ")
+	    local success = false
+	    local target = -1
+	    local result,num,players = World:getAllPlayers(-1)
+        for i,a in ipairs(players) do
+            target = players[i]
+            local result,nickkname=Player:getNickname(target)
+            if nickkname == argnink then
+                success = true
+                break;
+            end
+        end
+        
+        if success == false then
+            Chat:sendSystemMsg("#b("..commandTyped..")#n - player does not exist",playerid)
+            return ErrorCode.FAILED
+        end
+        	    
+	    local result,x,y,z=Actor:getPosition(target)
+	    x = math.floor(x)
+	    y = math.floor(y)
+	    z = math.floor(z)
+	    Player:setPosition(playerid,x,y+2,z)
+	    Chat:sendSystemMsg("Teleporting you to "..argnink.." position",playerid)
+	    Chat:sendSystemMsg("admin Teleported to Your position ",target)
+	     
+	    return ErrorCode.OK 
+	end
+	
+    -----------------------------
+    -- Error 406 = register command does not match with Exe composed comand
+	Chat:sendSystemMsg("#b("..commandTyped..")#n Error 406#R - Command registered does not match with commands_Exe_Argument",playerid)
+	return ErrorCode.FAILED
+	-----------------------------
+
+end
