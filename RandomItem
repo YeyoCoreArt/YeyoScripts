@@ -1,0 +1,38 @@
+ITEMRANDOM = 4099
+RandomItem = {}
+RandomCharges = {}
+RandomItem[1] = 4115 -- NitroMachineGun
+RandomCharges[1] = 1 
+RandomItem[2] = 4113 -- magnetic mines
+RandomCharges[2] = 1 
+RandomItem[3] = 4097 -- Turbo
+RandomCharges[3] = -3 
+RandomItem[4] = 4111 -- RepulsionField
+RandomCharges[4] = 1 
+RandomItem[5] = 4110 -- Invisibility
+RandomCharges[5] = 1 
+RandomItem[6] = 4114 -- RC Rocket
+RandomCharges[6] = -3 
+RandomItem[7] = 4116 -- Shield
+RandomCharges[7] = 1
+
+
+
+RandomItemCore = function(e)
+	if e.itemid ~= ITEMRANDOM then return 0 end 
+    local playerid = e.eventobjid
+    local r = math.random(1,#RandomItem)
+    local c = RandomCharges[r]
+    --Check Random Amount
+    if c < 0 then 
+        local c2 = math.abs(c)
+        c = math.random(1,c2)
+    end
+    Player:removeBackpackItem(playerid, ITEMRANDOM, 1)
+    additem(playerid, RandomItem[r], c, 1) 
+    
+    local ret,x,y,z = Player:getPosition(playerid)
+    Sound(x,y,z,10964)
+    
+end
+ScriptSupportEvent:registerEvent([=[Player.AddItem]=],RandomItemCore)
