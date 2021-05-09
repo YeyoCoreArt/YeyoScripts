@@ -1,22 +1,19 @@
-ITEMRANDOM = 4099
 RandomItem = {}
 RandomCharges = {}
-RandomItem[1] = 4115 -- NitroMachineGun
-RandomCharges[1] = 1 
-RandomItem[2] = 4113 -- magnetic mines
-RandomCharges[2] = 1 
-RandomItem[3] = 4097 -- Turbo
-RandomCharges[3] = -3 
-RandomItem[4] = 4111 -- RepulsionField
-RandomCharges[4] = 1 
-RandomItem[5] = 4110 -- Invisibility
-RandomCharges[5] = 1 
-RandomItem[6] = 4114 -- RC Rocket
-RandomCharges[6] = -3 
-RandomItem[7] = 4116 -- Shield
-RandomCharges[7] = 1
+ITEMRANDOM = 4099 -- Item Random
+
+-------------------------------------
+-- Item Table
+-----------------------------------
+RandomItem[1] = 4115 -- Item
+RandomCharges[1] = 1 -- Item Charges (number of charges, use negative values to set random range, example: -5)
 
 
+
+
+-------------------------------------
+-- Do not modify items after this line
+-------------------------------------
 
 RandomItemCore = function(e)
 	if e.itemid ~= ITEMRANDOM then return 0 end 
@@ -36,3 +33,19 @@ RandomItemCore = function(e)
     
 end
 ScriptSupportEvent:registerEvent([=[Player.AddItem]=],RandomItemCore)
+
+-------------------------------------
+additem = function(playerid, itemid, number, bar) -- Add a permanent item, that cant be discarted or droped
+	Player:gainItems(playerid, itemid, number, bar)
+	Player:setItemAttAction(playerid, itemid, PLAYERATTR.ITEM_DISABLE_DROP, true)
+	Player:setItemAttAction(playerid, itemid, PLAYERATTR.ITEM_DISABLE_THROW, true)
+end
+
+
+-------------------------------------
+Sound = function(x2,y2,z2,sound) -- simple sound
+    local pitch = 1 + math.random(-0.2,0.2)
+    local volume = 80 + math.random(40)
+    World:playSoundEffectOnPos({x=x2,y=y2,z=z2},sound,volume ,pitch,false)
+    
+end
