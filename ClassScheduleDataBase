@@ -1,0 +1,95 @@
+--[[
+	CLASS SCHEDULE DATABASE
+		Limit playable Map by YeyoCore. from Youtube channel https://www.youtube.com/multiverseeditor
+	
+	Description: 
+		this script will create the database to make CLASS SCHEDULE CORE works
+		
+	If You want to support me, go to my channel and subscribe or give it a like!
+	
+	
+	----------------------------------
+	*REQUIERES: CLASS SCHEDULE CORE
+	----------------------------------
+
+]]
+--*Do not modify this
+			--Global vars
+			ClassDB = {}
+			--Name Tags
+			ClassID = 1
+			ClassName = 1
+			ClassTime = 2
+			ClassDesc = 3
+			ClassEarn = 4
+
+
+
+---------------------------------
+-- SET UP
+---------------------------------
+--Class 1
+ClassID = 1 -- Class id
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#GFree Class " -- Class Name
+ClassDB[ClassID][ClassTime] = 180 --Class scheduled time
+ClassDB[ClassID][ClassDesc] = "Follow the instructions of the teacher" -- Class instruction
+ClassDB[ClassID][ClassEarn] = 10 --Class reward
+
+--Class 2
+ClassID = 2
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#GChemesty Lab. "
+ClassDB[ClassID][ClassTime] = 180
+ClassDB[ClassID][ClassDesc] = "Create some potions"
+ClassDB[ClassID][ClassEarn] = 5
+
+--Class 3
+ClassID = 3
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#RBreak "
+ClassDB[ClassID][ClassTime] = 180
+ClassDB[ClassID][ClassDesc] = "Have a free time"
+ClassDB[ClassID][ClassEarn] = 0
+
+--Class 4
+ClassID = 4
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#GMusic Class "
+ClassDB[ClassID][ClassTime] = 180
+ClassDB[ClassID][ClassDesc] = "Create a melody"
+ClassDB[ClassID][ClassEarn] = 5
+
+--Class 5
+ClassID = 5
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#GScience Lab "
+ClassDB[ClassID][ClassTime] = 180
+ClassDB[ClassID][ClassDesc] = "Create a machine"
+ClassDB[ClassID][ClassEarn] = 10
+
+
+--Class 6
+ClassID = 6
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#RBreak "
+ClassDB[ClassID][ClassTime] = 180
+ClassDB[ClassID][ClassDesc] = "Have a free time"
+ClassDB[ClassID][ClassEarn] = 0
+
+
+--Class 7
+ClassID = 7
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#GSports "
+ClassDB[ClassID][ClassTime] = 240
+ClassDB[ClassID][ClassDesc] = "Play the sport designed by teacher"
+ClassDB[ClassID][ClassEarn] = 10
+
+--Class 10
+ClassID = 9
+ClassDB[ClassID] = {}
+ClassDB[ClassID][ClassName] = "#YAfter School"
+ClassDB[ClassID][ClassTime] = 240
+ClassDB[ClassID][ClassDesc] = "Free time, dont forget to sleep"
+ClassDB[ClassID][ClassEarn] = 0
