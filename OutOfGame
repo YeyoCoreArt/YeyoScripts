@@ -1,0 +1,34 @@
+--[[
+	OUT OF THE GAME
+		Limit playable Map by YeyoCore. from Youtube channel https://www.youtube.com/multiverseeditor
+	
+	Description: 
+		this script will kill the players, and send players back to spawn if they exit from the playable zone
+		
+	If You want to support me, go to my channel and subscribe or give it a like!
+	
+]]
+
+---------------------------------
+-- SET UP
+---------------------------------
+LIMIT_X = -151
+LIMIT_X2 = 40
+LIMIT_Z = -4
+LIMIT_Z2 = 103
+
+
+
+---------------------------------
+-- Do not modify anything after this point
+---------------------------------
+OutOfGame = function(e)
+    local playerid = e.eventobjid
+    local out = false
+    local retb, x,y,z = Player:getPosition(playerid)
+    if x < LIMIT_X or x > LIMIT_X2  then out = true end
+    if z < LIMIT_Z or z > LIMIT_Z2  then out = true end
+    if out == false then return 0  end
+    Actor:killSelf(playerid)
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=],OutOfGame)
