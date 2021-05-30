@@ -1,0 +1,164 @@
+--[[
+	CLASS SCHEDULE CORE
+		Limit playable Map by YeyoCore. from Youtube channel https://www.youtube.com/multiverseeditor
+	
+	Description: 
+		this script will create a class schedule very easy. Also to add rewards, create a punishment sistem and get some extra awards
+		
+	If You want to support me, go to my channel and subscribe or give it a like!
+	
+	
+	----------------------------------
+	*REQUIERES: CLASS SCHEDULE DATABASE
+	----------------------------------
+
+]]
+
+---------------------------------
+-- SET UP
+---------------------------------
+GlobalItemCoin = 4118
+GlobalPunishBuff = 50000001
+GlobalAwardBuff = 50000005
+
+
+
+
+
+---------------------------------
+-- Do not modify anything after this point
+---------------------------------
+--Globals
+ClassActual= 1
+ClassBestStudent= 1
+Punished = {}
+Punished[1] = 0
+ret = 0
+
+TimerIni = function()
+    GlobalTimerText = ClassDB[ClassActual][ClassName]
+    GlobalTimerShow = true
+    GlobalTimer_TimeToStart = ClassDB[ClassActual][ClassTime]
+    timercreate(GlobalTimerText,GlobalTimer_TimeToStart)
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=], TimerIni)
+
+timercreate = function(Name,cd)
+	ret, GlobalTimer = MiniTimer:createTimer(Name)
+	MiniTimer:startBackwardTimer(GlobalTimer,cd,false);
+    local _,_,allPlayers = World:getAllPlayers(-1);
+	MiniTimer:showTimerTips(allPlayers,GlobalTimer,Name,true);
+end
+
+
+TimerOver = function(e)
+    if e.timerid ~= GlobalTimer then return 0 end
+    local result,timertime = MiniTimer:getTimerTime(GlobalTimer)
+    if timertime > 0 then return 0 end
+    local timername = e.timername
+    
+    --Rewards
+    local result,num,players=World:getAllPlayers(-1)
+    for i,a in ipairs(players) do
+        local playerid = players[i]
+        Player:notifyGameInfo2Self(i,"#bNext Class")
+        if Punished[playerid] == false then 
+            local coins = ClassDB[ClassActual][ClassEarn]
+            Player:gainItems(playerid,GlobalItemCoin,coins,1)
+            Player:notifyGameInfo2Self(i,"#GReward: "..coins.." Coins")
+        end 
+        Punished[playerid] = false
+        
+        if ClassBestStudent == playerid then 
+            Player:gainItems(playerid,GlobalItemCoin,5,1)
+            Player:notifyGameInfo2Self(i,"#G#bReward S:#n extra 5 coins due be the best student")
+        end
+    end
+    
+    --Next class
+    ClassActual = ClassActual + 1
+    if ClassActual > #ClassDB then  ClassActual = 1   end
+    MiniTimer:deleteTimer(GlobalTimer)
+    if ClassBestStudent ~= 1 then
+        Actor:removeBuff(ClassBestStudent,GlobalAwardBuff)
+    end
+    ClassBestStudent = 1
+    
+    ---New timer
+    local Tname = ClassDB[ClassActual][ClassName]
+    local Ttime = ClassDB[ClassActual][ClassTime]
+    local TReward = ClassDB[ClassActual][ClassEarn]
+    timercreate(Tname,Ttime)
+    
+    -- Send Mensaje
+    Chat:sendSystemMsg("#G"..Tname.."#n is going to start")
+    if Tname ~= "#RBreak " then Chat:sendSystemMsg("Please go to the specific classroom") end
+    Chat:sendSystemMsg("#GIntructions:#n".. ClassDB[ClassActual][ClassDesc])
+    if TReward > 0 then Chat:sendSystemMsg("#GReward: #b"..ClassDB[ClassActual][ClassEarn]) end
+    
+    --SOUND
+    if Tname ~= "#RBreak " then 
+        soundall(10961)
+    else
+        soundall(10827)
+    end
+end
+
+
+ScriptSupportEvent:registerEvent([=[minitimer.change]=], TimerOver)
+
+playerIni = function(e)
+    if Punished[e.eventobjid] == nil then
+        Punished[e.eventobjid] = false
+        Chat:sendSystemMsg("#GInstructions: "..Tname.."#n Follow the classes to eran rewards, avoid to be Punished by teacher")
+        
+    end
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=], playerIni)
+
+soundall = function(sound) -- Pay son on all players at same time
+	local reta,num,players = World:getAllPlayers(-1)
+	for id = 1, #players  do --add tips to all players
+		local playerid = players[id]
+		local result,x,y,z = Player:getPosition(playerid)
+		Sound(x,y,z,sound)
+	end
+end
+
+Sound = function(x2,y2,z2,sound) -- simple sound
+    local pitch = 1 + math.random(-0.2,0.2)
+    local volume = 80 + math.random(40)
+    World:playSoundEffectOnPos({x=x2,y=y2,z=z2},sound,volume ,pitch,false)
+    
+end
+
+PunishBuff = function(e)
+    if e.buffid ~= GlobalPunishBuff then return 0 end
+    local playerid = e.eventobjid
+    Punished[playerid] = true
+    Chat:sendSystemMsg("#RPunish:#n You have been punish by teacher",playerid)
+    Chat:sendSystemMsg("#RYou are not going to be reward for this class",playerid)
+    
+    if ClassBestStudent == playerid then
+        Actor:removeBuff(playerid,GlobalAwardBuff)
+        ClassBestStudent = 1
+    end
+    
+end 
+ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], PunishBuff)
+
+
+AwardBuff = function(e)
+    if e.buffid ~= GlobalAwardBuff then return 0 end
+    local playerid = e.eventobjid
+    
+    if ClassBestStudent ~= 1 then
+        Actor:removeBuff(ClassBestStudent,GlobalAwardBuff)
+    end
+    
+    ClassBestStudent = playerid
+    local result,namenick = Player:getNickname(ClassBestStudent)
+    Chat:sendSystemMsg("#GBest Student:#n Now "..namenick.." is the awarned student")
+   
+end 
+ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], AwardBuff)
