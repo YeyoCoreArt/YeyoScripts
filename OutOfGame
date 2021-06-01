@@ -30,5 +30,8 @@ OutOfGame = function(e)
     if z < LIMIT_Z or z > LIMIT_Z2  then out = true end
     if out == false then return 0  end
     Actor:killSelf(playerid)
+    Player:teleportHome(playerid)
+    
+    
 end
 ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=],OutOfGame)
