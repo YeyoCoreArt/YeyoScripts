@@ -1,0 +1,69 @@
+--- Grafity Can
+--SET-UP
+GFBID = 12249 -- ID  of the bullet ( requires reduce speed rate 0.2)
+--DO NOT MODIFY ANITHING UNDER THIS CAN
+
+GF001 = {}; 
+GF00U = {}; 
+GF0ID = {}; 
+GF00T = {}; 
+GF003 = function(event)
+local GGC001 = event.itemid
+if GGC001 ~= GFBID then return 0 end
+local playerid = event.eventobjid
+local GF0100 = event.toobjid
+table.insert(GF001, GF0100)
+table.insert(GF00U, playerid)
+table.insert(GF00T, 9)
+GF0ID[GF0100] = #GF001
+Actor:playBodyEffectById(GF0100,1287,0.6)
+end
+GF004 = function()
+local GF091 = {};
+local GF0912 = {};
+local GF0913 = {};
+if #GF001 <= 0 then return 0 end
+for i,v in pairs(GF001) do
+if GF001[i] ~= nil  then    
+local GF0100 = GF001[i] 
+local playerid = GF00U[i]
+GF00T[i] = GF00T[i] - 1
+if GF00T[i] > 0 then 
+table.insert(GF091, GF0100)
+table.insert(GF0912, playerid)
+table.insert(GF0913, GF00T[i])
+GF001[i] = nil
+GF00U[i] = nil
+GF00T[i] = nil
+GF0ID[GF0100] = #GF091
+else 
+local ID = GF0ID[GF0100]
+GF00T[i] = nil
+GF001[i] = nil;
+GF00U[i] = nil;
+GF0ID[GF0100] = nil
+World:despawnActor(GF0100)
+end
+end 
+end
+GF001 = GF002(GF091)
+GF00U = GF002(GF0912)
+GF00T = GF002(GF0913)
+end
+GF005 = function(event)
+local GF0100 = event.eventobjid
+local ID = GF0ID[GF0100]
+if GF001[ID] == nil then return 0 end
+GF001[ID] = nil;
+GF00U[ID] = nil;
+GF00T[ID] = nil
+GF0ID[GF0100] = nil
+end
+GF002 =  function(GFXT)
+local GFXTI = {}
+for k,v in pairs(GFXT) do GFXTI[k] = v end
+return GFXTI
+end
+ScriptSupportEvent:registerEvent([=[Missile.Create]=],GF003)
+ScriptSupportEvent:registerEvent([=[Game.Run]=],GF004)
+ScriptSupportEvent:registerEvent([=[Actor.Projectile.Hit]=],GF005)
