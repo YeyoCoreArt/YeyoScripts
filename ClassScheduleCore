@@ -15,17 +15,6 @@
 ]]
 
 ---------------------------------
--- SET UP
----------------------------------
-GlobalItemCoin = 4118
-GlobalPunishBuff = 50000001
-GlobalAwardBuff = 50000005
-
-
-
-
-
----------------------------------
 -- Do not modify anything after this point
 ---------------------------------
 --Globals
@@ -65,13 +54,13 @@ TimerOver = function(e)
         if Punished[playerid] == false then 
             local coins = ClassDB[ClassActual][ClassEarn]
             Player:gainItems(playerid,GlobalItemCoin,coins,1)
-            Player:notifyGameInfo2Self(i,"#GReward: "..coins.." Coins")
+            Player:notifyGameInfo2Self(i,"#G"..GlobalNextClassMSG2..coins.." "..GlobalNextClassMSG11)
         end 
         Punished[playerid] = false
         
         if ClassBestStudent == playerid then 
             Player:gainItems(playerid,GlobalItemCoin,5,1)
-            Player:notifyGameInfo2Self(i,"#G#bReward S:#n extra 5 coins due be the best student")
+            Player:notifyGameInfo2Self(i,"#G#b"..GlobalNextClassMSG2..":#n "..GlobalNextClassMSG10)
         end
     end
     
@@ -91,17 +80,27 @@ TimerOver = function(e)
     timercreate(Tname,Ttime)
     
     -- Send Mensaje
-    Chat:sendSystemMsg("#G"..Tname.."#n is going to start")
-    if Tname ~= "#RBreak " then Chat:sendSystemMsg("Please go to the specific classroom") end
-    Chat:sendSystemMsg("#GIntructions:#n".. ClassDB[ClassActual][ClassDesc])
-    if TReward > 0 then Chat:sendSystemMsg("#GReward: #b"..ClassDB[ClassActual][ClassEarn]) end
+    Chat:sendSystemMsg("#G"..Tname.."#n "..GlobalNextClassMSG4)
+    if Tname ~= GlobalNextClassMSG1 then Chat:sendSystemMsg(GlobalNextClassMSG5) end
+    Chat:sendSystemMsg("#G"..GlobalNextClassMSG3..":#n"..ClassDB[ClassActual][ClassDesc])
+    if TReward > 0 then Chat:sendSystemMsg("#G"..GlobalNextClassMSG2..": #b"..ClassDB[ClassActual][ClassEarn]) end
     
     --SOUND
-    if Tname ~= "#RBreak " then 
+    if Tname ~= GlobalNextClassMSG1 then 
         soundall(10961)
     else
         soundall(10827)
     end
+	
+	--Teleport Players
+	local x = ClassDB[ClassActual][ClassX]
+	local y = ClassDB[ClassActual][ClassY]
+	local z = ClassDB[ClassActual][ClassZ]	
+	for i,a in ipairs(players) do
+		local playerid = players[i]
+		Player:teleportHome(playerid)
+		Player:setRevivePoint(playerid,x,y,z)
+	end
 end
 
 
@@ -110,7 +109,7 @@ ScriptSupportEvent:registerEvent([=[minitimer.change]=], TimerOver)
 playerIni = function(e)
     if Punished[e.eventobjid] == nil then
         Punished[e.eventobjid] = false
-        Chat:sendSystemMsg("#GInstructions: "..Tname.."#n Follow the classes to eran rewards, avoid to be Punished by teacher")
+        Chat:sendSystemMsg("#G"..GlobalNextClassMSG3..": "..Tname.."#n "..GlobalNextClassMSG6)
         
     end
 end
@@ -136,8 +135,8 @@ PunishBuff = function(e)
     if e.buffid ~= GlobalPunishBuff then return 0 end
     local playerid = e.eventobjid
     Punished[playerid] = true
-    Chat:sendSystemMsg("#RPunish:#n You have been punish by teacher",playerid)
-    Chat:sendSystemMsg("#RYou are not going to be reward for this class",playerid)
+    Chat:sendSystemMsg("#RPunish:#n "..GlobalNextClassMSG7,playerid)
+    Chat:sendSystemMsg("#R"..GlobalNextClassMSG8,playerid)
     
     if ClassBestStudent == playerid then
         Actor:removeBuff(playerid,GlobalAwardBuff)
@@ -158,7 +157,7 @@ AwardBuff = function(e)
     
     ClassBestStudent = playerid
     local result,namenick = Player:getNickname(ClassBestStudent)
-    Chat:sendSystemMsg("#GBest Student:#n Now "..namenick.." is the awarned student")
+    Chat:sendSystemMsg("#GBest Student:#n "..namenick.." "..GlobalNextClassMSG9)
    
 end 
 ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], AwardBuff)
