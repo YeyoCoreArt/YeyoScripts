@@ -7,89 +7,59 @@
 		
 	If You want to support me, go to my channel and subscribe or give it a like!
 	
-	
 	----------------------------------
 	*REQUIERES: CLASS SCHEDULE CORE
 	----------------------------------
-
-]]
---*Do not modify this
-			--Global vars
-			ClassDB = {}
-			--Name Tags
-			ClassID = 1
-			ClassName = 1
-			ClassTime = 2
-			ClassDesc = 3
-			ClassEarn = 4
+    [No modificar esta linea]] ClassDB = {}; ClassID = 0; ClassName = 1; ClassTime = 2; ClassDesc = 3; ClassEarn = 4;ClassX = 5; ClassY = 6; ClassZ = 7
 
 
-
+			
 ---------------------------------
 -- SET UP
 ---------------------------------
---Class 1
-ClassID = 1 -- Class id
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#GFree Class " -- Class Name
-ClassDB[ClassID][ClassTime] = 180 --Class scheduled time
-ClassDB[ClassID][ClassDesc] = "Follow the instructions of the teacher" -- Class instruction
-ClassDB[ClassID][ClassEarn] = 10 --Class reward
+--[[  OBJETOS Y BUFFS  ]]
+GlobalItemCoin = 4118 -- ID objeto moneda
+GlobalPunishBuff = 50000001 -- ID Buff(estado) de castigo
+GlobalAwardBuff = 50000005 -- ID Buff(estado) de Premio
 
---Class 2
-ClassID = 2
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#GChemesty Lab. "
-ClassDB[ClassID][ClassTime] = 180
-ClassDB[ClassID][ClassDesc] = "Create some potions"
-ClassDB[ClassID][ClassEarn] = 5
-
---Class 3
-ClassID = 3
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#RBreak "
-ClassDB[ClassID][ClassTime] = 180
-ClassDB[ClassID][ClassDesc] = "Have a free time"
-ClassDB[ClassID][ClassEarn] = 0
-
---Class 4
-ClassID = 4
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#GMusic Class "
-ClassDB[ClassID][ClassTime] = 180
-ClassDB[ClassID][ClassDesc] = "Create a melody"
-ClassDB[ClassID][ClassEarn] = 5
-
---Class 5
-ClassID = 5
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#GScience Lab "
-ClassDB[ClassID][ClassTime] = 180
-ClassDB[ClassID][ClassDesc] = "Create a machine"
-ClassDB[ClassID][ClassEarn] = 10
+--[[  NOMBRES Y TEXTOS  ]]
+GlobalNextClassMSG1 = "Break" -- Nombre del recreo
+GlobalNextClassMSG2 = "Reward" -- Nombre del recompensa
+GlobalNextClassMSG3 = "Intructions" -- Nombre instrucciones
+GlobalNextClassMSG4 = "is going to start" -- Texto de ayuda 1
+GlobalNextClassMSG5 = "Please go to the specific classroom" -- Texto de ayuda para que lleguen a la clase correcta
+GlobalNextClassMSG6 = "Follow the classes to eran rewards, avoid to be Punished by teacher" -- Instrucciones iniciales
+GlobalNextClassMSG7 = "You have been punish by teacher"-- texto de castigo 1
+GlobalNextClassMSG8 = "You are not going to be reward for this class" -- texto explicacion del castigo
+GlobalNextClassMSG9 = "is the awarned student" -- texto explicacion jugador premiado
+GlobalNextClassMSG10 = "extra 5 coins due be the best student" -- texto recompensa extra al jugador premiado
+GlobalNextClassMSG11 = "Coins" -- Nombre de las monedas en tu juego
 
 
---Class 6
-ClassID = 6
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#RBreak "
-ClassDB[ClassID][ClassTime] = 180
-ClassDB[ClassID][ClassDesc] = "Have a free time"
-ClassDB[ClassID][ClassEarn] = 0
+---------------------------------
+-- HORARIO DE CLASES
+---------------------------------
+
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID +1 -- Solo copiar, No editar
+ClassDB[ClassID] = {} -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = "#GFree Class " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 15 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "Follow the instructions of the teacher" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 10 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = 1 --Coordena X
+ClassDB[ClassID][ClassY] = 11 -- Altura
+ClassDB[ClassID][ClassZ]  =  0 --Coordenada Y
 
 
---Class 7
-ClassID = 7
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#GSports "
-ClassDB[ClassID][ClassTime] = 240
-ClassDB[ClassID][ClassDesc] = "Play the sport designed by teacher"
-ClassDB[ClassID][ClassEarn] = 10
+--Ejemplo Recreo (Copiar, pegar y modificar pegar)
+ClassID = ClassID +1 -- Solo copiar, No editar
+ClassDB[ClassID] = {} -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = GlobalNextClassMSG1 --Solo copiar, No editar
+ClassDB[ClassID][ClassTime] = 15 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "Have free time for you!" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 5 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = 1 --Coordena X
+ClassDB[ClassID][ClassY] = 11 -- Altura
+ClassDB[ClassID][ClassZ]  =  0 --Coordenada Y
 
---Class 10
-ClassID = 9
-ClassDB[ClassID] = {}
-ClassDB[ClassID][ClassName] = "#YAfter School"
-ClassDB[ClassID][ClassTime] = 240
-ClassDB[ClassID][ClassDesc] = "Free time, dont forget to sleep"
-ClassDB[ClassID][ClassEarn] = 0
