@@ -98,8 +98,9 @@ TimerOver = function(e)
 	local z = ClassDB[ClassActual][ClassZ]	
 	for i,a in ipairs(players) do
 		local playerid = players[i]
-		Player:teleportHome(playerid)
 		Player:setRevivePoint(playerid,x,y,z)
+		Player:teleportHome(playerid)
+		
 	end
 end
 
@@ -161,3 +162,16 @@ AwardBuff = function(e)
    
 end 
 ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], AwardBuff)
+
+
+FixScheduleT  = 5
+FixSchedule = function(e)
+   
+	FixScheduleT = FixScheduleT - 1
+	if FixScheduleT > 0 then return 0 end
+	FixScheduleT  = 5
+	local _,_,allPlayers = World:getAllPlayers(-1);
+	MiniTimer:showTimerTips(allPlayers,GlobalTimer,ClassDB[ClassActual][ClassName],true);
+    
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=],FixSchedule)
