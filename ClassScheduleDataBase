@@ -10,7 +10,15 @@
 	----------------------------------
 	*REQUIERES: CLASS SCHEDULE CORE
 	----------------------------------
-    [No modificar esta linea]] ClassDB = {}; ClassID = 0; ClassName = 1; ClassTime = 2; ClassDesc = 3; ClassEarn = 4;ClassX = 5; ClassY = 6; ClassZ = 7
+    [No modificar esta linea]] ClassDB = {}; 
+	ClassID = 0; 
+	ClassName = 1; 
+	ClassTime = 2; 
+	ClassDesc = 3; 
+	ClassEarn = 4;
+	ClassX = 5; 
+	ClassY = 6; 
+	ClassZ = 7;
 
 
 			
@@ -18,15 +26,15 @@
 -- SET UP
 ---------------------------------
 --[[  OBJETOS Y BUFFS  ]]
-GlobalItemCoin = 4118 -- ID objeto moneda
+GlobalItemCoin = 4109 -- ID objeto moneda
 GlobalPunishBuff = 50000001 -- ID Buff(estado) de castigo
 GlobalAwardBuff = 50000005 -- ID Buff(estado) de Premio
 
 --[[  NOMBRES Y TEXTOS  ]]
-GlobalNextClassMSG1 = "Break" -- Nombre del recreo
-GlobalNextClassMSG2 = "Reward" -- Nombre del recompensa
-GlobalNextClassMSG3 = "Intructions" -- Nombre instrucciones
-GlobalNextClassMSG4 = "is going to start" -- Texto de ayuda 1
+GlobalNextClassMSG1 = "Recreo" -- Nombre del recreo
+GlobalNextClassMSG2 = "Recompensa" -- Nombre del recompensa
+GlobalNextClassMSG3 = "Intrucciones" -- Nombre instrucciones
+GlobalNextClassMSG4 = "inicio" -- Texto de ayuda 1
 GlobalNextClassMSG5 = "Please go to the specific classroom" -- Texto de ayuda para que lleguen a la clase correcta
 GlobalNextClassMSG6 = "Follow the classes to eran rewards, avoid to be Punished by teacher" -- Instrucciones iniciales
 GlobalNextClassMSG7 = "You have been punish by teacher"-- texto de castigo 1
@@ -41,25 +49,111 @@ GlobalNextClassMSG11 = "Coins" -- Nombre de las monedas en tu juego
 ---------------------------------
 
 --Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID + 1 --Solo copiar, No editar
+ClassDB[ClassID] = {} -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = "#G clase de teatro " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "sigue a tu profesor para que te guie a tu siguiente clase" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 15 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = -9 --Coordena X
+ClassDB[ClassID][ClassY] = 69 -- Altura
+ClassDB[ClassID][ClassZ]  =  1 --Coordenada Y
+
+--Ejemplo Clase (Copi Solo copiar, No editar
+ClassID = ClassID + 1
+ClassDB[ClassID] = {}  -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = GlobalNextClassMSG1 -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "es hora del descanzo" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 2 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = -68 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  =  0 --Coordenada Y
+
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID + 1 -- Solo copiar, No editar
+ClassDB[ClassID] = {}  -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = "#G clase de agricultura " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "no ataques a los animales" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 15 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = -47 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  =  -63 --Coordenada Y
+
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
 ClassID = ClassID +1 -- Solo copiar, No editar
 ClassDB[ClassID] = {} -- Solo copiar, No editar
-ClassDB[ClassID][ClassName] = "#GFree Class " -- Nombre de la clase, no quitar comillas ("")
-ClassDB[ClassID][ClassTime] = 15 --Tiempo que dura la clase
-ClassDB[ClassID][ClassDesc] = "Follow the instructions of the teacher" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassName] = GlobalNextClassMSG1 -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10--Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "es hora de jugar y explorar" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 7 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = -31 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  = -49 --Coordenada Y
+
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID + 1 -- Solo copiar, No editar
+ClassDB[ClassID] = {} -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = "#G clase de muscia " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "es hora de cantar a tu alrededor" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 15 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = -79 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  =  -36 --Coordenada Y
+
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID  + 1-- Solo copiar, No editar
+ClassDB[ClassID] = {}  -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = "#G clase de quimica " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "el profesor decide la clase mister wu no esta con nosotros aun" -- Instrucciones en el chat para la clase
 ClassDB[ClassID][ClassEarn] = 10 --Recompensa de la clase
-ClassDB[ClassID][ClassX] = 1 --Coordena X
-ClassDB[ClassID][ClassY] = 11 -- Altura
-ClassDB[ClassID][ClassZ]  =  0 --Coordenada Y
+ClassDB[ClassID][ClassX] = -56 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  =  -47 --Coordenada Y
 
-
---Ejemplo Recreo (Copiar, pegar y modificar pegar)
-ClassID = ClassID +1 -- Solo copiar, No editar
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID + 1 -- Solo copiar, No editar
 ClassDB[ClassID] = {} -- Solo copiar, No editar
-ClassDB[ClassID][ClassName] = GlobalNextClassMSG1 --Solo copiar, No editar
-ClassDB[ClassID][ClassTime] = 15 --Tiempo que dura la clase
-ClassDB[ClassID][ClassDesc] = "Have free time for you!" -- Instrucciones en el chat para la clase
-ClassDB[ClassID][ClassEarn] = 5 --Recompensa de la clase
-ClassDB[ClassID][ClassX] = 1 --Coordena X
-ClassDB[ClassID][ClassY] = 11 -- Altura
-ClassDB[ClassID][ClassZ]  =  0 --Coordenada Y
+ClassDB[ClassID][ClassName] = "#G clase de entrenamiento " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "si no sigues mis instrucciones tu vida correra peligro" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 25 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = -42 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  =  -71 --Coordenada Y
 
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID + 1 -- Solo copiar, No editar
+ClassDB[ClassID] = {} -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = GlobalNextClassMSG1 -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "tienes poco tiempo hantes de deportes intenta descansar" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 15 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = 15 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  =  -31 --Coordenada Y
+
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID + 1 -- Solo copiar, No editar
+ClassDB[ClassID] = {} -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = "#R clase de deportes " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "disfruta de la pisicna y la cancha de futbol" -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 15 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = 24 --Coordena X
+ClassDB[ClassID][ClassY] = 68 -- Altura
+ClassDB[ClassID][ClassZ]  =  -33 --Coordenada Y
+
+--Ejemplo Clase (Copiar, pegar y modificar pegar)
+ClassID = ClassID + 1 -- Solo copiar, No editar
+ClassDB[ClassID] = {} -- Solo copiar, No editar
+ClassDB[ClassID][ClassName] = "#R clase de historia y geografia  " -- Nombre de la clase, no quitar comillas ("")
+ClassDB[ClassID][ClassTime] = 10 --Tiempo que dura la clase
+ClassDB[ClassID][ClassDesc] = "es tu ultima clase la que durara mas jajajajajajajajajajajj ten cuidado con el bibliotecario descubre el misterio podras ir a la vez a la clase de entrenamiento a vencer a cherubimon " -- Instrucciones en el chat para la clase
+ClassDB[ClassID][ClassEarn] = 100 --Recompensa de la clase
+ClassDB[ClassID][ClassX] = -97 --Coordena X
+ClassDB[ClassID][ClassY] = 70 -- Altura
+ClassDB[ClassID][ClassZ]  =  67 --Coordenada Y
