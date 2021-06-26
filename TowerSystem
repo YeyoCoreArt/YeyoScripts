@@ -1,0 +1,84 @@
+ItemMoney = 4107
+ItemTowerUpgrade = 4179
+UpgradeDropChance = 90
+
+WeaponActivated = true
+WeaponBullet = 4130
+WeaponBulletBuff = 50000005
+
+MobEnter = function(e)
+    local imob = e.eventobjid
+    local result,mass =Creature:getMass(e.eventobjid)
+    if mass == 999999 then return 0 end
+    Actor:addBuff(imob,102,1,0)
+end
+ScriptSupportEvent:registerEvent([=[Actor.Create]=],MobEnter)
+
+
+MobDies = function(e)
+    local imob = e.eventobjid
+    local result,mass = Creature:getMass(imob)
+    if mass == 999999 then return 0 end
+    
+    local result,mobHP = Creature:getAttr(imob,CREATUREATTR.MAX_HP)
+    mobHP = math.floor( mobHP/20)
+    
+    --SpawnCoins
+    local result,x,y,z = Actor:getPosition(imob)
+    World:spawnItem(x,y,z,ItemMoney,mobHP)
+    
+    --SpawnUpgrade
+    local chance = math.random(100) + mobHP
+    if chance < UpgradeDropChance then return 0 end 
+    World:spawnItem(x,y,z,ItemTowerUpgrade,1)
+    
+
+end
+ScriptSupportEvent:registerEvent([=[Actor.Die]=],MobDies)
+
+SellTower = function(e)
+    local imob = e.toobjid
+    local result,mass = Creature:getMass(imob)
+    if mass ~= 999999 then return 0 end
+    local playerid = e.eventobjid
+
+     --SpawnCoins
+    local result,mobHP = Creature:getAttr(imob,CREATUREATTR.MAX_HP)
+    if mobHP > 10 then return 0 end
+    
+    local result,x,y,z = Actor:getPosition(imob)
+    local result,objid = World:spawnItem(x,y,z,ItemMoney,mobHP)
+    Player:notifyGameInfo2Self(playerid,"#GSold: #b$"..mobHP)
+    Sound(x,y,z,10961)
+    Actor:killSelf(imob)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.ClickActor]=],SellTower)
+
+
+
+AttackWard = function(e) -- simple sound
+    if WeaponActivated == false then return 0 end
+    if e.toobjid == nil or e.toobjid == -1 then return 0 end
+    local imob = e.toobjid
+    local result,mass = Creature:getMass(imob)
+    if mass == 999999 then return 0 end
+    Actor:addBuff(imob,WeaponBulletBuff,1,20)
+    
+end
+ScriptSupportEvent:registerEvent([=[Actor.Projectile.Hit]=],AttackWard)
+
+
+
+Sound = function(x2,y2,z2,sound) -- simple sound
+    local pitch = 1 + math.random(-0.2,0.2)
+    local volume = 80 + math.random(40)
+    World:playSoundEffectOnPos({x=x2,y=y2,z=z2},sound,volume ,pitch,false)
+    
+end
+
+
+AutoHealHunger = function(e)
+	Player:setAttr(e.eventobjid, PLAYERATTR.CUR_HUNGER, 100)
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], AutoHealHunger)
