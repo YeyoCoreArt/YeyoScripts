@@ -1,0 +1,23 @@
+	"set_ai": [
+		{
+			"block_id": 550,
+			"buff_id": 102001,
+			"check_sight": true,
+			"length": 8,
+			"name": "target_mutate",
+			"priority": 2,
+			"prob": 20 
+		},
+		{
+			"atkrange": 800,
+			"buffid": 0,
+			"count": 1,
+			"max_atktime": 10,
+			"min_atktime": 10,
+			"name": "projectile_attack",
+			"power": 1,
+			"priority": 1,
+			"projectileid": 12051,
+			"speed": 1 
+		},
+	] 
