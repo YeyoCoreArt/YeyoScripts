@@ -1,0 +1,8 @@
+function GetItemID(event)
+    local itemid = event.itemid
+
+    local result,iiname = Item:getItemName(itemid)
+    Chat:sendSystemMsg("Hand Item ID: "..itemid,0)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.SelectShortcut]=],GetItemID)
