@@ -1,10 +1,7 @@
 ------------------------------------------------------------------------------
  --Block Store 1.0
- 	--by YeyoCore. from Youtube channel https://www.youtube.com/multiverseeditor
- 
- -- By YeyoCore UID 2769323
- 
-	-- Provide you a sistem to create custom commands based on text chats
+ -- By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
+	-- allow you to open the toolbox by using an item or mob
 
  -- /!\ Requieres /!\ : 
 	--No other script
