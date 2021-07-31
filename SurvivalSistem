@@ -14,21 +14,21 @@
 --           SET UP
 --------------------------------------------------
 --Stats
-PlayerPointsMaxLife = 200 -- max hp for player
-PlayerPointsCoinsperkill = 3 -- how many coins player will receive per kill
+PlayerPointsMaxLife = 200 -- max hp for player // HP maximo del jugador
+PlayerPointsCoinsperkill = 3 -- how many coins player will receive per kill // Monedas por cada kill
 --Items
-PlayerPointsCoinsItem = 4099 -- Itemid of the money inside the game
-PlayerPointsLifeItem = 4117 -- Itemid of the life number
-PlayerPointsLifeReduction = 4124 -- Itemid life reduction item (-25)
+PlayerPointsCoinsItem = 4099 -- Itemid of the money inside the game // ID del objeto moneda
+PlayerPointsLifeItem = 4117 -- Itemid of the life number // ID del objeto vida extra
+PlayerPointsLifeReduction = 4124 -- Itemid life reduction item (-25) // id del objeto para reducir vida 
 --buffs
-PlayerPointsObserverBuff = 50000005
+PlayerPointsObserverBuff = 50000005 -- Observer buff(remove the ,1 at the end) // Buff de observador (quitar ,1 al fina)
 --Texts
-PlayerPointsMensage = "Resurects -1 life ❤" -- Mensaje when players uses extra life
-PlayerPointsMensage2 = "HAS LOSE! 💀" -- Mensaje when players uses extra life
-PlayerPointsMensage3 = "Now You Are an Observer 👁" -- Mensaje when players uses extra life
+PlayerPointsMensage = "Resurects -1 life ❤" -- Mensaje when players uses extra life // texto cuando el jugador usa 1 vida
+PlayerPointsMensage2 = "HAS LOSE! 💀" -- Mensaje when players lose // mensaje cuando el jugador pierde
+PlayerPointsMensage3 = "Now You Are an Observer 👁" -- Mensaje when players transfor into observer // mensaje cuando el jugador se vuelve observador
 --Avoid Glich
-PlayerPointsMinY = 0
-PlayerPointsMaxY = 47
+PlayerPointsMinY = 0 -- Minimun Max Height // Altura minima
+PlayerPointsMaxY = 47 -- Max height // Altura maxima
 
 ------------------------------------------------------------------------------
 -- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
