@@ -1,0 +1,235 @@
+--[[------------------------------------------------------------------------------
+
+ DEATH SCORE SISTEM 1.10
+ 
+ Created by YeyoCore UID 2769323, from Youtube channel: https://www.youtube.com/multiverseeditor
+ Provide you a sistem to auto aim, sell towers, and desactivate hunger
+ 
+ /!\ Requieres /!\ : 
+ --complete the set up
+
+---------------------------------------------------------------------------------]]
+
+--------------------------------------------------
+--           SET UP
+--------------------------------------------------
+--Stats
+PlayerPointsMaxLife = 200 -- max hp for player
+PlayerPointsCoinsperkill = 3 -- how many coins player will receive per kill
+--Items
+PlayerPointsCoinsItem = 4099 -- Itemid of the money inside the game
+PlayerPointsLifeItem = 4117 -- Itemid of the life number
+PlayerPointsLifeReduction = 4124 -- Itemid life reduction item (-25)
+--buffs
+PlayerPointsObserverBuff = 50000005
+--Texts
+PlayerPointsMensage = "Resurects -1 life ❤" -- Mensaje when players uses extra life
+PlayerPointsMensage2 = "HAS LOSE! 💀" -- Mensaje when players uses extra life
+PlayerPointsMensage3 = "Now You Are an Observer 👁" -- Mensaje when players uses extra life
+--Avoid Glich
+PlayerPointsMinY = 0
+PlayerPointsMaxY = 47
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+local GameRule = class.GameRule.new()
+PlayerPointsSound = {};
+PlayerPointsSound[1] = 10948 --RESURECTION SOUND
+PlayerPointsSound[2] = 10102
+PlayerPointsSound[3] = 10146
+PlayerPointsSound[4] = 10190
+PlayerPointsSound[5] = 10199
+
+PlayerPointsLose = {}; -- security players cant access again
+GAMEFINISH = false
+PlayerPointsPlayersEntering = 0
+GameRule.KillNotify = 0 -- avoid get mensajes
+--GameRule.DisplayScore = 0
+
+PlayerPointsDie = function(e)
+	if GAMEFINISH == true then return 0 end
+	if PlayerPointsLose[e.eventobjid] == true then return 0 end
+	local playerid = e.eventobjid
+    
+    --Check if player resurects
+    local R1 = Backpack:hasItemByBackpackBar(playerid,1,PlayerPointsLifeItem)
+    local R2 = Backpack:hasItemByBackpackBar(playerid,2,PlayerPointsLifeItem)
+    if R1 == ErrorCode.OK or R2 == ErrorCode.OK then  
+        Backpack:removeGridItemByItemID(playerid,PlayerPointsLifeItem,1)
+        local result,name = Player:getNickname(playerid)
+        Chat:sendSystemMsg("#G"..name.." "..PlayerPointsMensage)
+        SoundPlayer(playerid,PlayerPointsSound[1])
+        return 0 
+    end
+    
+	--No resurection
+    Team:changePlayerTeam(playerid,2)
+	PlayerPointsLose[playerid] = true
+	local result,name = Player:getNickname(playerid)
+	Chat:sendSystemMsg("#R"..name.." "..PlayerPointsMensage2)
+	local r = math.random(2,#PlayerPointsSound)
+	SoundPlayer(playerid,PlayerPointsSound[r])
+	
+	--RewardPlayers
+	PlayerPointRewardAll(PlayerPointsCoinsperkill,1,"Kill",180) 
+end
+ScriptSupportEvent:registerEvent([=[Player.Die]=],PlayerPointsDie)
+
+PlayerPointsResurect = function(e)
+    local playerid = e.eventobjid
+    local result,teamplayer = Player:getTeam(playerid)
+    if teamplayer == 1 then return 0 end
+ 
+    Player:changeViewMode(playerid,VIEWPORTTYPE.BACKVIEW,true)
+	Actor:addBuff(playerid,PlayerPointsObserverBuff,1,0)
+	Player:notifyGameInfo2Self(playerid,"#R"..PlayerPointsMensage3)
+	
+	--Add points to other players
+    local result,score1 = Team:getTeamScore(1)
+    Player:setGameScore(playerid,score1-1)
+	Player:setGameResults(playerid,score1-1)
+	--Team:addTeamScore(1,1)
+	
+    --[[Won or lose
+	if GAMEFINISH == true then return 0 end
+    local result,Teamnum = Team:getTeamPlayerNum(1,2)
+    if Teamnum > 1 then return 0 end
+	GAMEFINISH = true
+    local result,Teamnum,Allplayers = Team:getTeamPlayers(1,1)
+    for i,a in ipairs(Allplayers) do
+        local result,value=Player:getGameScore(Allplayers[i])
+        Player:setGameScore(Allplayers[i],value) 
+        Player:setGameResults(Allplayers[i],value) 
+    end
+	]]
+    
+    --Team:addTeamScore(1,999)
+	
+	
+	
+end
+ScriptSupportEvent:registerEvent([=[Player.Revive]=],PlayerPointsResurect)
+
+
+PlayerPointsEndGame = function()
+	if GAMEFINISH == true then return 0 end
+	if PlayerPointsPlayersEntering < 2 then return 0 end
+
+	local result,team1 = Team:getTeamPlayerNum(1,2)
+	if team1 > 1 then return 0 end 
+	GAMEFINISH = true
+	
+	--local result,Teamnum,Allplayers = Team:getTeamPlayers(1,1)
+	local result,num,Allplayers = World:getAllPlayers(-1)
+    for i,a in ipairs(Allplayers) do
+        local result,value = Player:getGameScore(Allplayers[i]) 
+		if result then 
+			Player:setGameResults(Allplayers[i],value)
+		else 
+			Player:setGameResults(Allplayers[i],1)
+		end 
+    end
+	Team:setTeamScore(1,999) 
+	
+	return 0
+
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], PlayerPointsEndGame)
+
+
+PlayerPointIni = function(e)
+    if GAMEFINISH == true then return 0 end
+	if PlayerPointsLose[e.eventobjid] == nil then -- new player
+		Team:changePlayerTeam(e.eventobjid,1)
+		PlayerPointsPlayersEntering = PlayerPointsPlayersEntering +1
+		Player:setAttr(playerid,PLAYERATTR.MAX_HP,PlayerPointsMaxLife)
+		Player:setAttr(playerid,PLAYERATTR.CUR_HP,PlayerPointsMaxLife)
+		return 0 
+	end
+	
+	--re entered losee player
+	local playerid = e.eventobjid
+	Team:changePlayerTeam(playerid,2) -- Returning player
+	Player:changeViewMode(playerid,VIEWPORTTYPE.BACKVIEW,true)
+	Actor:addBuff(playerid,PlayerPointsObserverBuff,1,0)
+	Player:notifyGameInfo2Self(playerid,"#R"..PlayerPointsMensage3)
+	
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=],PlayerPointIni)
+
+PlayerPointRewardAll = function(Coins,Points,Text,Protection) 
+    if Points > 0 then Team:addTeamScore(1,Points) end	
+	local result,score1 = Team:getTeamScore(1)
+    local result,Teamnum,teamAll = Team:getTeamPlayers(1,1)
+    for i,a in ipairs(teamAll) do
+        local player2 = teamAll[i]
+		if Protection > 0 then Actor:addBuff(player2,999,2,Protection) end
+        if Coins > 0 then
+			Player:gainItems(player2,PlayerPointsCoinsItem,Coins,1)
+			Player:notifyGameInfo2Self(player2,"#G+"..Coins.." coins")
+		end
+        if Points > 0 then 
+			Player:setGameScore(player2,score1) 
+			if Text ~= "" then
+				Player:notifyGameInfo2Self(player2,"#R"..Text..": #G+"..Points.." Points")
+			end
+		end	
+    end
+end
+
+PlayerPointsTotemHP = function(e)
+	if e.itemid ~= PlayerPointsLifeReduction then return 0 end 
+	local playerid = e.eventobjid
+	Backpack:removeGridItemByItemID(playerid,PlayerPointsLifeReduction,1)
+	PlayerPointsMaxLife = math.max(PlayerPointsMaxLife - 25,50)
+	Chat:sendSystemMsg("#R---------------------------------------",0)
+	Chat:sendSystemMsg("#R All players life reduced to #b"..PlayerPointsMaxLife,0)
+	Chat:sendSystemMsg("#R---------------------------------------",0)
+	Actor:playBodyEffectById(playerid,1305,1)
+	SoundPlayer(playerid,10958)
+	
+	local result,num,players = World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		playerid = players[i]
+		--SetMaxLife
+		Player:setAttr(playerid,PLAYERATTR.MAX_HP,PlayerPointsMaxLife)
+		
+		--Adjust Life
+		local result,actualHP=Player:getAttr(playerid,PLAYERATTR.CUR_HP)
+		if actualHP > PlayerPointsMaxLife then 
+			Player:setAttr(playerid,PLAYERATTR.CUR_HP,PlayerPointsMaxLife)
+		end
+	end
+end
+ScriptSupportEvent:registerEvent([=[Player.AddItem]=],PlayerPointsTotemHP)
+
+PlayerPointsOutofgame = function(e)
+	local ret, x,y,z = Player:getPosition(e.eventobjid) --actual position
+	if y > PlayerPointsMinY and  y < PlayerPointsMaxY  then return 0 end
+	Actor:killSelf(e.eventobjid)
+	Player:teleportHome(e.eventobjid)
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], PlayerPointsOutofgame) 
+
+SoundPlayer = function(playerid,sound) -- simple sound on player
+	local result,x,y,z = Actor:getPosition(playerid)
+	Sound(x,y,z,sound) 
+end
+
+Sound = function(x2,y2,z2,sound) -- simple sound
+    local pitch = 1 + math.random(-0.2,0.2)
+    local volume = 80 + math.random(40)
+    World:playSoundEffectOnPos({x=x2,y=y2,z=z2},sound,volume ,pitch,false)
+end
+
+Scramble = function(VariableName,Number1,Number2) 
+    local Ret,OldValue = VarLib2:getGlobalVarByName(VARTYPE.NUMBER,VariableName)
+    local NewValue = math.random(Number1,Number2)
+    if NewValue == OldValue then NewValue = NewValue + 1 end
+	if NewValue > Number2 then NewValue = Number1 end
+    local result = VarLib2:setGlobalVarByName(VARTYPE.NUMBER,VariableName,NewValue)
+    --test_msg("Scramble")
+end
