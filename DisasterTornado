@@ -1,0 +1,161 @@
+--[[------------------------------------------------------------------------------
+
+TORNADO PUBLIC 1.O
+Created by YeyoCore UID 2769323, from Youtube channel: https://www.youtube.com/multiverseeditor
+
+Creates a Tornado that follows the player in the current location. slowly drags the player to it
+
+/!\ Requieres /!\ : 
+--complete the set up
+--invisible proyectile
+--Invisible Mob
+
+---------------------------------------------------------------------------------]]
+
+--------------------------------------------------
+--           SET UP    //  CONFIGURACION
+--------------------------------------------------
+-- Main Config
+YeyoTornadoDummy = 3 -- Mob id // id del mob
+YeyoTornadoMissile = 4122  -- proyectile id // id del proyectil
+YeyoTornadoTimeIni = 600 -- Durantion on ticks (30sec) // Duracion en tics // 30secs
+YeyoTornadoPower = 1 -- Atraction power // Poder de atraccion
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  NO CAMBIAR NADA DESPUES DE ESTE TEXTO
+------------------------------------------------------------------------------
+YeyoTornado = {}; YeyoTornadoA = {}; YeyoTornadoB = {}; 
+
+YeyoTornado0 =  function(YeyoTornadoY)
+local YeyoTornadoW = {}
+for k,v in pairs(YeyoTornadoY) do
+YeyoTornadoW[k] = v
+end
+return YeyoTornadoW
+end
+YeyoTornado6 = function (inivec,compvec,power,distancemax) -- Return the YeyoTornadoM for appendSpeed
+local vdir = 0;
+local force = 0;
+local YeyoTornadoM = 0;
+local distance = math.abs(inivec - compvec)
+if distance < distancemax then
+if inivec > compvec then vdir = -1  
+elseif inivec < compvec then vdir = 1
+else vdir = 0
+end
+YeyoTornadoM = power*vdir
+return YeyoTornadoM
+else
+return 0
+end
+end
+YeyoTornado1 = function(event_args)
+local actor = event_args['eventobjid']
+local toobjid = event_args['toobjid']
+local ret, actorid = Creature:getActorID(actor)
+local ret, YeyoTornadoZ = Creature:getTamedOwnerID(actor)
+if actorid ~= YeyoTornadoDummy  then return 0 end
+table.insert(YeyoTornado, actor)
+table.insert(YeyoTornadoB, YeyoTornadoTimeIni)
+YeyoTornadoA[YeyoTornadoZ] = #YeyoTornado 
+Actor:playBodyEffectById(actor,1349,3.5)
+Actor:playBodyEffectById(actor,1031,2)
+Actor:playBodyEffectById(actor,1185,1)
+local ret,x,y,z = Player:getPosition(actor)
+Sound(x,y,z,10571) 
+end
+YeyoTornado2 = function()
+local YeyoTornadoC = {};
+local YeyoTornadoD = {};
+if #YeyoTornado <= 0 then return 0 end
+for i,v in pairs(YeyoTornado) do
+if YeyoTornado[i] ~= nil  then
+local YeyoTornadoZ = YeyoTornado[i]
+YeyoTornadoB[i] = YeyoTornadoB[i] - 1
+if YeyoTornadoB[i] > 0 then 
+YeyoTornado4(YeyoTornadoZ,9.5,4,YeyoTornadoPower)
+YeyoTornado4(YeyoTornadoZ,8.5,2,YeyoTornadoPower/5)
+YeyoTornado4(YeyoTornadoZ,8.0,1,YeyoTornadoPower/5)
+if math.random(0,100) < 10 then 
+local ret1,x,y,z = Actor:getPosition(YeyoTornadoZ)
+local x2 = x + math.random(-7.5,7.5)
+local y2 = y + math.random(1.5,10)
+local z2 = z + math.random(-7.5,7.5)
+local result = World:spawnProjectile(YeyoTornadoZ, YeyoTornadoMissile, x2, y2, z2, x, y+1, z, 100)
+end
+table.insert(YeyoTornadoC, YeyoTornadoZ)
+table.insert(YeyoTornadoD, YeyoTornadoB[i])
+YeyoTornado[i] = nil
+YeyoTornadoB[i] = nil
+YeyoTornadoA[YeyoTornadoZ] = #YeyoTornadoC
+else 
+local ID = YeyoTornadoA[YeyoTornadoZ]
+YeyoTornadoB[i] = nil
+World:despawnCreature(YeyoTornado[i])
+YeyoTornado[i] = nil;
+YeyoTornadoA[YeyoTornadoZ] = nil
+end
+end 
+end
+YeyoTornado = YeyoTornado0(YeyoTornadoC)
+YeyoTornadoB = YeyoTornado0(YeyoTornadoD)
+end
+YeyoTornado3 = function(event)
+local YeyoTornadoZ = event.eventobjid
+local ID = YeyoTornadoA[YeyoTornadoZ]
+if YeyoTornado[ID] == nil then return 0 end
+local YeyoTornadoZ = YeyoTornado[ID]
+local x = event.x
+local y = event.y
+local z = event.z
+YeyoTornado[ID] = nil;
+YeyoTornadoB[ID] = nil
+YeyoTornadoA[YeyoTornadoZ] = nil
+end
+YeyoTornado4 = function(YeyoTornadoZ,distance,objtype,power)
+local ret1,x,y,z = Actor:getPosition(YeyoTornadoZ)
+y = y-1
+local x1,y1,z1=x-distance,y-(distance/2),z-distance
+local x2,y2,z2=x+distance,y+distance,z+distance
+local result,num,objids = World:getActorsByBox(objtype,x1,y1,z1,x2,y2,z2)
+if result ~= ErrorCode.OK or num <= 0 then return 0 end 
+for i,a in ipairs(objids) do
+local YeyoTornadoX = objids[i] 
+if YeyoTornadoX ~= YeyoTornadoZ then
+local ret2, xb,yb,zb = Actor:getPosition(YeyoTornadoX)
+if ret1 == 0 and ret2 == 0 then
+local result3,objtype2= Actor:getObjType(YeyoTornadoX)
+local forceY = power/7
+if objtype2 ~= 4 then
+local dis1 = math.abs(xb-x)
+local dis2 = math.abs(zb-z)
+forceY = power/3
+if  dis1 < 2 or dis2 < 2  then
+forceY = power*2
+elseif dis1 < 5 or dis2 < 5  then
+forceY = power
+elseif dis1 < 7 or dis2 < 7 then
+forceY = power/2
+end
+end
+if objtype2 == 2 then 
+local ret, actorid = Creature:getActorID(YeyoTornadoX)
+if actorid == YeyoTornadoDummy then forceY = 0 end
+end
+YeyoTornado5(YeyoTornadoX,power*-1,forceY,100,x,y,z,xb,yb,zb)
+end
+end
+end
+end
+YeyoTornado5 = function(YeyoTornadoX,power,powery,distancemax,x,y,z,x2,y2,z2)
+if y2 < y then y2 = y + 0.5 end 
+local vx = YeyoTornado6(x,x2,power,distancemax)
+local vy = YeyoTornado6(y,y2,powery,distancemax)
+local vz = YeyoTornado6(z,z2,power,distancemax)
+Actor:appendSpeed(YeyoTornadoX, vx, vy, vz)
+end
+ScriptSupportEvent:registerEvent([=[Actor.Die]=],YeyoTornado3)  
+ScriptSupportEvent:registerEvent([=[Game.Run]=],YeyoTornado2)
+ScriptSupportEvent:registerEvent([=[Actor.Create]=],YeyoTornado1) 
