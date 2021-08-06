@@ -1,0 +1,116 @@
+--[[----------------------------------------------------------------------------
+YeyoEarthquake 1.0
+By YeyoCore UID 2769323, from Youtube channel https://www.youtube.com/multiverseeditor
+
+this script shakes Players Camera, Automated, only changing a simple variable
+To call this function: YeyoEarthquake1()
+
+----------------------------------------------------------------------------]]--
+
+---------------------------------
+--              SET UP
+--------------------------------
+YeyoEarthquakeTriggerName = "DisEarthQuake" -- Name of the Earthquake timer // Nombre del timer
+YeyoEarthquakeMissile = 4103 -- Indoors Proyectile // Municion de Interiores
+YeyoEarthquakeReduction = 0.90 -- horizontal Camera shake reduction
+YeyoEarthquakeReductiony = 0.95 -- Vertical Camera shake reduction
+
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+
+YeyoEarthquake = {}; -- Holds Missile
+YeyoEarthquakeA = {}; -- Holds Player
+YeyoEarthquakeB = {}; -- Holds index for dinamic indexing
+YeyoEarthquake0 =  function(YeyoEarthquakeN)
+local YeyoEarthquakeM = {}
+for k,v in pairs(YeyoEarthquakeN) do
+YeyoEarthquakeM[k] = v
+end
+return YeyoEarthquakeM
+end
+YeyoEarthquake1 = function()
+local Ret,DisEarthQuake = VarLib2:getGlobalVarByName(VARTYPE.TIMER,YeyoEarthquakeTriggerName)
+local result, YeyoEarthquakeY = MiniTimer:getTimerTime(DisEarthQuake)
+if YeyoEarthquakeY <= 0 then return 0 end 
+local YeyoEarthquakeX = math.random(1,3)
+local result,num,players=World:getAllPlayers(1)
+for i,a in ipairs(players) do
+local YeyoEarthquakeZ = players[i]
+if YeyoEarthquakeB[YeyoEarthquakeZ] == nil then 
+table.insert(YeyoEarthquake, YeyoEarthquakeX)
+table.insert(YeyoEarthquakeA, YeyoEarthquakeZ)
+YeyoEarthquakeB[YeyoEarthquakeZ] = #YeyoEarthquake
+else
+local id = YeyoEarthquakeB[YeyoEarthquakeZ]
+if YeyoEarthquakeX > YeyoEarthquake[id] then
+YeyoEarthquake[id] = YeyoEarthquakeX
+end
+end
+end
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=],YeyoEarthquake1)
+YeyoEarthquake2 = function()
+local YeyoEarthquakeC = {};
+local YeyoEarthquakeD = {};
+if #YeyoEarthquake <= 0 then return 0 end
+for i,v in pairs(YeyoEarthquake) do
+if YeyoEarthquake[i] ~= nil  then
+YeyoEarthquake[i] = YeyoEarthquake[i] * YeyoEarthquakeReduction
+local YeyoEarthquakeX = YeyoEarthquake[i]
+local YeyoEarthquakeZ = YeyoEarthquakeA[i]
+local Ret,DisEarthQuake = VarLib2:getGlobalVarByName(VARTYPE.TIMER,"DisEarthQuake")
+local result, YeyoEarthquakeY = MiniTimer:getTimerTime(DisEarthQuake)
+if YeyoEarthquake[i] > 0.1 and YeyoEarthquakeY > 0 then 
+local result,yaw = Actor:getFaceYaw(YeyoEarthquakeZ)
+local result,pitch = Actor:getFacePitch(YeyoEarthquakeZ)
+yaw = yaw  - 180 -- Fit Camera
+local shakexz = YeyoEarthquake4(YeyoEarthquakeX,YeyoEarthquakeReduction)
+local shakey = YeyoEarthquake4(YeyoEarthquakeX,YeyoEarthquakeReductiony)
+Player:rotateCamera(YeyoEarthquakeZ,yaw + shakexz , pitch + shakey)
+table.insert(YeyoEarthquakeC, YeyoEarthquake[i])
+table.insert(YeyoEarthquakeD, YeyoEarthquakeA[i])
+YeyoEarthquake[i] = nil
+YeyoEarthquakeA[i] = nil
+YeyoEarthquakeB[YeyoEarthquakeZ] = #YeyoEarthquakeC
+else 
+YeyoEarthquake[i] = nil;
+YeyoEarthquakeA[i] = nil;
+YeyoEarthquakeB[YeyoEarthquakeZ] = nil
+end
+end 
+end
+YeyoEarthquake = YeyoEarthquake0(YeyoEarthquakeC)
+YeyoEarthquakeA = YeyoEarthquake0(YeyoEarthquakeD)
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=],YeyoEarthquake2)
+YeyoEarthquake3 = function()	
+local result,num,players=World:getAllPlayers(1)
+for i,a in ipairs(players) do
+if math.random(0,100) < 35 then 
+local result,teamplayer = Player:getTeam(players[i])
+if teamplayer == 1 then  
+local YeyoEarthquakeZ = players[i]
+local _, x, y, z = Actor:getPosition(YeyoEarthquakeZ)
+x = x + math.random(-2,2)
+z = z + math.random(-2,2)
+local result, dis1 = World:getRayLength(x, y, z, x, y+10, z, 10)
+if dis1 < 10  then 
+Block:destroyBlock( x, y+dis1, z,false)
+local result = World:spawnProjectile(YeyoEarthquakeZ, YeyoEarthquakeMissile, x, y+dis1,z,x,y,z, 1)
+end
+end
+end
+end
+end
+YeyoEarthquake4 = function(variable, rate)
+variable = variable * rate 
+r = math.random(-1,1)
+variable = variable * r
+return variable
+end
+
+
