@@ -1,8 +1,8 @@
 --[[----------------------------------------------------------------------------
-YeyoEarthquake 1.0
+Earthquake 1.0
 By YeyoCore UID 2769323, from Youtube channel https://www.youtube.com/multiverseeditor
 
-this script shakes Players Camera, Automated, only changing a simple variable
+this script shakes Players Camera, and make debris fall on indoors
 To call this function: YeyoEarthquake1()
 
 ----------------------------------------------------------------------------]]--
@@ -15,16 +15,12 @@ YeyoEarthquakeMissile = 4103 -- Indoors Proyectile // Municion de Interiores
 YeyoEarthquakeReduction = 0.90 -- horizontal Camera shake reduction
 YeyoEarthquakeReductiony = 0.95 -- Vertical Camera shake reduction
 
-
 ------------------------------------------------------------------------------
 -- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 --  DO NOT MODIFY ANYTHING BELOW THIS TEXT
 --  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 ------------------------------------------------------------------------------
-
-YeyoEarthquake = {}; -- Holds Missile
-YeyoEarthquakeA = {}; -- Holds Player
-YeyoEarthquakeB = {}; -- Holds index for dinamic indexing
+YeyoEarthquake = {}; YeyoEarthquakeA = {}; YeyoEarthquakeB = {};
 YeyoEarthquake0 =  function(YeyoEarthquakeN)
 local YeyoEarthquakeM = {}
 for k,v in pairs(YeyoEarthquakeN) do
@@ -67,7 +63,7 @@ local result, YeyoEarthquakeY = MiniTimer:getTimerTime(DisEarthQuake)
 if YeyoEarthquake[i] > 0.1 and YeyoEarthquakeY > 0 then 
 local result,yaw = Actor:getFaceYaw(YeyoEarthquakeZ)
 local result,pitch = Actor:getFacePitch(YeyoEarthquakeZ)
-yaw = yaw  - 180 -- Fit Camera
+yaw = yaw  - 180 
 local shakexz = YeyoEarthquake4(YeyoEarthquakeX,YeyoEarthquakeReduction)
 local shakey = YeyoEarthquake4(YeyoEarthquakeX,YeyoEarthquakeReductiony)
 Player:rotateCamera(YeyoEarthquakeZ,yaw + shakexz , pitch + shakey)
@@ -112,5 +108,3 @@ r = math.random(-1,1)
 variable = variable * r
 return variable
 end
-
-
