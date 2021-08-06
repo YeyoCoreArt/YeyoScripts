@@ -1,0 +1,100 @@
+--[[------------------------------------------------------------------------------
+
+ THUNDER PUBLIC 1.O
+ Created by YeyoCore UID 2769323, from Youtube channel: https://www.youtube.com/multiverseeditor
+ 
+ Creates a thunder in the current location
+ 
+ /!\ Requieres /!\ : 
+ --complete the set up
+ --invisible proyectile
+
+---------------------------------------------------------------------------------]]
+
+--------------------------------------------------
+--           SET UP    //  CONFIGURACION
+--------------------------------------------------
+YeyoThunderAulletID = 4123 -- ID  of the bullet // id del proyectil
+YeyoThunderMinY = 2 -- Minimun Height of your map // Altura minima de tu mapa
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  NO CAMBIAR NADA DESPUES DE ESTE TEXTO
+------------------------------------------------------------------------------
+YeyoThunder = {}; YeyoThunderA = {}; YeyoThunderB = {}; YeyoThunderC = {};
+
+--Copy a full table
+YeyoThunder0 =  function(YeyoThunderY)
+local YeyoThunderW = {}
+for k,v in pairs(YeyoThunderY) do
+YeyoThunderW[k] = v
+end
+return YeyoThunderW
+end
+YeyoThunder2 = function()
+local YeyoThunderD = {};
+local YeyoThunderE = {};
+local YeyoThunderF = {};
+if #YeyoThunder <= 0 then return 0 end
+for i,v in pairs(YeyoThunder) do
+if YeyoThunder[i] ~= nil  then     
+local YeyoThunderZ = YeyoThunder[i] 
+local YeyoThunderX = YeyoThunderZ
+YeyoThunderC[i] = YeyoThunderC[i] - 1
+if YeyoThunderC[i] > 0 then 
+local xvar = math.random(-1,1)
+local zvar = math.random(-1,1)
+Actor:appendSpeed(YeyoThunderZ, xvar*0.10, 0, zvar*0.10 )
+if math.random(0,100) < 10 and #YeyoThunder < 15 then 
+local ret, x,y,z = Actor:getPosition(YeyoThunderZ)
+if y > YeyoThunderMinY then 
+local xvar = math.random(-1,1)
+local zvar = math.random(-1,1)
+World:spawnProjectileByDir(YeyoThunderZ, YeyoThunderAulletID, x, y, z , xvar ,-0.4,zvar, 100)
+end
+end
+table.insert(YeyoThunderD, YeyoThunderZ)
+table.insert(YeyoThunderE, YeyoThunderX)
+table.insert(YeyoThunderF, YeyoThunderC[i])
+YeyoThunder[i] = nil
+YeyoThunderA[i] = nil
+YeyoThunderC[i] = nil
+YeyoThunderB[YeyoThunderZ] = #YeyoThunderD
+else 
+local ID = YeyoThunderB[YeyoThunderZ]
+YeyoThunderC[i] = nil
+YeyoThunder[i] = nil;
+YeyoThunderA[i] = nil;
+YeyoThunderB[YeyoThunderZ] = nil
+World:despawnActor(YeyoThunderZ)
+end
+end 
+end
+YeyoThunder = YeyoThunder0(YeyoThunderD)
+YeyoThunderA = YeyoThunder0(YeyoThunderE)
+YeyoThunderC = YeyoThunder0(YeyoThunderF)
+end
+YeyoThunder3 = function(event)
+local YeyoThunderZ = event.eventobjid
+local ID = YeyoThunderB[YeyoThunderZ]
+if YeyoThunder[ID] == nil then return 0 end
+YeyoThunder[ID] = nil;
+YeyoThunderA[ID] = nil;
+YeyoThunderC[ID] = nil
+YeyoThunderB[YeyoThunderZ] = nil
+end
+YeyoThunder1 = function(event)
+local itemid = event.itemid
+if itemid ~= YeyoThunderAulletID then return 0 end
+local YeyoThunderZ = event.toobjid
+table.insert(YeyoThunder, YeyoThunderZ)
+table.insert(YeyoThunderA, YeyoThunderZ)
+table.insert(YeyoThunderC, 20)
+YeyoThunderB[YeyoThunderZ] = #YeyoThunder
+Actor:playBodyEffectById(YeyoThunderZ,1020,3)
+Actor:playBodyEffectById(YeyoThunderZ,1213,0.5)
+end
+ScriptSupportEvent:registerEvent([=[Missile.Create]=],YeyoThunder1)
+ScriptSupportEvent:registerEvent([=[Game.Run]=],YeyoThunder2)
+ScriptSupportEvent:registerEvent([=[Actor.Projectile.Hit]=],YeyoThunder3)    
