@@ -1,20 +1,27 @@
 ------------------------------------------------------------------------------
  --Block Store 1.0
  -- By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
-	-- allow you to open the toolbox by using an item or mob
+
+allow you to open the toolbox by using an item or mob // abre el menu de crafteo con un objeto en la mano
 
  -- /!\ Requieres /!\ : 
-	--No other script
-  -- one object for the store
-  -- one object for the Dev store
+  -- one dummy object for the store // un objeto dummy que abra la tienda
+  -- one object for the Dev store // un objeto dummy que abra la tienda de desarrollador
+  
+  
 
  
 ---------------------------------
 -- SET UP
 ---------------------------------
-StoreToolboxItem =  4106 -- put here item id for open toolbox
-StoreToolboxMob = 6 -- put here item id for open devstore
-StoreDevStoreItem = 4105 -- put here item id for open devstore
+-- Normal Store
+StoreToolboxItem =  4106 -- put here item id for open toolbox // Objeto dummy que abra la tienda
+StoreToolboxMob = -1 -- put here item id for open devstore // Mob que abra la tienda
+
+--Developer
+StoreDevStoreItem = 4105 -- put here item id for open devstore // lo mismo pero para la tienda de desarrollador
+
+
 
 ---------------------------------
 -- Do not modify anything after this point
