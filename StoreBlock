@@ -2,7 +2,7 @@
  --Block Store 1.0
  -- By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
 
-allow you to open the toolbox by using an item or mob // abre el menu de crafteo con un objeto en la mano
+--allow you to open the toolbox by using an item or mob // abre el menu de crafteo con un objeto en la mano
 
  -- /!\ Requieres /!\ : 
   -- one dummy object for the store // un objeto dummy que abra la tienda
