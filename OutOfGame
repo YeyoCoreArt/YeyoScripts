@@ -12,17 +12,17 @@
 ---------------------------------
 -- SET UP
 ---------------------------------
-LIMIT_MIN_X = 221 -- minimun X coordinate 
-LIMIT_MAX_X = 341 -- maximun X coordinate
+LIMIT_MIN_X = 10 -- minimun X coordinate // cordenanda menor X
+LIMIT_MAX_X = 65 -- maximun X coordinate // cordenanda mayor X
 
-LIMIT_MIN_Z = -565 -- minimun z coordinate
-LIMIT_MAX_Z = -498 -- maximun z coordinate
+LIMIT_MIN_Z = -13 -- minimun z coordinate // cordenanda menor Z
+LIMIT_MAX_Z = 28 -- maximun z coordinate // cordenanda mayor Z
 
-LIMIT_MIN_Y = -13 -- minimun Y(height) coordinate
-LIMIT_MAX_Y = 65 -- maximun Y(height) coordinate
+LIMIT_MIN_Y = 10 -- minimun Y(height) coordinate // cordenanda menor Y
+LIMIT_MAX_Y = 28 -- maximun Y(height) coordinate // cordenanda mayor Y
 
-OutofgameDeadColor = '#c00FF76' -- Color of death text
-OutofgameDeadText = 'falls into the abyss#b_' -- death text
+OutofgameDeadColor = '#c00FF76' -- Color of death text // Color de texto muerte
+OutofgameDeadText = 'falls into the abyss#b_' -- death text // // texto muerte
 
 
 ---------------------------------
@@ -50,4 +50,4 @@ Outofgame = function(e)
 	local ret, nicknamekill = Player:getNickname(playerid)
 	Chat:sendSystemMsg(OutofgameDeadColor..nicknamekill..' '..OutofgameDeadText, playerid)
 end
-ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], Outofgame) 
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], Outofgame)
