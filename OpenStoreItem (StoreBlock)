@@ -1,0 +1,104 @@
+------------------------------------------------------------------------------
+ OpenStore = 1.2
+ --[[ By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
+
+--Open the Toolbox/Devstore menu by using an item/mob // abre el menu de crafteo/DESAROLLADOR con un objeto/Mob
+
+ -- /!\ Requieres /!\ : 
+  -- one dummy item for the store // un articulo dummy que abra la tienda
+  -- one item for the Dev store // un objeto dummy que abra la tienda de desarrollador
+  -- one mob for the store  // un mob que abra la tienda
+  
+  
+---------------------------------
+-- SET UP
+---------------------------------]]
+-- Normal Store
+OpenStoreItem =  4111 -- put here item id for open toolbox // Objeto dummy que abra la tienda
+OpenStoreMob = -1 -- put here item id for open devstore // Mob que abra la tienda
+
+--Developer
+OpenStoreItemDev = 4110 -- put here item id for open devstore // lo mismo pero para la tienda de desarrollador
+
+--Options
+OpenStoreRespawn = false --spam store until player gets any item // Spammea la tienda hasta que el jugador compre algo al inicio
+OpenStoreSpawn = true --spam store until player gets any item // Spammea la tienda hasta que el jugador compre algo al inicio
+OpenStoreSpawntText = "#b#R Select your hero first! "
+
+
+---------------------------------
+-- Do not modify anything after this point
+---------------------------------
+OpenStoreItemLobbyMode = true
+OpenStoreItemChoosed = {}
+
+--Toolbox Store
+OpenStoreItemOpen = function(event_args)
+	local itemid = event_args['itemid']
+	-- check it
+	if itemid ~= OpenStoreItem then return 0 end
+	local playerid = event_args['eventobjid']	
+    local result = Player:forceOpenBoxUI(playerid, 800)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.UseItem]=],OpenStoreItemOpen)
+
+OpenStoreItemOpenMob = function(e)
+    local imob = e.toobjid
+    local result,actorid=Creature:getActorID(imob)
+    if actorid ~= OpenStoreMob then return 0 end
+    local playerid = e.eventobjid
+
+     --SpawnCoins
+    local result = Player:forceOpenBoxUI(playerid, 800)
+ 
+end
+ScriptSupportEvent:registerEvent([=[Player.ClickActor]=],OpenStoreItemOpenMob)
+
+--Dev Store
+OpenStoreItemOpenDev = function(event_args)
+	local itemid = event_args['itemid']
+	
+	-- check it
+	if itemid ~= OpenStoreItemDev then return 0 end
+	local playerid = event_args['eventobjid']
+    Player:openDevStore(playerid)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.UseItem]=],OpenStoreItemOpenDev)
+
+--SpamStore
+OpenStoreItemOpenSpam = function(event) -- Spawns Menu until player selects hero
+	if OpenStoreSpawn == false then return end
+    if OpenStoreItemLobbyMode ~= false then return 0 end
+    if OpenStoreItemChoosed[event.eventobjid] ~= nil then return 0 end
+	local result = Player:forceOpenBoxUI(event.eventobjid, 800)
+	 Chat:sendSystemMsg(OpenStoreSpawntText,event.eventobjid)
+    Player:notifyGameInfo2Self(event.eventobjid,OpenStoreSpawntText)
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=],OpenStoreItemOpenSpam)
+
+OpenStoreItemOpenSpamOn = function(event) 
+	OpenStoreItemLobbyMode = false 
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=],OpenStoreItemOpenSpamOn)
+
+OpenStoreItemOpenSpamOFF = function(e)
+    if OpenStoreItemChoosed[e.eventobjid] ~= nil then return end
+    OpenStoreItemChoosed[e.eventobjid] = true
+end
+ScriptSupportEvent:registerEvent([=[Player.AddItem]=],OpenStoreItemOpenSpamOFF)
+
+OpenStoreItemIni = function(event)
+	local playerid = event.eventobjid
+	local result = Player:forceOpenBoxUI(playerid, 800)
+end
+ScriptSupportEvent:registerEvent([=[Player.Init]=],OpenStoreItemIni)
+
+OpenStoreItemReborn = function(event)
+	if OpenStoreRespawn == false then return end
+	local playerid = event.eventobjid
+	local result = Player:forceOpenBoxUI(playerid, 800)
+end
+ScriptSupportEvent:registerEvent([=[Player.Revive]=],OpenStoreItemReborn)
+
