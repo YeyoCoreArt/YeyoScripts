@@ -22,8 +22,8 @@ OpenStoreItemDev = 4110 -- put here item id for open devstore // lo mismo pero p
 
 --Options
 OpenStoreRespawn = false --spam store until player gets any item // Spammea la tienda hasta que el jugador compre algo al inicio
-OpenStoreSpawn = true --spam store until player gets any item // Spammea la tienda hasta que el jugador compre algo al inicio
-OpenStoreSpawntText = "#b#R Select your hero first! "
+OpenStoreSpawn = false --spam store until player gets any item // Spammea la tienda hasta que el jugador compre algo al inicio
+OpenStoreSpawntText = "#b#R Select your ROBOT FIRST! "
 
 
 ---------------------------------
@@ -92,6 +92,16 @@ ScriptSupportEvent:registerEvent([=[Player.AddItem]=],OpenStoreItemOpenSpamOFF)
 OpenStoreItemIni = function(event)
 	local playerid = event.eventobjid
 	local result = Player:forceOpenBoxUI(playerid, 800)
+	
+	
+	--MemoryHandlerCleanUp
+	local Leaks = collectgarbage("count")
+	test_msg("Leaks"..Leaks)
+	collectgarbage("collect")
+	Leaks = collectgarbage("count")
+	test_msg("Leaks after"..Leaks)
+	
+	
 end
 ScriptSupportEvent:registerEvent([=[Player.Init]=],OpenStoreItemIni)
 
