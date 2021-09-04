@@ -1,0 +1,170 @@
+--[[------------------------------------------------------------------------------
+
+ DodgeBallSistem 1.10
+ 
+ Created by YeyoCore UID 2769323, from Youtube channel: https://www.youtube.com/multiverseeditor
+ Provide you a sistem to make PVP rules in which eliminated team loses
+ 
+ /!\ Requieres /!\ : 
+ --complete the set up
+
+---------------------------------------------------------------------------------]]
+PlayerPointsLoc = {}; -- no cambiar
+
+--------------------------------------------------
+--           SET UP
+--------------------------------------------------
+--Items
+PlayerPointsCoinsItem = 4109 -- Itemid of the money inside the game // ID del objeto moneda
+
+--buffs
+PlayerPointsObserverBuff = 50000005 -- Observer buff(remove the ,1 at the end) // Buff de observador (quitar ,1 al fina)
+--Texts
+PlayerPointsMensage2 = "HAS LOSE! 💀" -- Mensaje when players lose // mensaje cuando el jugador pierde
+PlayerPointsMensage3 = "Now You Are an Observer 👁" -- Mensaje when players transfor into observer // mensaje cuando el jugador se vuelve observador
+
+--Observer Area: when a player is eliminated, it will be teleported to observer area
+PlayerPointsLoc[1] = 38 -- X coordinate // cordenada x
+PlayerPointsLoc[2] = 40 -- Y coordinate // cordenada y
+PlayerPointsLoc[3] = 6  -- Z coordinate // cordenada z
+
+--Misc
+PlayerPointsJump = 60 -- jump amount in  game // poder de salto de los jugadores
+PlayerPointsSpeed1 = 12 -- player speed // velociad jugador
+PlayerPointsSpeed2	= 12 -- player running speed // velociad corriendo del jugador
+PlayerPointsSpeed3	= 12 -- player stealth speed // velociad de sigilo jugador
+PlayerPointsTeamScore1 = "score1"
+PlayerPointsTeamScore2 = "score2"
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+GAMEFINISH = false
+GAMESTARTED = false
+PlayerDied = {}
+PlayersJoin = 0
+
+PlayerPointsDie = function(e)
+	if GAMEFINISH == true then return 0 end
+	local playerid = e.eventobjid
+  
+	--SendMensaje
+	PlayerDied[e.eventobjid] = true
+	local result,name = Player:getNickname(playerid)
+	Chat:sendSystemMsg("#G"..name.." "..PlayerPointsMensage2)
+	
+	--Reward team
+	local result,playerTeam=Player:getTeam(playerid)
+	local targetTeam = 1
+	if playerTeam == 1 then 
+		targetTeam = 2
+	end
+	local result,num,RewardTeam = Team:getTeamPlayers(targetTeam,2)
+	for i,a in ipairs(RewardTeam) do
+		Player:gainItems(RewardTeam[i],PlayerPointsCoinsItem,1,1)
+		Player:notifyGameInfo2Self(RewardTeam[i],"#GKill +1₡")
+	end
+	
+	--Check Winner
+	local ret = PlayerPointsSync()
+	if ret == ErrorCode.OK then 
+		Chat:sendSystemMsg("Game end")
+	end
+	
+	Player:setRevivePoint(playerid,PlayerPointsLoc[1],PlayerPointsLoc[2],PlayerPointsLoc[3])
+	Player:reviveToPos(playerid,PlayerPointsLoc[1],PlayerPointsLoc[2],PlayerPointsLoc[3])
+end
+ScriptSupportEvent:registerEvent([=[Player.Die]=],PlayerPointsDie)
+
+PlayerPointsResurect = function(e)
+    local playerid = e.eventobjid
+    local result,teamplayer = Player:getTeam(playerid)
+	Player:changeViewMode(playerid,VIEWPORTTYPE.BACKVIEW,true)
+	Actor:addBuff(playerid,PlayerPointsObserverBuff,1,0)
+	Player:notifyGameInfo2Self(playerid,"#R"..PlayerPointsMensage3)
+	
+	
+end
+ScriptSupportEvent:registerEvent([=[Player.Revive]=],PlayerPointsResurect)
+
+
+PlayerPointEnter = function(e)
+    if GAMEFINISH == true then return end
+	local playerid = e.eventobjid
+	if PlayerDied[playerid] == nil then -- new player
+		Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,PlayerPointsJump)
+		Player:setAttr(playerid,PLAYERATTR.RUN_SPEED,PlayerPointsSpeed1)
+		Player:setAttr(playerid,PLAYERATTR.WALK_SPEED,PlayerPointsSpeed2)
+		Player:setAttr(playerid,PLAYERATTR.SNEAK_SPEED,PlayerPointsSpeed3)
+		if GAMESTARTED == true then PlayersJoin = PlayersJoin +1 end
+		
+		--SyncPoints
+		local ret = PlayerPointsSync()
+		Player:notifyGameInfo2Self(playerid,"#GWelcome"..playerid)
+		return 
+	end 
+
+	--re entered losee player
+	Player:changeViewMode(playerid,VIEWPORTTYPE.BACKVIEW,true)
+	Actor:addBuff(playerid,PlayerPointsObserverBuff,1,0)
+	Player:notifyGameInfo2Self(playerid,"#R"..PlayerPointsMensage3)
+	
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=],PlayerPointEnter)
+
+
+PlayerPointLeave = function(e)
+	PlayerPointsSync()
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.LeaveGame]=],PlayerPointLeave)
+
+PlayerPointStart = function(e)
+	local result,num=World:getPlayerTotal(-1)
+	PlayersJoin = num
+	GAMESTARTED = true
+	PlayerPointsSync()
+	
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=],PlayerPointStart)
+
+PlayerPointsSync = function()
+	--CheckIfTeamWins
+	local teamcount = {}
+	teamcount[1] = 0
+	teamcount[2] = 0
+	local result,num,allplayers=World:getAllPlayers(-1)
+	for i,a in ipairs(allplayers) do
+		playerid = allplayers[i]
+		local result,playerteam = Player:getTeam(playerid)
+		if result == ErrorCode.OK then 
+			if PlayerDied[playerid] == nil then
+				teamcount[playerteam] = teamcount[playerteam] + 1 
+			end
+		end
+	end
+	
+	--SyncScore with Vars
+	VarLib2:setGlobalVarByName(VARTYPE.NUMBER,PlayerPointsTeamScore1,teamcount[1])
+	VarLib2:setGlobalVarByName(VARTYPE.NUMBER,PlayerPointsTeamScore2,teamcount[2])
+	
+	if GAMESTARTED == false then return ErrorCode.FAILED end 
+	if PlayersJoin  < 2 then return ErrorCode.FAILED end 
+	if teamcount[1] > 0 and teamcount[2] > 0 then return ErrorCode.FAILED end 
+	GAMEFINISH = true
+	
+	--RedWins
+	if teamcount[1] > teamcount[2] then
+		Team:addTeamScore(1,800)
+		Chat:sendSystemMsg("Red Team Won")
+	elseif teamcount[2] > teamcount[1] then
+		Team:addTeamScore(2,800)
+		Chat:sendSystemMsg("Blue Team Won")
+	else 
+		Chat:sendSystemMsg("Draw") 	
+		Game:doGameEnd()
+	end
+	return ErrorCode.OK
+
+end
