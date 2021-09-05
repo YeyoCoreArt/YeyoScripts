@@ -96,10 +96,9 @@ OpenStoreItemIni = function(event)
 	
 	--MemoryHandlerCleanUp
 	local Leaks = collectgarbage("count")
-	test_msg("Leaks"..Leaks)
 	collectgarbage("collect")
 	Leaks = collectgarbage("count")
-	test_msg("Leaks after"..Leaks)
+	
 	
 	
 end
