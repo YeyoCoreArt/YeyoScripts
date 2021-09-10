@@ -1,0 +1,38 @@
+----------------------------------------------------------------------------
+ AutoMount = {} -- version 1.0
+ 
+--[[ By YeyoCore UID 2769323, from Youtube channel https://www.youtube.com/multiverseeditor
+
+this script makes player auto mount mobs when are spawned by item
+	*Mobs need to be spawned by items, item needs to have a summon skill with follow feature on
+
+----------------------------------------------------------------------------]]--
+
+---------------------------------
+--              SET UP
+--------------------------------
+--MobUsingAutoMount
+AutoMount[1] = 2 -- Actordi for your mob #1 // id de tu mob #1
+AutoMount[2] = 5 -- Actordi for your mob #2 // id de tu mob #2
+
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT 
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+AutoMountCheck = function(event_args)
+	local actor = event_args['eventobjid']
+    local toobjid = event_args['toobjid']
+	local ret, actorid = Creature:getActorID(actor)
+	local ret, playerid = Creature:getTamedOwnerID(actor)
+	if playerid ==  0 then return end
+	local success2 = false 
+	for i=1, #AutoMount do
+		if actorid == AutoMount[i] then success2 = true end
+	end
+	--Mount
+	if success2 ~= true then return 0 end
+	Player:mountActor(playerid, actor, 0)	
+end
+ScriptSupportEvent:registerEvent([=[Actor.Create]=],AutoMountCheck)
