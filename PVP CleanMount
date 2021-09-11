@@ -1,3 +1,6 @@
-local ret,playerid = VarLib2:getGlobalVarByName(VARTYPE.PLAYER,"playerid")
-VarLib2:setPlayerVarByName(playerid,VARTYPE.CREATURE,"Mech",nil)
+local playeridName = "playerid"
+local MechName = "Mech"
+
+local ret,playerid = VarLib2:getGlobalVarByName(VARTYPE.PLAYER,playeridName)
+VarLib2:setPlayerVarByName(playerid,VARTYPE.CREATURE,MechName,nil)
 --Chat:sendSystemMsg("Player get down mob"..playerid)
