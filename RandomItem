@@ -1,13 +1,27 @@
-RandomItem = {}
-RandomCharges = {}
-ITEMRANDOM = 4099 -- Item Random
+----------------------------------------------------------------------------
+RandomItem = {} -- version 1.0
+RandomCharges = {} -- do not modify
+--[[ By YeyoCore UID 2769323, from Youtube channel https://www.youtube.com/multiverseeditor
+this script replace and item when is received by a random item from the list
 
--------------------------------------
--- Item Table
------------------------------------
-RandomItem[1] = 4115 -- Item
-RandomCharges[1] = 1 -- Item Charges (number of charges, use negative values to set random range, example: -5)
+----------------------------------------------------------------------------]]--
 
+---------------------------------
+--       SET UP // configuracion
+--------------------------------
+
+ITEMRANDOM = 4099 -- Item id of the random item container // id del objeto contenedor
+
+Random item list // lista de objetos aleatorios
+--Example // Ejemplo
+RandomItem[1] = 4115 -- Item ID // Id del objeto
+RandomCharges[1] = 1 -- Item Charges (number of charges, use negative values to set random range, example: -5) // numero de cargas
+
+RandomItem[2] = 100
+RandomCharges[2] = 64
+
+RandomItem[3] = 800
+RandomCharges[3] = 1 
 
 
 
