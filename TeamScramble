@@ -1,0 +1,124 @@
+--[[------------------------------------------------------------------------------
+
+ Team Scramble 1.20
+ Created by YeyoCore UID 2769323, from Youtube channel: https://www.youtube.com/multiverseeditor
+ 
+ Autoblance two teams, by radomizing the players team assignament, including the host
+ 
+ /!\ Requieres /!\ : 
+	On Maps basic set up need to be as default no team assignament
+	Use Ready Cubes for Lobby
+	Place a white block in the midle of the map
+	Use Color public spawn for spawn players
+ 
+ Requiere
+	Cambiar orden de asignacion de equipo a "no asignar equipo"
+	Poner cubos "Ready" en el lobby
+	Poner un cubo de spawn blanco en cada base
+	Poner cubos de spawn publicos de cada color de equipo
+ 
+
+---------------------------------------------------------------------------------]]
+--------------------------------------------------
+--           SET UP
+--------------------------------------------------
+TeamX = {}; TeamY = {}; TeamZ = {};
+
+--Team Red Spawn Point // posicion inicial equipo rojo
+TeamX[1] = 69 --X
+TeamY[1] = 22 --Y
+TeamZ[1] = 8 -- Z
+
+--Team Blue Spawn Point  // posicion inicial equipo azul
+TeamX[2] = 7 -- X
+TeamY[2] = 22 -- Y
+TeamZ[2] = 8 -- Z
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+TeamAsigmentScrambleGameStart = false
+
+TeamAsigmentScramblePlayer = function(playerid)
+	local result,TeamNum1=Team:getTeamPlayerNum(1,2)
+	local result,TeamNum2=Team:getTeamPlayerNum(2,2)
+	local teamToAdd = 0
+
+	if TeamNum1 < TeamNum2 then teamToAdd = 1 -- les players on team 1
+	elseif TeamNum2 < TeamNum1 then teamToAdd = 2 -- les players on team 2
+	else  teamToAdd = math.random(2) end -- Same amount of players 1
+		
+	if teamToAdd == 0 then 	Chat:sendSystemMsg("#RERROR: NO TEAM") end
+	TeamAsigmentScrambleRespawn(playerid,teamToAdd)
+end
+
+TeamAsigmentScramblePlayerEnter = function(e)
+    if TeamAsigmentScrambleGameStart == false then return 0 end
+	TeamAsigmentScramblePlayer(e.eventobjid)
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=],TeamAsigmentScramblePlayerEnter)
+
+TeamAsigmentScrambleIni = function()
+	local result,Playernum,Allplayers = World:getAllPlayers(-1)
+	local ScrambleLimit = math.floor(Playernum / 2)
+	local ScrambleLimit = math.max(1, ScrambleLimit)
+	local ScramblePlayersSelected = 0
+	
+	-- Take Half of the players and completele selcet team by random 
+	while(ScramblePlayersSelected < ScrambleLimit)
+	do
+		local temptable = {};
+		--Fijar Jugador a uno aleatorio de la lista
+		local ScrablePlayerID = math.random(#Allplayers)
+		local ScrablePlayer = Allplayers[ScrablePlayerID]
+		
+		--Cambiar equipo al azar
+		local teamToAdd = math.random(2) 
+		TeamAsigmentScrambleRespawn(playerid,teamToAdd)
+
+		-- Create new table with cleaned list
+		for i,a in ipairs(Allplayers) do
+			if Allplayers[i] ~= ScrablePlayer then  
+				table.insert(temptable, Allplayers[i]) -- Add not set players to new list
+			end
+			Allplayers[i] = nil -- Table Clean Out
+		end
+		
+		--Aumentar Scramble PlayersSelected
+		ScramblePlayersSelected = ScramblePlayersSelected + 1
+		
+		--Copiar lista a limpio
+		Allplayers = TableCopy(temptable) 
+		temptable = nil
+	end
+	
+	Allplayers = nil  -- celan up
+	--Take remaingin players and fill the remaining spots acording to the actual teams
+	local result,num,Allplayers = World:getAllPlayers(-1)
+	for i,a in ipairs(Allplayers) do
+		local playerid = Allplayers[i]
+		local result,PlayerTeam = Player:getTeam(playerid)
+		if PlayerTeam ~= 1 and PlayerTeam ~= 2 then 
+			TeamAsigmentScramblePlayer(playerid)
+		end 
+	end
+	
+	--autoff
+	TeamAsigmentScrambleGameStart = true
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=],TeamAsigmentScrambleIni)
+
+TeamAsigmentScrambleRespawn = function(playerid,teamToAdd)
+	Team:changePlayerTeam(playerid,teamToAdd)
+	local x = TeamX[teamToAdd] + math.random(-3,3)
+	local y = TeamY[teamToAdd] + math.random(1,3)
+	local z = TeamZ[teamToAdd] + math.random(-3,3)
+	Player:setRevivePoint(playerid,x, y, z)
+	Player:reviveToPos(playerid,x, y, z)
+	Player:reviveToPos(playerid,x, y, z)
+	Actor:setPosition(playerid,x,y,z)
+	Player:setPosition(playerid,x,y,z)
+    --Player:teleportHome(playerid)
+end 
