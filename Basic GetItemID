@@ -1,4 +1,6 @@
 --Update 1.1 (10/2/2021): detects also block position with right click
+--Update 1.2 (10/7/2021): Get Block id by breaking a block
+--Update 1.3 (10/7/2021): Get Buff id & level by adding a buff to your self
 
 function GetItemID(event)
     local itemid = event.itemid
@@ -17,8 +19,16 @@ end
 ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],CheckBlockID)
 
 BreakBlockID = function( parameters )
-    local player = parameters.eventobjid
+    local playerid = parameters.eventobjid
     local block = parameters.blockid
-    Chat:sendSystemMsg("#GYou break a blockid: "..block,player)
+    Chat:sendSystemMsg("#GYou break a blockid: "..block,playerid)
 end 
 ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],BreakBlockID)
+
+AddBuffBlockID = function( event )
+	local playerid = event.eventobjid
+	local buff = event.buffid
+	local lvl = event.bufflvl
+	Chat:sendSystemMsg("#GYour buff #Gid: "..buff.."#n and #Rlvl: "..lvl,playerid)
+end
+ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], AddBuffBlockID)
