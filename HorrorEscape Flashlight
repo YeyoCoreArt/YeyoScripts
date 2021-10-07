@@ -1,0 +1,82 @@
+------------------------------------------------------------------------------
+ --FlashLight Public 1.0
+ --[[ By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
+
+--Skill that makes players scare, shake the camera and detect players
+
+ -- /!\ Requieres /!\ :
+	-Dummy Misc Item 
+	-Light block (air, invisible, light 10)
+  
+---------------------------------
+-- SET UP // Configuracion
+---------------------------------]]
+playerTorchBlocklightblock = 2004 --Light block id // ID del Bloque de luz 
+playerTorchBlockTorchID = 4100 --Flashlight item ID // Id del item linterna
+
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+A= {};
+B= {};
+C= {};
+F = function(event)
+playerid = event.eventobjid 
+local toobjid = event.toobjid
+local itemid = event.itemid
+if itemid == playerTorchBlockTorchID then 
+D(playerid)
+else    
+if  A[playerid] ~= nil then 
+Block:destroyBlock( A[playerid],B[playerid],C[playerid],false)
+A[playerid]= nil
+B[playerid]= nil
+C[playerid]= nil
+end
+end
+end
+D =  function(playerid)
+local ret, x,y,z = Actor:getPosition(playerid)
+local y2 = y
+if A[playerid] ~= nil then Block:destroyBlock( A[playerid],B[playerid],C[playerid],false) end
+local succes = ErrorCode.FAILED
+for i=0, 3 do
+y = y + 1 -- one block up
+if y == (y2+2) then y = y +1 end -- Prevent to obstruct player iteractions
+if Block:isAirBlock(x,y,z) == ErrorCode.OK then
+A[playerid]= x;
+B[playerid]= y;
+C[playerid]= z;
+local day = World:isDaytime() 
+if day ~= 0 or y <= 3 then Block:placeBlock(playerTorchBlocklightblock, x, y, z,0) end
+succes = ErrorCode.OK -- Test Succes
+break
+end
+end
+return succes
+end
+E = function(event)
+local playerid = event.eventobjid 
+local toobjid = event.toobjid
+local  result,handitem = Player:getCurToolID(playerid)
+if handitem ~= playerTorchBlockTorchID then 
+if  A[playerid] ~= nil then 
+Block:destroyBlock( A[playerid],B[playerid],C[playerid],false)
+A[playerid]= x;
+B[playerid]= y;
+C[playerid]= z;
+end
+return 0 
+end
+local succes = D(playerid)
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=],E)
+ScriptSupportEvent:registerEvent([=[Player.ShortcutChange]=],F)
+ScriptSupportEvent:registerEvent([=[Player.SelectShortcut]=],F)
+
+
+
+
