@@ -1,0 +1,275 @@
+------------------------------------------------------------------------------
+ --Escape Horror Sistem 1.2
+ --[[ By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
+
+--Game Rules for horror escape game, please go to the set up section to set up your game
+
+ -- /!\ Requieres /!\ : 
+	--Dummy Item
+	--Change Virus infection buff
+	--Observer Buff
+	--3 teams (red, blue and green)
+	--Spawn for 3 teams
+	
+  
+---------------------------------
+-- SET UP
+---------------------------------]]
+
+--Rules
+EscapeHorrorMonsterWin = true --If monster won when time is up // si el monstuo gana cuando acaba el tiempo
+
+--JumpScare
+JumpScareTimerMin = 50 -- minimun amount of time to random scare players //Tiempo minimo para asustar juagadores
+JumpScareTimerMax = 150 -- Max amount of time to random scare players //Tiempo Maximo para asustar juagadores
+
+--Buffs
+EscapeHorrorBuffCaptured = 50000001 -- Captured Buff (First Custom Buff) // Buff de capturado (Primer buff creado)
+EscapeHorrorBuffMonster = 1002 -- Monster Buff (1002 virus) // Buff de Mosntruo (1002 inf. virus)
+EscapeHorrorBuffPlayer =   40 -- Player Buff (40 Gigant) // Buff del jugador 40 Gigant)
+
+-- Text
+EscapeHorrorNameMonster = "Monster" -- Name of the monster players // Nomnre del Monstruo
+EscapeHorrorNameVictims = "Survivor" -- Name of the victim players // Nombre de los Humanos
+EscapeHorrorMSG0 = "#R#bCapture#n all the players to win" -- Start help for monster // Ayuda inicial para el monstuo
+EscapeHorrorMSG1 = "#R#bHide#n, avoid to be killed by the  "..EscapeHorrorNameMonster -- Chat Help for entering players // Ayuda de chat para los jugadores
+EscapeHorrorMSG2 = "has been captured!" -- Chat when a player gets killed!// Chat cuando muere un humano
+EscapeHorrorMSG3 = "#R"..EscapeHorrorNameMonster.." has spawn" -- Chat when monster is spawen // Chat cuando el monstruo aparece
+EscapeHorrorMSG4 = EscapeHorrorNameMonster.." has left the game, swiching "..EscapeHorrorNameMonster -- Chat when changing monster // chat cuando cambia el monstruo
+EscapeHorrorMSG5 = "#G"..EscapeHorrorNameMonster.." has captured all players." -- chat when monster won // Chat cuando el monstruo gana
+EscapeHorrorMSG6 = "#G"..EscapeHorrorNameVictims.." had escaped!." -- chat when victims won // Chat cuando los jugadores ganan
+
+
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+local Team = class.Team.new()
+--Gamerules
+GameRule.MaxPlayers = 6
+GameRule.BlockDestroy = 0
+GameRule.BlockPlace = 0
+GameRule.BlockUse = 1
+--GameRule.ReviveMode = 0
+GameRule.MobGen = 0
+GameRule.MinimapTeams = 1 
+GameRule.AllowMidwayJoin = 1
+GameRule.ViewMode = 1
+GameRule.ViewType = 1
+--GLOBALS
+Monster_Main = nil 
+Monster_Spawned = false
+GAMEFINISH = false
+gameenteredplayers = 0
+JumpScareTimer = JumpScareTimerMin
+
+wes_Player_Enter = function(event)
+    local playerid = event.eventobjid
+    local toobjid = event.toobjid
+    Player:setTeam(playerid,2)
+	Actor:addBuff(playerid,EscapeHorrorBuffPlayer,1,0)
+    if Monster_Spawned == true then Chat:sendSystemMsg(EscapeHorrorMSG1, playerid);end
+    gameenteredplayers = gameenteredplayers + 1
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=], wes_Player_Enter)
+
+wes_gamestart = function() 
+	local result,team2=Team:getTeamPlayerNum(2,2)
+	if team2 <= 1 then return 0 end
+	if team2 >0 then Team:setTeamScore(2, team2) end
+	Chat:sendSystemMsg(EscapeHorrorMSG1, 0);
+	
+	local result,num,players=World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		Player:setTeam(players[i],2)
+	end
+	return 1;
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=], wes_gamestart)
+
+wes_gamerun = function()
+    if Monster_Spawned == false then return 0 end
+	if gameenteredplayers <= 1 then return 0 end
+    
+    --SetScore
+	local result,team1 = Team:getTeamPlayerNum(1,1)
+	local result,team2 = Team:getTeamPlayerNum(2,1)
+	
+	if team1 > 0 then Team:setTeamScore(1, team1) end 
+	if team2 > 0 then Team:setTeamScore(2, team2) end
+	
+	--check winner
+	local result,team1a = Team:getTeamPlayerNum(1,2)
+	local result,team2a = Team:getTeamPlayerNum(2,2)
+	
+	--if (team1a + team2a) == 1 then return 0 end
+	if GAMEFINISH == true then return 0 end
+	
+	if team2 <= 0 then
+	    CalculateScore(1)
+		--zombie_win();
+		return 1;
+	end
+	
+	if team1 <= 0 then
+		CalculateScore(2)
+		--human_win();
+		return 1;
+	end
+	
+	return 0
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], wes_gamerun)
+
+wes_game_timeover = function()
+	if EscapeHorrorMonsterWin == true then
+		CalculateScore(1) 	--zombie_win();
+	else
+		local result,sur = Team:getTeamPlayerNum(2,1)
+		if sur > 0 then
+			CalculateScore(2) 	--human_win();
+		else
+		   CalculateScore(1) 	--zombie_win();
+		end
+	end
+end
+ScriptSupportEvent:registerEvent([=[Game.TimeOver]=], wes_game_timeover)
+
+wes_playerid_die = function(event) 
+    local playerid = event.eventobjid
+	local toobjid = event.toobjid
+	local result,team  = Player:getTeam(playerid)
+	local result,nickName = Player:getNickname(playerid)
+	
+    if team == 2 then
+        Chat:sendSystemMsg("#R#b"..nickName.."#n #R"..EscapeHorrorMSG2, 0);
+		Team:changePlayerTeam(playerid,3)
+	end
+	return 1;
+end
+ScriptSupportEvent:registerEvent([=[Player.Die]=], wes_playerid_die)
+
+wes_playerid_revive = function(event)
+    local playerid = event.eventobjid
+	local toobjid = event.toobjid 
+	local result,team  = Player:getTeam(playerid)
+	
+	if Monster_Spawned == false and  Monster_Main == playerid then
+		Actor:clearAllBuff(playerid)	
+		Backpack:clearAllPack(playerid)
+		--add buff
+		Actor:addBuff(playerid,EscapeHorrorBuffMonster,1,0)
+		--Send Mensaje
+		Chat:sendSystemMsg(EscapeHorrorMSG0, playerid); -- Mensaje to player
+		Chat:sendSystemMsg(EscapeHorrorMSG3, 0); -- Mensaje to all players
+		Monster_Spawned = true -- Activate the game
+		soundall(10473) -- sound for all players 
+	end
+	
+	if team ~= 3 then return end
+	Actor:clearAllBuff(playerid)  --Add victim buff
+	Actor:addBuff(playerid,EscapeHorrorBuffCaptured,1,0)	
+
+	return 1;
+end
+ScriptSupportEvent:registerEvent([=[Player.Revive]=], wes_playerid_revive)
+
+wes_Automonster = function()
+    if Monster_Main ~= nil then return end
+	local result, player = Team:randomTeamPlayer(2,-1)
+	if player == nil then return 0 end
+	Team:changePlayerTeam(player,1)
+	Monster_Main = player -- set player as vampire lord
+	Player:killSelf(Monster_Main) -- when player revive get the buffs
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], wes_Automonster)
+
+
+wes_Player_Leave = function(event)
+	player = event.eventobjid
+	if player ~= Monster_Main then return 0 end -- check if is main vampire
+	Chat:sendSystemMsg(EscapeHorrorMSG4, 0);  
+	Monster_Main = nil 
+	Monster_Spawned = false
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.LeaveGame]=],wes_Player_Leave)
+
+CalculateScore = function(winnerteam)
+	GAMEFINISH = true
+    local reta,num,players = World:getAllPlayers(-1)
+	local maxscore = 0
+	local loserteam = 0
+	if winnerteam == 1 then
+		Chat:sendSystemMsg(EscapeHorrorMSG5, 0);
+		loserteam = 2
+	else
+		Chat:sendSystemMsg(EscapeHorrorMSG6,  0);
+		loserteam = 1
+	end
+    for idx = 1, #players  do --add tips to all players
+        local playerid = players[idx]
+		local result,team = Player:getTeam(playerid)
+		Player:setGameScore(playerid,100)
+		
+		-- Change for winners
+		if team == winnerteam then
+			Chat:sendSystemMsg("#GYou won the game", playerid);
+		else
+			Chat:sendSystemMsg("#RYou lose the game", playerid);
+		end
+		
+	end
+	-- If Vampire wins, set firtst place to vampire lord
+	if winnerteam == 1 then
+		Player:setGameScore(Monster_Main,200)
+	end
+	
+	--End Game
+	Team:setTeamScore(winnerteam, 10); 
+	Team:setTeamScore(loserteam, 1);
+	Team:setTeamResults(winnerteam, 1);
+	Team:setTeamResults(loserteam, 2);
+	Team:setTeamPlayersResults(winnerteam, 1);
+	Team:setTeamPlayersResults(loserteam, 2);
+	--Endn game
+	Game:doGameEnd()
+	
+end
+
+JumpScare = function()
+	JumpScareTimer = JumpScareTimer - 0.1
+	if JumpScareTimer > 0 then return end
+	JumpScareTimer = math.random(JumpScareTimerMin,JumpScareTimerMax)
+	local result,playerid = Team:randomTeamPlayer(2,1)
+    local result,x,y,z = Player:getPosition(playerid)
+    local r = math.random(4)
+	local xr = math.random(-10,10)
+	local zr = math.random(-10,10)
+	local soundr = 10149
+    if r == 1 then soundr = 10103 end    
+    if r == 2 then soundr = 10116 end  
+    if r == 3 then soundr = 10117 end  
+	Sound(x + xr,y,z + zr,soundr)
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=],JumpScare)
+
+Sound = function(x2,y2,z2,sound) -- simple sound
+    local pitch = 1 + (math.random(-2,2)/10)
+    local volume = 80 + math.random(40)
+    World:playSoundEffectOnPos({x=x2,y=y2,z=z2},sound,volume ,pitch,false)
+    
+end
+soundall = function(sound) -- Pay son on all players at same time
+	local reta,num,players = World:getAllPlayers(-1)
+	for id = 1, #players  do --add tips to all players
+		local playerid = players[id]
+		local result,x,y,z = Player:getPosition(playerid)
+		Sound(x,y,z,sound)
+	end
+end
+SoundPlayer = function(playerid,sound) -- simple sound on player
+	local result,x,y,z = Actor:getPosition(playerid)
+	Sound(x,y,z,sound) 
+end
