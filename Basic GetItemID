@@ -15,3 +15,10 @@ function CheckBlockID(e)
     	Chat:sendSystemMsg("x "..x.." / y "..y.." / z "..z,0)
 end
 ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],CheckBlockID)
+
+BreakBlockID = function( parameters )
+    local player = parameters.eventobjid
+    local block = parameters.blockid
+    Chat:sendSystemMsg("#GYou break a blockid: "..block,player)
+end 
+ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],BreakBlockID)
