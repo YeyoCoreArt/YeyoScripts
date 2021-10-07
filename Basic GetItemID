@@ -2,17 +2,16 @@
 
 function GetItemID(event)
     local itemid = event.itemid
-
+    
     local result,iiname = Item:getItemName(itemid)
     Chat:sendSystemMsg("Hand Item ID: "..itemid,0)
-
 end
 ScriptSupportEvent:registerEvent([=[Player.SelectShortcut]=],GetItemID)
 
 function CheckBlockID(e)
 	local x = e.x
-    local y = e.y
-    local z = e.z
-    Chat:sendSystemMsg("x "..x.." / y "..y.." / z "..z,0)
+    	local y = e.y
+    	local z = e.z
+    	Chat:sendSystemMsg("x "..x.." / y "..y.." / z "..z,0)
 end
 ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],CheckBlockID)
