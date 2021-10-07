@@ -21,7 +21,7 @@ ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],CheckBlockID)
 BreakBlockID = function( parameters )
     local playerid = parameters.eventobjid
     local block = parameters.blockid
-    Chat:sendSystemMsg("#GYou break a blockid: "..block,playerid)
+    Chat:sendSystemMsg("blockid: "..block,playerid)
 end 
 ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],BreakBlockID)
 
@@ -29,6 +29,6 @@ AddBuffBlockID = function( event )
 	local playerid = event.eventobjid
 	local buff = event.buffid
 	local lvl = event.bufflvl
-	Chat:sendSystemMsg("#GYour buff #Gid: "..buff.."#n and #Rlvl: "..lvl,playerid)
+	Chat:sendSystemMsg("Buff #Gid: "..buff.."#n and #Rlvl: "..lvl,playerid)
 end
 ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], AddBuffBlockID)
