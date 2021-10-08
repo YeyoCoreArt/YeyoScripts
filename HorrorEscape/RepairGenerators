@@ -1,0 +1,197 @@
+--[[------------------------------------------------------------------------------
+
+ DodgeBallSistem 1.10
+ 
+ Created by YeyoCore UID 2769323, from Youtube channel: https://www.youtube.com/multiverseeditor
+ Provide you a sistem to make PVP rules in which eliminated team loses
+ 
+ /!\ Requieres /!\ : 
+ --complete the set up
+ --A Damaged Generator block
+ --A fixed generator block
+ --Wrench Item
+ 
+
+---------------------------------------------------------------------------------]]
+
+-------------------------------------------------
+--           SET UP
+-------------------------------------------------
+-- General Info
+Generators = 7 -- Amount of Generator // Cantidad de generadores
+GeneratorsReapairReward = 10
+ -- How muchcoins per generator repaired // recompensa de monedas por reparar el generador
+
+--IDS
+GeneratorsReapairMobID = 2009 --Mob ID of the Generator  // id del mob generador
+GeneratorsReapairMobIDRepaired = 2010
+GeneratorsReapairToolID = 4118 --Wrench item ID // Id de la llave inglesa
+GeneratorsReapairRewardItem = 4097 -- money item id // Id del dinero en el juego
+
+--Triggers Sync
+GeneratorsReapairVarName = "OpenDoor" -- Name of the Global Boolean Trigger Variable // Nombre de la Variable Global de Activador
+
+-- Text Bar Info
+textBarCharacterFull = "|" -- Full bar Character // Caracter de la barra llena
+textBarCharacterFullColor = "#c00FFCB" --Full bar color // Color de la barra llena
+textBarCharacterEmpy = "|" -- EmpyBar Character // Caracter de la barra vacia
+textBarCharacterEmpyColor = "#R" --Empy bar color // Color de la barra vacia
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+GeneratorsReapairID = {}
+GeneratorsReapairSounds = {}
+textBarActor = {}
+textBarGrapIDActor = {}
+GeneratorsRepaired = 0 
+
+GeneratorsReapairHit = function(e)
+	if e.blockid ~= GeneratorsReapairMobID and e.blockid ~= GeneratorsReapairMobIDRepaired then return 0 end
+    local result,team = Player:getTeam(e.eventobjid)
+    --if team ~= 2 then return end
+	local result,toolhandid = Player:getCurToolID(e.eventobjid)
+    if toolhandid ~= GeneratorsReapairToolID then 
+		Player:notifyGameInfo2Self(e.eventobjid,"#R⚠ Use a Wrench")
+		local pitch = 1 + (math.random(-2,2)/10)
+		local volume = 50
+		World:playSoundEffectOnPos({x=x,y=y,z=z},10946,volume ,pitch,false)	
+		return
+	end
+	
+	--Coordinates to number
+	local x = e.x
+	local y = e.y
+	local z = e.z
+	local GenX = tostring(math.floor(x))
+	GenX = math.abs(GenX)
+	local GenY = tostring(math.floor(y))
+	GenY = math.abs(GenY)
+	local GenZ = tostring(math.floor(z))
+	GenZ = math.abs(GenZ)
+	local GENKey = tonumber(GenX..GenY..GenZ)
+	
+	local generator = GENKey
+	local playerid = e.eventobjid
+	
+	--Check
+	if GeneratorsReapairID[generator] == nil then  --Create New
+		GeneratorsReapairID[generator] = 0
+		GeneratorsReapairSounds[generator] = 0		
+	elseif GeneratorsReapairID[generator] <= -1 then  -- has been rapaired
+		Player:notifyGameInfo2Self(playerid,"♺ Generator is already working!")
+		local pitch = 1 + (math.random(-2,2)/10)
+		local volume = 50
+		World:playSoundEffectOnPos({x=x,y=y,z=z},10795,volume ,pitch,false)		
+		return
+	end
+	
+	--Repair
+	GeneratorsReapairID[generator] = GeneratorsReapairID[generator] + 0.8
+	local textbardone = textBar(GeneratorsReapairID[generator],100,15)
+	local repairTextAm = math.floor(GeneratorsReapairID[generator])
+    Player:notifyGameInfo2Self(playerid,"Repairing... ".." [#c00FFCB"..repairTextAm.."#n/#R100%#n] ["..textbardone.."]")
+	
+	--Sound
+	GeneratorsReapairSounds[generator] = GeneratorsReapairSounds[generator] - 1
+	if GeneratorsReapairSounds[generator]  <= 0 then
+		GeneratorsReapairSounds[generator] = 7
+		local pitch = 1 + (math.random(-2,2)/10)
+		local soundR = math.random(1,6)
+		local soundPlay = 10659
+		if soundR == 2 then soundPlay = 10296 end
+		if soundR == 3 then soundPlay = 10616 end
+		if soundR == 4 then soundPlay = 10617 end
+		if soundR == 5 then soundPlay = 10658 end
+		if soundR == 6 then soundPlay = 10795 end
+		World:playSoundEffectOnPos({x=x,y=y,z=z},soundPlay,25 ,pitch,false)
+	end
+
+
+	--Fully Repaired
+	if GeneratorsReapairID[generator] > 99 then 
+	--if GeneratorsReapairID[generator] > 10 then 
+		GeneratorsRepaired = GeneratorsRepaired +1
+		GeneratorsReapairID[generator] = -1 --off
+		Block:destroyBlock(x,y,z,false)
+		Block:placeBlock(GeneratorsReapairMobIDRepaired,x,y,z,1)
+		World:playParticalEffect(x,y,z,1210,1.5)
+		
+		--feedback
+		local leftgen = Generators - GeneratorsRepaired
+		Player:notifyGameInfo2Self(playerid,"#G#b ♺ Repairied! ♺")
+        Chat:sendSystemMsg("#G#bA generator has been repaired!")
+		Chat:sendSystemMsg("#G"..GeneratorsRepaired.."#n/#R"..Generators.."#n♺ - ["..leftgen.."] Generators left")
+		
+		--Reward
+		if GeneratorsReapairReward > 0 then 
+			for i=1, GeneratorsReapairReward do
+				xr = x + (math.random(-10,10)*0.1)
+				zr = z + (math.random(-10,10)*0.1)
+				yr = y + (math.random(-10,10)*0.1)
+				World:spawnItem(xr,yr,zr,GeneratorsReapairRewardItem,1)
+			end
+		end
+
+		--Opendoor 
+		if GeneratorsRepaired == Generators then 
+				Player:notifyGameInfo2Self(playerid,"#G#b Exit Door is open! ♺")
+			    Chat:sendSystemMsg("#G#bThe Exit door has energy, you can exit now!")
+				VarLib2:setGlobalVarByName(VARTYPE.BOOLEAN,GeneratorsReapairVarName,true)
+				local pitch = 1 + (math.random(-2,2)/10)
+				local volume = 50
+				World:playSoundEffectOnPos({x=x,y=y,z=z},10556,volume ,pitch,false)
+			return			
+		end
+		
+		--Normal Feedback
+		local pitch = 1 + (math.random(-2,2)/10)
+		local volume = 50
+		World:playSoundEffectOnPos({x=x,y=y,z=z},10659,volume ,pitch,false)
+		
+	end
+
+end
+ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],GeneratorsReapairHit)
+
+function textBar(HPCurrent,HPmax,bars)
+	local hpbar = textBarColored(HPCurrent,HPmax,bars,textBarCharacterFullColor,textBarCharacterEmpyColor)
+	return hpbar
+end
+function textBarColored(HPCurrent,HPmax,bars,colorCurret,ColorEmpy)
+	local percentaje = math.floor(HPCurrent/HPmax * bars)
+    if HPCurrent < 0 or HPCurrent == nil then HPCurrent = 1 end    
+        
+	--Create fullfit bar
+    hpbar = colorCurret 
+	for i = percentaje, 1,-1 do
+		hpbar = hpbar..textBarCharacterFull
+	end
+	-- unfill remaining
+	hpbar = hpbar..ColorEmpy
+	for i = bars - percentaje, 1,-1 do
+		hpbar = hpbar..textBarCharacterEmpy
+	end
+	
+	return hpbar
+end
+function textBaronActor(Actor,HPCurrent,HPmax,bars)
+	if textBarActor[Actor] == nil then 
+		local barinfo = textBar(HPCurrent,HPmax,bars)
+		local Grap1  = Graphics:makeGraphicsText(barinfo, 10, 1, 1)
+		--local ret, Grap2 = Graphics:createGraphicsTxtByPos(x,y,z,Grap1)
+		local ret, Grap2 = Graphics:createGraphicsTxtByActor(Actor, Grap1, 1, 100)
+		textBarActor[Actor] = Grap2 
+		return Grap2
+	else
+		local barinfo = textBar(HPCurrent,HPmax,bars)
+		Graphics:updateGraphicsTextById(textBarActor[Actor], barinfo)
+	end
+end
+
+SimpleFloatingText = function(title,fontsize,alpha,x,y,z)
+    local Grap1  = Graphics:makeGraphicsText(title, fontsize, alpha, 1)
+    local ret, Grap2 = Graphics:createGraphicsTxtByPos(x,y,z,Grap1)
+end
