@@ -1,10 +1,11 @@
 ------------------------------------------------------------------------------
-                --WorldGuard 1.0
+                --WorldGuard 1.1
                 -- By YeyoCore UID 2769323
 				
 	--With this code you cant prevent your maps to by played by unauthorized players
 	-- this could be useful to test your maps online, or provide a password to exclusive firends
-	
+	AuthPlayers = {}  -- do not modify
+	AUTHWORLDWARD = 1.1
 	
 	--Instructions>
 		-- 1 Scroll down to the SET UP Section and add the names of the authorized players, those would be able to host without imput any password (Remeber to player your name there)
@@ -16,109 +17,148 @@
 ------------------------------------------------------------------------------
 --  SET UP 
 ------------------------------------------------------------------------------
-    
-    --Auth Users (Max 3)
-    --Change the green part with the exact name of the players who can create a room
-        AuthPlayer1 = "alf notme"
-        AuthPlayer2 = "TheShadowLord"
-        AuthPlayer3 = "YeyoCore"
-    
     -- Password Set UP
-        AuthPassword = "123" -- Set here the password 
-        AuthTimeUp =  40 -- max SECONDS to imput password
-
-
-
-
-
-
-
+    AuthPassword = "NuevoPass" -- Set here the password // La clave
+    AuthTimeUp =  20 -- max SECONDS to imput password // tiempo para verificas
+		
+	--AUTORIZED UIDS
+    AuthPlayers[1] = 1002769323  -- UID 1
+    AuthPlayers[2] = 118068839 -- UID 2
+    AuthPlayers[3] = 2769323 -- UID 3
+    --AuthPlayer3[4] = 2769323 -- NEW UIDS
 
 ------------------------------------------------------------------------------
 -- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
-
 --  DO NOT MODIFY ANYTHING BELOW THIS TEXT
-
 --  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 ------------------------------------------------------------------------------
 AUTH = false
-AuthTimeUp = AuthTimeUp * 1.5
+AUTHTimerDeleted = false
 AUTHMAX = AuthTimeUp
 AUTHPASS = false
 AuthEndgame = false
+AUTHName = "#c7D89FF⊗World_Guard#n"
 local Actor = class.Actor.new()
 
-timercreate = function()
-	_,TIMER = MiniTimer:createTimer('TIMER')
-	--MiniTimer:startBackwardTimer(timerid,cd,false);
-    local _,_,allPlayers = World:getAllPlayers(-1);
-	MiniTimer:showTimerTips(allPlayers,TIMER,"#BWorld_Guard#n ",true);
-end
-timercreate()
 
-Authhandler = function()
-    --AUTHENTER
-	local ret,uin = Player:getHostUin()
-	local ret,name = Player:getNickname(uin)
-	if AUTH == false then
-		if name == AuthPlayer1 or name == AuthPlayer2 or name == AuthPlayer3 then
-		    Chat:sendSystemMsg("#BWorld_Guard#n: Welcome AUTHUSER_"..name,0) 
-		    AUTH = true
-		    local _,_,allPlayers = World:getAllPlayers(-1);
-	        MiniTimer:deleteTimer(TIMER)
-		    return true
-		else
-		    local timertimefix = math.ceil(AuthTimeUp)
-		    local _,_,allPlayers = World:getAllPlayers(-1);
-	        MiniTimer:showTimerTips(allPlayers,TIMER,"#R#bYOU AREN'T AN AUTHUSER !#n#n input password now #R"..timertimefix,true);
-		    return  false
-		end
-	end
-end
-
-
-Authchecker = function(event)
-    if AUTH == true then return true end 
-    if Authhandler() == true then return true end
-    
-    if AuthTimeUp == AUTHMAX then
-        local AU1,AU2,AU3, AU4 = "ey","re","World Guard", "Y"
-        local AU5,AU6 = "oCo", " 1.0"
-        Chat:sendSystemMsg("#B--------------------------------------",0) 
-        Chat:sendSystemMsg("#BProtected with "..AU3..AU6.." #bby "..AU4..AU1..AU5..AU2,0)
-        --Chat:sendSystemMsg("#BProtect your maps > Youtube MultiverseEditor",0)
-        Chat:sendSystemMsg("#B//////////////////////////////////////",0) 
-    end 
-        
-    AuthTimeUp = AuthTimeUp - 0.1
-    if AuthTimeUp < 1 and AuthEndgame == false then
-        AuthEndgame = true
-        Game:doGameEnd()
-    end
-    
-    return false
-    
+function AuthhandlerTimerIni() -- creates ini timer
+	rettimer, AuthhandlerTimer = MiniTimer:createTimer(AUTHName,nil,false)
+	MiniTimer:startBackwardTimer(AuthhandlerTimer,AuthTimeUp,false) --GameStart
+	local _,_,allPlayers = World:getAllPlayers(-1);
+	MiniTimer:showTimerTips(allPlayers,AuthhandlerTimer,AUTHName.." ",true);
+	
 end 
-ScriptSupportEvent:registerEvent([=[Game.Run]=],Authchecker)
+ScriptSupportEvent:registerEvent([=[Game.Start]=],AuthhandlerTimerIni)
+
+function AuthhandlerTimerChange(e) -- Called when game is going to start
+	if AUTH == true and AUTHTimerDeleted == true then return end
+	if AUTH == true and AUTHTimerDeleted == false then
+		MiniTimer:deleteTimer(AuthhandlerTimer)
+		AUTHTimerDeleted = true
+		return 
+	end
+	
+	if e.timerid ~= AuthhandlerTimer then return end
+	local result,seconds = MiniTimer:getTimerTime(e.timerid)
+	local ret,uin = Player:getHostUin()
+	
+	--Count Down
+	if seconds < 6 then
+		local timetexttimeup = seconds - 1
+		Chat:sendSystemMsg(AUTHName.." No #RPassword#n game ending in "..timetexttimeup,0)
+		Player:notifyGameInfo2Self(playerid,AUTHName.." #R#b⚠TYPE A PASSWORD NOW! #W"..timetexttimeup)
+	end
+	--No Authorization TIMEUP
+	if seconds > 1 then return end
+	if AuthEndgame == true or AUTH == true then return end
+    AuthEndgame = true
+	Game:doGameEnd()
+
+end
+ScriptSupportEvent:registerEvent([=[minitimer.change]=],AuthhandlerTimerChange)
+
+AuthPlayer = function(e)
+	if AUTH == true then return end
+    local playerid = e.eventobjid
+	local AU1,AU2,AU3, AU4 = "ey","re",AUTHName, "Y"
+    local AU5,AU6 = "oCo", " 1.0"
+    Chat:sendSystemMsg("#c7D89FF//////////////////////////////////////",playerid)	
+    Chat:sendSystemMsg("#BProtected with "..AU3..AU6.." #bby "..AU4..AU1..AU5..AU2,playerid)
+	Chat:sendSystemMsg("  ",playerid) 
+    
+	--Check Auth
+	if Authhandler(playerid) == true then
+		Chat:sendSystemMsg("  ",playerid)
+		Chat:sendSystemMsg("#c7D89FF//////////////////////////////////////",playerid)
+		return true 
+	end
+	
+	--No Auth
+	Chat:sendSystemMsg("Please inmput the #Bmap password#n now ",playerid)
+	Chat:sendSystemMsg("  ",playerid)
+	Chat:sendSystemMsg("#c7D89FF//////////////////////////////////////",playerid) 
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=],AuthPlayer)
+
+Authhandler = function(playerid)
+	if AUTH == true then return true end
+	
+	--Check autorization
+	local ret,uin = Player:getHostUin()
+	for i=1, #AuthPlayers do
+		if uin == AuthPlayers[i] then AUTH = true end
+	end
+	
+	local ret,name = Player:getNickname(uin)
+	--No Auth
+	if AUTH == false then 
+		Chat:sendSystemMsg("#c7D89FF/////// "..AUTHName,playerid)
+		Chat:sendSystemMsg(name.." is not an #R#bAUTORIZED_USER",playerid)
+		Player:notifyGameInfo2Self(playerid,AUTHName.." #R#b⚠TYPE A PASSWORD NOW")
+		Actor:playSoundEffectById(playerid,10949,100,1,false)
+		return false 
+	end
+
+	--Auth
+	--MiniTimer:deleteTimer(AuthhandlerTimer)
+	Chat:sendSystemMsg(AUTHName.." Welcome #GAUTHUSER_"..name,0)
+	Player:notifyGameInfo2Self(playerid,AUTHName.." #GWELCOME "..name)
+	return true
+end
 
 
 Authpass = function(event_args)
-    if AUTH == true then return 0 end
     local content = event_args['content']
     local playerid = event_args['eventobjid']
-    --if uin ~= playerid then return 0 end 
+	if content == "/getuid" then
+		Chat:sendSystemMsg(AUTHName.." Your #GUID#n is #G: "..playerid,playerid)
+		return true
+	end
+	
+	if AUTH == true then return true end
 	if content == AuthPassword then
 	    local result,name = Player:getNickname(playerid)
-        Chat:sendSystemMsg("#BWorld_Guard#n: Welcome AUTHUSER_"..name,0)
 		AUTH = true
-		local _,_,allPlayers = World:getAllPlayers(-1);
-        MiniTimer:deleteTimer(TIMER)
-		
+        --MiniTimer:deleteTimer(AuthhandlerTimer)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg(AUTHName.." Welcome #GAUTHUSER_"..name,0)
+		Player:notifyGameInfo2Self(playerid,AUTHName.." #G#b WELCOME "..name)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Chat:sendSystemMsg("                       ",0)
+		Actor:playSoundEffectById(playerid,10953,100,1,false)
 		return true
+		
 	elseif content ~= AuthPassword then
-	    Chat:sendSystemMsg("#BWorld_Guard#n: #R#bWRONG PASSWORD #Wtry again#n",0)
+		Player:notifyGameInfo2Self(playerid,AUTHName.." #R#b⚠WRONG PASSWORD #Wtry again#n")
+		Actor:playSoundEffectById(playerid,10949,100,1,false)
 		return  false
 	end
 end
 ScriptSupportEvent:registerEvent([=[Player.NewInputContent]=],Authpass)
-
