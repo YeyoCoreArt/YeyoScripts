@@ -18,28 +18,38 @@
 --  SET UP 
 ------------------------------------------------------------------------------
     -- Password Set UP
+	AUTHPREFIX = "/"
     AuthPassword = "NuevoPass" -- Set here the password // La clave
     AuthTimeUp =  20 -- max SECONDS to imput password // tiempo para verificas
 		
 	--AUTORIZED UIDS
-    AuthPlayers[1] = 1002769323  -- UID 1
-    AuthPlayers[2] = 118068839 -- UID 2
-    AuthPlayers[3] = 2769323 -- UID 3
-    --AuthPlayer3[4] = 2769323 -- NEW UIDS
+    AuthPlayers[1] = 1002769323  -- Map creator UID
+    AuthPlayers[2] = 118068839 -- Extra auth uid 1
+    AuthPlayers[3] = 2769323 -- Extra auth uid 2
+    --AuthPlayer3[4] = 2769323 -- Extra auth uid 3
+	--AuthPlayer3[5] = 2769323 -- Extra auth uid 4
 
 ------------------------------------------------------------------------------
 -- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 --  DO NOT MODIFY ANYTHING BELOW THIS TEXT
 --  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 ------------------------------------------------------------------------------
+local Actor = class.Actor.new()
 AUTH = false
 AUTHTimerDeleted = false
 AUTHMAX = AuthTimeUp
 AUTHPASS = false
 AuthEndgame = false
 AUTHName = "#c7D89FF⊗World_Guard#n"
-local Actor = class.Actor.new()
 
+AUTHCOMMAND_INTEGRATION = false
+
+--Command sistem integration
+if CommandSistemVer ~= nil then if CommandSistemVer >= 1.2 then AUTHCOMMAND_INTEGRATION = true end end
+if AUTHCOMMAND_INTEGRATION == true then  
+	AUTHPREFIX = COMMANDSMODEPREFIX --Auto link prefix
+	AuthPlayers[1] = COMMANDS_ADMIN -- Autolink Admin
+end
 
 function AuthhandlerTimerIni() -- creates ini timer
 	rettimer, AuthhandlerTimer = MiniTimer:createTimer(AUTHName,nil,false)
@@ -130,7 +140,7 @@ end
 Authpass = function(event_args)
     local content = event_args['content']
     local playerid = event_args['eventobjid']
-	if content == "/getuid" then
+	if content == AUTHPREFIX.."getuid" then
 		Chat:sendSystemMsg(AUTHName.." Your #GUID#n is #G: "..playerid,playerid)
 		return true
 	end
