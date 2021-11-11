@@ -1,0 +1,54 @@
+--[[------------------------------------------------------------------------------
+
+ Fancy Text 1.O
+ Created by YeyoCore UID 2769323, from Youtube channel: https://www.youtube.com/multiverseeditor
+ 
+ Creates frames for sending system mensajes
+ to use:
+ 
+	FramedChat(text,Frametype)
+	
+	FramedChat("All players are dead",1)
+	FramedChat("Arena Selected: #G"..ArenaDB[arena][ArenaDBName])
+ 
+ 
+---------------------------------------------------------------------------------]]
+
+function FramedChat(text,Frametype)
+
+	if Frametype == nil then 
+		Chat:sendSystemMsg("(O)=)><><><><><><><><><><><><)=(O)")
+		Chat:sendSystemMsg("                                  ")
+		Chat:sendSystemMsg("       "..text)
+		Chat:sendSystemMsg("                                  ")
+		Chat:sendSystemMsg("(O)=)><><><><><><><><><><><><)=(O)")
+	end
+	
+	if Frametype == 2 then 
+		Chat:sendSystemMsg("* * * * * * * * * * * * * * * * * *")
+		Chat:sendSystemMsg("*                                 *")
+		Chat:sendSystemMsg("*       "..text.."	*")
+		Chat:sendSystemMsg("*                                 *")
+		Chat:sendSystemMsg("* * * * * * * * * * * * * * * * * *")
+	end
+	
+	
+	if Frametype == 3 then 
+		Chat:sendSystemMsg("+-----------------------------------+")
+		Chat:sendSystemMsg("| = : = : = : = : = : = : = : = : = |")
+		Chat:sendSystemMsg("       "..text.."	")
+		Chat:sendSystemMsg("| = : = : = : = : = : = : = : = : = |")
+		Chat:sendSystemMsg("|{>-------------------------------<}|")
+	end
+	
+	if Frametype == 4 then 
+		Chat:sendSystemMsg("   .-.     .-.     .-.     .-.     .-.     .-.")
+		Chat:sendSystemMsg(" .'   `._.'   `._.'   `._.'   `._.'   `._.'   `.")
+		Chat:sendSystemMsg("       "..text.."	")
+		Chat:sendSystemMsg("   .-.     .-.     .-.     .-.     .-.     .-.")
+		Chat:sendSystemMsg(" .'   `._.'   `._.'   `._.'   `._.'   `._.'   `.")
+	end
+
+
+end
+	
