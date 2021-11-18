@@ -1,0 +1,215 @@
+--[[
+	Custom Music Core 1.0
+		Extra funcition to manage music on miniworld. from Youtube channel https://www.youtube.com/multiverseeditor
+		If You want to support me, go to my channel and subscribe or give it a like!
+	
+
+		Parameters:
+		Mode 0 = no alter, 1 tension alter, 2 fast, 3 slow
+		Folder = 1 = action, 2 suspense, 3 others, 4 jam, 5 relax
+		
+		Single player
+		CustomMusicIDPlay(playerid,Folder,track,mode,volume)
+		CustomMusicIDPrev(playerid)
+		CustomMusicIDNext(playerid)  
+		CustomMusicIDRandom(playerid)
+		CustomMusicIDStop(playerid) 
+		CustomMusicIDResume(playerid) 
+
+		All players
+		CustomMusicIDPlayAll(Folder,track,mode,volume)
+		CustomMusicIDPrevAll()
+		CustomMusicIDNextAll()
+		CustomMusicIDStopAll() 
+		CustomMusicIDResumeAll() 
+]]
+
+-- Globals
+CustomMusicTensionLVL = 0 -- extra pitch depending of the game
+CustomMusicMode = 1 --Mode 0 = no tension, 1 tension alter, 2 fast, 3 slow
+CustomMusicVolume = 100 
+CustomMusicTrack = 0
+CustomMusicFolder = 0
+CustomMusicVolumePrev = CustomMusicVolume
+
+--Tags folders
+CustomMusicIDAction = 1
+CustomMusicIDSuspense = 2
+CustomMusicIDOther = 3
+CustomMusicIDJam = 4
+CustomMusicIDRelaxed = 5
+CustomMusicID = {}
+CustomMusic = 1
+
+	--ACTION
+	CustomMusicID[CustomMusicIDAction] = {}
+		CustomMusicID[CustomMusicIDAction][1] = 10713 -- Action like rpg anime
+		CustomMusicID[CustomMusicIDAction][2] = 10714 -- Action Cowboy
+		CustomMusicID[CustomMusicIDAction][3] = 10716 -- Action 80S music
+		CustomMusicID[CustomMusicIDAction][5] = 10719 -- Bomberman
+		CustomMusicID[CustomMusicIDAction][6] = 10737 -- Toy Soldier
+		CustomMusicID[CustomMusicIDAction][7] = 10738 -- Action Explosion Honor
+		CustomMusicID[CustomMusicIDAction][8] = 10752 -- Action 80s tehcno 1
+		CustomMusicID[CustomMusicIDAction][9] = 10753 -- Action 80s tehcno 2
+		CustomMusicID[CustomMusicIDAction][10] = 10754 -- Action 80s tehcno 4
+		CustomMusicID[CustomMusicIDAction][11] = 10755 -- Action 80s tehcno 5
+
+	--TENSION
+	CustomMusicID[CustomMusicIDSuspense] = {}
+		CustomMusicID[CustomMusicIDSuspense][1] = 10718 -- Retro tension
+		CustomMusicID[CustomMusicIDSuspense][2] = 10725 -- Relaxed tension
+		CustomMusicID[CustomMusicIDSuspense][3] = 10727 -- Reflexive psicotic tension
+		CustomMusicID[CustomMusicIDSuspense][4] = 10730 -- psicotic tension SPACE
+		CustomMusicID[CustomMusicIDSuspense][5] = 10731-- Space mystery
+		CustomMusicID[CustomMusicIDSuspense][6] = 10733 -- Tension magical trhiller bonyo
+		CustomMusicID[CustomMusicIDSuspense][7] = 10735 -- Tecno curiosity
+		CustomMusicID[CustomMusicIDSuspense][8] = 10736 -- small tension bg
+		CustomMusicID[CustomMusicIDSuspense][9] = 10760 -- 5sec tension
+		CustomMusicID[CustomMusicIDSuspense][10] = 10761 -- 5sec tension
+
+	--OTHER 
+	CustomMusicID[CustomMusicIDOther] = {}
+		CustomMusicID[CustomMusicIDOther][1] = 10720 -- Stadium
+		CustomMusicID[CustomMusicIDOther][2] = 10728 -- Navidad
+		CustomMusicID[CustomMusicIDOther][3] = 10729 -- sweet repetitive music (horror?)
+		CustomMusicID[CustomMusicIDOther][4] = 10732 -- fly me to the moon
+		CustomMusicID[CustomMusicIDOther][5] = 10732 -- Miniworld theme
+
+	--JAM 
+	CustomMusicID[CustomMusicIDJam] = {}
+		CustomMusicID[CustomMusicIDJam][1] = 10762 -- 5sec Jam
+		CustomMusicID[CustomMusicIDJam][2] = 10763 -- 5sec Jam
+
+	--RELAXED
+	CustomMusicID[CustomMusicIDRelaxed] = {}
+		CustomMusicID[CustomMusicIDRelaxed][1] = 10715 -- Relaxed chine music
+		CustomMusicID[CustomMusicIDRelaxed][2] = 10717 -- Relaxed music
+		CustomMusicID[CustomMusicIDRelaxed][3] = 10722 -- Relaxed music minecraft style
+		CustomMusicID[CustomMusicIDRelaxed][4] = 10723 -- Relaxed music arpa minecraft style
+		CustomMusicID[CustomMusicIDRelaxed][5] = 10724 -- Relaxed music arpa II minecraft style
+		CustomMusicID[CustomMusicIDRelaxed][6] = 10726 -- Relaxed tesnion II minecraft style
+
+---Global
+
+function CustomMusicIDResumeAll() 
+	local result,num,players=World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		local playerid = players[i] 
+		CustomMusicIDResume(playerid) 
+	end
+end
+
+function CustomMusicIDRandomAll()
+	local result,num,players=World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		local playerid = players[i] 
+		CustomMusicIDRandom(playerid)
+	end
+end 
+
+function CustomMusicIDNextAll()
+	local result,num,players=World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		local playerid = players[i] 
+		CustomMusicIDNext(playerid)
+	end
+
+end
+
+function CustomMusicIDPrevAll()
+	local result,num,players=World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		local playerid = players[i] 
+		CustomMusicIDPrev(playerid)
+	end
+
+end
+
+function CustomMusicIDPlayAll(Folder,track,mode,volume)
+	local result,num,players=World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		local playerid = players[i] 
+		CustomMusicIDPlay(playerid,Folder,track,mode,volume)
+	end		
+end
+
+function CustomMusicIDStopAll() 
+	local result,num,players=World:getAllPlayers(-1)
+	for i,a in ipairs(players) do
+		local playerid = players[i] 
+		CustomMusicIDStop(playerid)
+	end
+end
+
+
+---Single Player
+function CustomMusicIDStop(playerid) 
+	CustomMusicIDPlay(playerid,CustomMusicFolder,CustomMusicTrack,CustomMusicMode,0)
+end
+
+function CustomMusicIDResume(playerid) 
+	CustomMusicIDPlay(playerid,CustomMusicFolder,CustomMusicTrack,CustomMusicMode,CustomMusicVolume)
+end
+
+function CustomMusicIDRandom(playerid) 
+	local OldValue = CustomMusicTrack
+	local track = math.random(1,#CustomMusicID[CustomMusicFolder])
+    if track == OldValue then track = track + 1 end
+	if track > #CustomMusicID[CustomMusicFolder] then track = 1 end
+	CustomMusicIDPlay(playerid,CustomMusicFolder,track,CustomMusicMode,CustomMusicVolume)
+end
+
+function CustomMusicIDNext(playerid) 
+	local track = CustomMusicTrack + 1
+	if track > #CustomMusicID[CustomMusicFolder] then 
+		track = 1
+	end
+	
+	CustomMusicIDPlay(playerid,CustomMusicFolder,track,CustomMusicMode,CustomMusicVolume)
+end
+
+
+function CustomMusicIDPrev(playerid) 
+	local track = CustomMusicTrack - 1
+	if track < 1 then 
+		track = #CustomMusicID[CustomMusicFolder]
+	end
+	
+	CustomMusicIDPlay(playerid,CustomMusicFolder,track,CustomMusicMode,CustomMusicVolume)
+end
+
+function CustomMusicIDPlay(playerid,Folder,track,mode,volume)
+	--Stop
+	Player:stopMusic(playerid)
+	
+	--Mode 0 = no alter, 1 tension alter, 2 fast, 3 slow
+	local pitch = 1
+	if mode == 1 then 
+		pitch = 1 + CustomMusicTensionLVL
+	elseif mode == 2 then 
+		pitch = 1.5
+	elseif mode == 3 then 
+		pitch = 0.5	
+	end
+	
+	--Random Variance
+	local randompitch = math.random(-5,5)
+	randompitch = randompitch/100
+	
+	--Check Foldermode 
+	if Folder == 0 then 
+		Folder = math.random(1,#CustomMusicID) -- Random folder
+		track = math.random(1,#CustomMusicID[Folder]) --Random Song
+	end
+	-- check track mode
+	if track == 0 then 
+		track = math.random(1,#CustomMusicID[Folder]) --Random Song
+	end
+	
+	CustomMusicTrack = track
+	CustomMusicFolder = Folder
+
+	Player:playMusic(playerid,CustomMusicID[Folder][track],volume,pitch,true)
+	
+end
+
