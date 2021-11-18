@@ -1,0 +1,205 @@
+------------------------------------------------------------------------------
+ --EliminationMiniGames Rules 1.1
+ --[[ By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
+	--Game Rules for EliminationMiniGames, please go to the set up section to set up your game
+
+ -- /!\ Requieres /!\ : 
+	--Two teams, red for players, blue for observers
+	--No team assigment 
+	
+---------------------------------
+-- SET UP
+---------------------------------]]
+-- Text
+MinigameGameRulesMSG1 = "Pick up stars, avoid to be killed " -- Chat Help for entering players // Ayuda de chat para los jugadores
+MinigameGameRulesMSG2 = "has been Eliminated" -- Chat when a player gets killed!// Chat cuando muere un humano
+MinigameGameRulesMSG3 = "★" -- Star icon // Incono de estrellas
+MinigameGameRulesMSG4 = "Now you are an observer" --Observer Text // Texto para observadores
+
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+local Team = class.Team.new()
+MINIGAMERULES = 1.0
+--Gamerules
+GameRule.MaxPlayers = 8
+--GameRule.ReviveMode = 0
+GameRule.MobGen = 0
+GameRule.MinimapTeams = 1 
+GameRule.AllowMidwayJoin = 1
+GameRule.ViewMode = 1
+GameRule.ViewType = 1
+
+--GLOBALS
+GAMEFINISH = false
+MinigameGameRulesEnterdPlayers = 0
+MinigameGameRulesPlayerEliminated = {}
+MinigameGameRulesPlayerExtralife = {}
+
+function MinigameGameRulesPlayerIni(e) --set up ini players
+	MinigameGameRulesEnterdPlayers = MinigameGameRulesEnterdPlayers + 1
+
+	if MinigameGameRulesPlayerExtralife[e.eventobjid] == nil then
+		Player:setTeam(e.eventobjid,1) --Move to team 1
+		Chat:sendSystemMsg("                       ",e.eventobjid)
+		Chat:sendSystemMsg(MinigameGameRulesMSG1,e.eventobjid)
+		Chat:sendSystemMsg("                       ",e.eventobjid)
+		MinigameGameRulesPlayerExtralife[e.eventobjid] = 1
+		
+		--Give 3 stars
+		if MINIGAMECORE ~= nil then 
+			Player:setAttr(e.eventobjid,PLAYERATTR.LEVEL,MiniGameGemLife*2)
+		end 
+	else 
+		Player:setTeam(e.eventobjid,2) --Move to team 2 as observer 
+		Chat:sendSystemMsg(MinigameGameRulesMSG4,e.eventobjid)
+	end
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=],MinigameGameRulesPlayerIni)
+
+MinigameGameRulesGameRun = function()
+	if MinigameGameRulesEnterdPlayers <= 1 then return 0 end --survival mode
+    
+    --SetScore
+	local result,team1 = Team:getTeamPlayerNum(1,2)
+	Team:setTeamScore(1, team1)
+
+	--check winner
+	if GAMEFINISH == true then return 0 end
+	if team1 <= 1 then 
+		MinigameGameRulesGetWinners() 
+	end --winner
+	    
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], MinigameGameRulesGameRun)
+
+
+MinigameGameRulesPlayerDie = function(event) 
+    local playerid = event.eventobjid
+	local toobjid = event.toobjid
+	local result,team  = Player:getTeam(playerid)
+	local result,nickName = Player:getNickname(playerid)
+	
+    if team == 2 then return end
+	local text = MinigameGameRulesMSG2
+	
+	--Music Integration
+	if CustomMusic ~= nil then
+		--Player:stopMusic(playerid)
+		CustomMusicIDStop(playerid) 
+	end
+
+	local result,Stars = Player:getAttr(playerid,PLAYERATTR.LEVEL)
+	if Stars <= 0 then
+		Team:changePlayerTeam(playerid,2)
+		MinigameGameRulesPlayerEliminated[playerid] = 1
+		--SoundPlayer(playerid,10966)
+		SoundPlayer(playerid,10816)
+		--Eliminatedplayer
+		if MINIGAMECORE ~= nil then
+			Chat:sendSystemMsg("#cAD062C///////////////////",playerid)
+			Chat:sendSystemMsg(" ",playerid)
+			Chat:sendSystemMsg("#cFF003A⊗ Eliminated ⊗",playerid)
+			Chat:sendSystemMsg("No more #cFF003A#b★#n left",playerid)
+			Chat:sendSystemMsg(" ",playerid)
+			Chat:sendSystemMsg("#cAD062C///////////////////",playerid)
+		end
+		
+		if MinigameGameRulesEnterdPlayers <= 1 then 
+			Chat:sendSystemMsg("You Survived #cFF003"..MinigameGameRounds.." Rounds",playerid)
+			MinigameGameRulesGetWinners()
+		end 
+	else 
+		SoundPlayer(playerid,10781)
+		--remove 3 stars
+		local starsdrop = MiniGameGemLife
+		if Stars < MiniGameGemLife then starsdrop = Stars end 
+		Stars = math.max(0, Stars - MiniGameGemLife)
+		Player:setAttr(playerid,PLAYERATTR.LEVEL,Stars)
+		text = "#R -"..starsdrop..MinigameGameRulesMSG3
+		Player:notifyGameInfo2Self(playerid,"You lose "..starsdrop..MinigameGameRulesMSG3)
+		--Spawn 3 stars
+		if MINIGAMECORE ~= nil then
+			local result,x,y,z=Actor:getPosition(playerid)
+			local result,GemSpawned = World:spawnCreature(x,y,z,MiniGameGem,starsdrop)
+			for i=1,#GemSpawned do
+				local target = GemSpawned[i]
+				local rx = math.random(-10,10)/10
+				local rz = math.random(-10,10)/10
+				Actor:appendSpeed(target,rx * 0.2,1 * 0.2,rz * 0.2)
+			end
+		end	
+	end
+	
+	local result,name = Player:getNickname(playerid)
+	Chat:sendSystemMsg("#G"..name.." "..text)
+	
+	
+end
+ScriptSupportEvent:registerEvent([=[Player.Die]=], MinigameGameRulesPlayerDie)
+
+MinigameGameRulesPlayerRevive = function(event)
+    local playerid = event.eventobjid
+	local result,team  = Player:getTeam(playerid)
+	
+	--Minigame Integration
+	if MINIGAMECORE ~= nil then
+		MiniGamePermisions(playerid)
+		local Method = MinigameArena[MinigameGameID][MinigameArenaSpawnMet]	
+		MiniGameTeleportPlayerChangeSpawn(playerid,Method)
+	end
+	
+	--Music Integration
+	if CustomMusic ~= nil then
+		--Player:stopMusic(playerid)
+		--CustomMusicIDStop(playerid) 
+		CustomMusicIDResume(playerid) 
+	end
+	
+	if team ~= 2 then return end --OnlyObservers
+	local toobjid = event.toobjid 	
+	Backpack:clearAllPack(playerid)
+	Actor:clearAllBuff(playerid)  --Add victim buff
+	Player:addBuff(playerid, 42, 1, 0) -- addbuff
+	Chat:sendSystemMsg(MinigameGameRulesMSG4,playerid)
+	--Minigame Lyb
+	
+	
+	return 1;
+end
+ScriptSupportEvent:registerEvent([=[Player.Revive]=], MinigameGameRulesPlayerRevive)
+
+MinigameGameRulesGetWinners = function()
+	GAMEFINISH = true
+    local reta,num,players = World:getAllPlayers(-1)
+	local winnerteam = 1
+	local loserteam = 2
+	
+    for idx = 1, #players  do --add tips to all players
+        local playerid = players[idx]
+		local result,team = Player:getTeam(playerid)
+		Player:setGameScore(playerid,100)
+		
+		-- Change for winners
+		if team == winnerteam then
+			Chat:sendSystemMsg("#GYou won the game", playerid);
+		else
+			Chat:sendSystemMsg("#RYou lose the game", playerid);
+		end
+	end
+
+	--End Game
+	Team:setTeamScore(winnerteam, 10); 
+	Team:setTeamScore(loserteam, 1);
+	Team:setTeamResults(winnerteam, 1);
+	Team:setTeamResults(loserteam, 2);
+	Team:setTeamPlayersResults(winnerteam, 1);
+	Team:setTeamPlayersResults(loserteam, 2);
+	--Endn game
+	Game:doGameEnd()
+end
+
+
