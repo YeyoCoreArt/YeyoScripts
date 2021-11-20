@@ -15,6 +15,7 @@ MinigameSwitch()
 ------------------------
 CanJump = 40 --1-100
 CanSpeed = 9 --1-10
+CanCamera = 0 --0 1st, 1 = 3rd, 2 = Back, 3 = custom
 CanMove = true  --true, false
 CanPlanceBlock = false --true, false
 CanUseBlock = false --true, false
