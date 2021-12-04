@@ -1,0 +1,161 @@
+--[[
+	MINIGAME Missile Barrage
+		Proyectiles that will follow the a player. from Youtube channel https://www.youtube.com/multiverseeditor
+		If You want to support me, go to my channel and subscribe or give it a like!
+
+]]
+
+---------------------------------
+-- SET UP
+---------------------------------
+
+--- REQUIRES HM18
+-- Main Config
+HommingMissilesBulletID = 4111 -- ID  of the bullet ( requires reduce speed rate 0.2)
+HommingMissilesPower = 0.02--0.08--0.15 -- Desviation power of appspeed
+HommingMissilesPowery = 0.01--0.065--0.13 -- Desviation power of appspeed
+HommingMissilesY = 3
+
+------------------------------------------------------------------------------
+-- /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ 
+-- DO NOT MODIFY ANYTHING BELOW THIS TEXT
+-- /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ 
+------------------------------------------------------------------------------
+--Globals
+HM = {}; 
+HM1 = {};
+HM2 = {}; 
+HM3 = {}; 
+HM4 = (LIMIT_MAX_X - LIMIT_MIN_X) / 2
+HM4 = LIMIT_MIN_X + HM4
+HM5 = (LIMIT_MAX_Z - LIMIT_MIN_Z) / 2
+HM5 = LIMIT_MIN_Z + HM5
+function HM9()
+HM4 = (LIMIT_MAX_X - LIMIT_MIN_X) / 2
+HM4 = LIMIT_MIN_X + HM4
+HM5 = (LIMIT_MAX_Z - LIMIT_MIN_Z) / 2
+HM5 = LIMIT_MIN_Z + HM5
+local x = LIMIT_MIN_X
+local z = LIMIT_MIN_Z
+local HM15 = math.random(1,4)
+if HM15 == 1 then 
+x = LIMIT_MAX_X - 2 
+z = LIMIT_MAX_Z - 2
+elseif HM15 == 2 then
+x = LIMIT_MAX_X - 2
+z = LIMIT_MIN_Z + 2
+elseif HM15 == 3 then
+x = LIMIT_MIN_X + 2
+z = LIMIT_MIN_Z + 2
+else
+x = LIMIT_MIN_X + 2
+z = LIMIT_MAX_Z - 2
+end
+local result = World:spawnProjectile(nil, HommingMissilesBulletID, x, HommingMissilesY, z, x, HommingMissilesY + 50, z, 15)
+soundall(10635)
+end
+HM10 = function(event)
+if event.itemid ~= HommingMissilesBulletID then return 0 end
+local result2,HM17 = Team:randomTeamPlayer(1,1)	
+if HM17 == nil then  
+Actor:killSelf(event.toobjid)
+return
+end
+local HM16 = event.toobjid
+table.insert(HM, HM16) 
+table.insert(HM1, HM17)
+table.insert(HM3, 180)
+HM2[HM16] = #HM
+Actor:playBodyEffectById(HM16,1251,0.6)
+end
+HM11 = function()
+local HM6 = {};
+local HM7 = {};
+local HM8 = {}
+if #HM <= 0 then return 0 end
+for i,v in pairs(HM) do
+if HM[i] ~= nil  then
+local HM16 = v
+local HM21 = HM1[i]
+HM3[i] = HM3[i] - 1
+if HM3[i] > 0 then 
+local ret, x,y,z = Actor:getPosition(HM16)
+local ret2, x2,y2,z2 = Actor:getPosition(HM21)
+if ret == 0 and ret2 == 0 then HM22(HM16,HommingMissilesPower,HommingMissilesPowery,100,x,y,z,x2,y2+1.0,z2) end
+table.insert(HM6, HM16)
+table.insert(HM7, HM3[i])
+table.insert(HM8,HM1[i])
+HM[i] = nil
+HM1[i] = nil
+HM3[i] = nil
+HM2[HM16] = #HM6
+else 
+local ID = HM2[HM16]
+HM3[i] = nil
+HM[i] = nil;
+HM1[i] = nil
+HM2[HM16] = nil
+World:despawnActor(HM16)
+end
+end 
+end
+HM = HM18(HM6)
+HM1 = HM18(HM8)
+HM3 = HM18(HM7)
+end
+HM12 = function(event)
+if event.itemid ~= HommingMissilesBulletID then return end
+local HM16 = event.eventobjid
+if HM[HM2[HM16]] == nil then return 0 end
+local ID = HM2[HM16]
+local HM16 = HM[ID]
+HM[ID] = nil;
+HM1[ID] = nil
+HM3[ID] = nil
+HM2[HM16] = nil
+local blockid = event.blockid
+local HM21 = event.toobjid
+local x = event.x
+local y = event.y
+local z = event.z
+Actor:playBodyEffectById(HM21,1009,0.7)
+SoundPlayer(HM21,10660)
+end
+ScriptSupportEvent:registerEvent([=[Actor.Projectile.Hit]=],HM12)
+ScriptSupportEvent:registerEvent([=[Missile.Create]=],HM10)
+ScriptSupportEvent:registerEvent([=[Game.Run]=],HM11)    
+HM18 =  function(HM20)
+local HM19 = {}
+for k,v in pairs(HM20) do
+HM19[k] = v
+end
+return HM19
+end
+HM22 = function(HM21,power,powery,distancemax,x,y,z,x2,y2,z2)
+local vx = HM25(x,x2,power,distancemax)
+local vy = HM25(y,y2,powery,distancemax)
+local vz = HM25(z,z2,power,distancemax)
+Actor:appendSpeed(HM21, vx, vy, vz)
+end
+HM25 = function (inivec,compvec,power,distancemax)
+local vdir = 0;
+local force = 0;
+local vector = 0;
+local distance = math.abs(inivec - compvec)
+if distance < distancemax then
+if inivec > compvec then vdir = -1  
+elseif inivec < compvec then vdir = 1
+else vdir = 0
+end
+vector = power*vdir
+return vector
+else
+return 0
+end
+end
+function MissilesSpawn() 
+HM9() 
+end
+
+
+
