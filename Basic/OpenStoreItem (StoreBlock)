@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
- OpenStore = 1.2
+ OpenStore = 1.3
  --[[ By YeyoCore UID 2769323 from Youtube channel https://www.youtube.com/multiverseeditor
 
 --Open the Toolbox/Devstore menu by using an item/mob // abre el menu de crafteo/DESAROLLADOR con un objeto/Mob
@@ -14,16 +14,15 @@
 -- SET UP
 ---------------------------------]]
 -- Normal Store
-OpenStoreItem =  4111 -- put here item id for open toolbox // Objeto dummy que abra la tienda
+OpenStoreItem =  4104 -- put here item id for open toolbox // Objeto dummy que abra la tienda
 OpenStoreMob = -1 -- put here item id for open devstore // Mob que abra la tienda
-
 --Developer
-OpenStoreItemDev = 4110 -- put here item id for open devstore // lo mismo pero para la tienda de desarrollador
-
+OpenStoreItemDev = 4105 -- put here item id for open devstore // lo mismo pero para la tienda de desarrollador
 --Options
-OpenStoreRespawn = false --spam store until player gets any item // Spammea la tienda hasta que el jugador compre algo al inicio
+OpenStoreRespawn = false --open store everytime player respawn // abrir tienda cada vez que el jugador resucita
 OpenStoreSpawn = false --spam store until player gets any item // Spammea la tienda hasta que el jugador compre algo al inicio
-OpenStoreSpawntText = "#b#R Select your ROBOT FIRST! "
+	OpenStoreKey = "Hero" --Spam store until player loses this item (= nil to turn off) // Spamear hasta que el jugador no tenga este objeto (= nil para apagar)
+	OpenStoreSpawntText = "#b#R⚠ Select your class! "
 
 
 ---------------------------------
@@ -73,7 +72,7 @@ OpenStoreItemOpenSpam = function(event) -- Spawns Menu until player selects hero
     if OpenStoreItemLobbyMode ~= false then return 0 end
     if OpenStoreItemChoosed[event.eventobjid] ~= nil then return 0 end
 	local result = Player:forceOpenBoxUI(event.eventobjid, 800)
-	 Chat:sendSystemMsg(OpenStoreSpawntText,event.eventobjid)
+	--Chat:sendSystemMsg(OpenStoreSpawntText,event.eventobjid)
     Player:notifyGameInfo2Self(event.eventobjid,OpenStoreSpawntText)
 end
 ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=],OpenStoreItemOpenSpam)
@@ -85,22 +84,24 @@ ScriptSupportEvent:registerEvent([=[Game.Start]=],OpenStoreItemOpenSpamOn)
 
 OpenStoreItemOpenSpamOFF = function(e)
     if OpenStoreItemChoosed[e.eventobjid] ~= nil then return end
+	if OpenStoreKey ~= nil then  --only exe when is a custom items
+		local result,Itemname = Item:getItemName(e.itemid)
+		if string.match(Itemname, OpenStoreKey) then 
+			OpenStoreItemChoosed[e.eventobjid] = true
+			local result,Ninckname=Player:getNickname(0)
+			Chat:sendSystemMsg(Ninckname.." Choose "..Itemname)
+		end
+		return		
+	end 
+	--Normal mode
     OpenStoreItemChoosed[e.eventobjid] = true
 end
 ScriptSupportEvent:registerEvent([=[Player.AddItem]=],OpenStoreItemOpenSpamOFF)
 
+
 OpenStoreItemIni = function(event)
 	local playerid = event.eventobjid
 	local result = Player:forceOpenBoxUI(playerid, 800)
-	
-	
-	--MemoryHandlerCleanUp
-	local Leaks = collectgarbage("count")
-	collectgarbage("collect")
-	Leaks = collectgarbage("count")
-	
-	
-	
 end
 ScriptSupportEvent:registerEvent([=[Player.Init]=],OpenStoreItemIni)
 
@@ -110,4 +111,3 @@ OpenStoreItemReborn = function(event)
 	local result = Player:forceOpenBoxUI(playerid, 800)
 end
 ScriptSupportEvent:registerEvent([=[Player.Revive]=],OpenStoreItemReborn)
-
