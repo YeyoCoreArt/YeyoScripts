@@ -1,12 +1,15 @@
 AutoGetScoreVarPlayer = "BestPlayer"
 AutoGetScoreVarScore = "BestPlayerScore"
+AutoGetScoreVarPlayer = "BestPlayer"
+AutoGetScoreVarSMetter = "AweMetter"
 function AutoGetScore()
+    msg("autogetscore exe") 
     local maxScore = 0
     local maxScorePlayer = 0
     local result,num,players=World:getAllPlayers(-1)
     for i,a in ipairs(players) do
         local playerid = players[i]
-        local result,AweMetter = VarLib2:getPlayerVarByName(playerid,VARTYPE.NUMBER,"AweMetter")
+        local result,AweMetter = VarLib2:getPlayerVarByName(playerid,VARTYPE.NUMBER,AutoGetScoreVarSMetter)
 
         if  AweMetter > maxScore then --topscore
             maxScore = AweMetter
@@ -20,12 +23,15 @@ function AutoGetScore()
                 maxScore = AweMetter
                 maxScorePlayer = playerid
             end
-            local result = VarLib2:setPlayerVarByName(playerid,VARTYPE.NUMBER,"AweMetter",AweMetter)
+            local result = VarLib2:setPlayerVarByName(playerid,VARTYPE.NUMBER,AutoGetScoreVarSMetter,AweMetter)
 
         end
     end
 
-    if maxScorePlayer == 0 then return end 
-    local result = VarLib2:setGlobalVarByName(VARTYPE.NUMBER,"BestPlayer",maxScore)
-    local result = VarLib2:setGlobalVarByName(VARTYPE.PLAYER,"BestPlayerScore",maxScorePlayer)
+    if maxScorePlayer == 0 then return 
+        msg("autogetscore exit")    
+    end 
+     msg("autogetscore calculated")    
+    local result = VarLib2:setGlobalVarByName(VARTYPE.NUMBER,AutoGetScoreVarPlayer,maxScore)
+    local result = VarLib2:setGlobalVarByName(VARTYPE.PLAYER,AutoGetScoreVarScore,maxScorePlayer)
 end
