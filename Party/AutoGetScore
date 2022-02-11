@@ -1,0 +1,31 @@
+AutoGetScoreVarPlayer = "BestPlayer"
+AutoGetScoreVarScore = "BestPlayerScore"
+function AutoGetScore()
+    local maxScore = 0
+    local maxScorePlayer = 0
+    local result,num,players=World:getAllPlayers(-1)
+    for i,a in ipairs(players) do
+        local playerid = players[i]
+        local result,AweMetter = VarLib2:getPlayerVarByName(playerid,VARTYPE.NUMBER,"AweMetter")
+
+        if  AweMetter > maxScore then --topscore
+            maxScore = AweMetter
+            maxScorePlayer = playerid
+        elseif AweMetter == maxScore then --draw
+            randomPlayer = math.random(100)
+            if randomPlayer <= 49 then --Not draw winner
+                AweMetter = AweMetter - 1
+            else -- Make player winner 
+                AweMetter = AweMetter + 1 
+                maxScore = AweMetter
+                maxScorePlayer = playerid
+            end
+            local result = VarLib2:setPlayerVarByName(playerid,VARTYPE.NUMBER,"AweMetter",AweMetter)
+
+        end
+    end
+
+    if maxScorePlayer == 0 then return end 
+    local result = VarLib2:setGlobalVarByName(VARTYPE.NUMBER,"BestPlayer",maxScore)
+    local result = VarLib2:setGlobalVarByName(VARTYPE.PLAYER,"BestPlayerScore",maxScorePlayer)
+end
