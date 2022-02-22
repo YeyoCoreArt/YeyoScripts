@@ -12,7 +12,7 @@ this script replace and item when is received by a random item from the list
 
 ITEMRANDOM = 4099 -- Item id of the random item container // id del objeto contenedor
 
-Random item list // lista de objetos aleatorios
+--Random item list // lista de objetos aleatorios
 --Example // Ejemplo
 RandomItem[1] = 4115 -- Item ID // Id del objeto
 RandomCharges[1] = 1 -- Item Charges (number of charges, use negative values to set random range, example: -5) // numero de cargas
