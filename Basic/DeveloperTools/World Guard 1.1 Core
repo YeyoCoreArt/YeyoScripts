@@ -34,7 +34,7 @@
 --  DO NOT MODIFY ANYTHING BELOW THIS TEXT
 --  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 ------------------------------------------------------------------------------
-local Actor = class.Actor.new()
+--local Actor = class.Actor.new()
 AUTH = false
 AUTHTimerDeleted = false
 AUTHMAX = AuthTimeUp
