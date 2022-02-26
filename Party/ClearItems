@@ -1,0 +1,2 @@
+local ret, playerid = VarLib2:getGlobalVarByName(VARTYPE.PLAYER,"playerid")
+Backpack:clearAllPack(playerid)
