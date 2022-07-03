@@ -4,7 +4,7 @@
 
 --Cambia automaticamente el color del nombre del mob de acuerdo al equipo al que pertence, ademas le agrega el nombre del equipo
 --Changes automatically the color of the name of any mob according to the owner team, also adds a tag with the team name
-
+--https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/AutoColorMOBS
 
 ------------------------------------------------------------------------------------
 function RTSItem2Mob_CreateMob(e)
