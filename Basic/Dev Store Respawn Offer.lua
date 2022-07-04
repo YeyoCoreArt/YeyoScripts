@@ -2,8 +2,9 @@ RandomOffer = {}
 --[[
 
 	RESPAWN OFFER 2.0
-	    https://www.youtube.com/multiverseeditor
-        UID: 2769323
+		https://www.youtube.com/multiverseeditor
+        	UID: 2769323
+		Ultima version: https://github.com/YeyoCoreArt/YeyoScripts/edit/master/Basic/DevStoreRespawnOffer.lua
 
 	Descripcion: 
 	    Este script le offrece un objeto al azar de tu tienda de objetos a los jugadores cuando reviven
