@@ -1,34 +1,111 @@
 --Update 1.1 (10/2/2021): detects also block position with right click
 --Update 1.2 (10/7/2021): Get Block id by breaking a block
 --Update 1.3 (10/7/2021): Get Buff id & level by adding a buff to your self
+--Update 1.4 (8/10/2022): Fix bufs, and showing floating, multilanguje support
 
-function GetItemID(event)
-    local itemid = event.itemid
-    
+-------------------------------------------
+--SET UP HERE
+-------------------------------------------
+GetItemIDLanGlob = 1 -- 1 = english, 0 = español
+
+-------------------------------------------
+--DO NOT CHANGE ANYTHING AFTER THIS
+-------------------------------------------
+GetItemID_EN = 1
+GetItemID_ES = 2
+GetItemIDColorHG = "#G"
+GetItemIDColorHG2 = "#B"
+GetItemIDColorHG3 = "#R"
+GetItemIDText = {}
+GetItemIDLanCustom = {}
+
+--ENG
+GetItemIDText[GetItemID_EN] = {}
+GetItemIDText[GetItemID_EN][1] = "Hand Item ID: " 
+GetItemIDText[GetItemID_EN][2] = GetItemIDColorHG.."Item ID: ".."#n"
+GetItemIDText[GetItemID_EN][3] = "Breaked block id: "
+GetItemIDText[GetItemID_EN][4] = GetItemIDColorHG.."Block ID: ".."#n"
+GetItemIDText[GetItemID_EN][5] = "Clicked point Coordinades: "
+GetItemIDText[GetItemID_EN][6] = "Added Buff ID: "
+GetItemIDText[GetItemID_EN][7] = GetItemIDColorHG.."Buff ID: ".."#n"
+GetItemIDText[GetItemID_EN][8] = " Level: "
+GetItemIDText[GetItemID_EN][9] = GetItemIDColorHG2.." Lvl: ".."#n"
+GetItemIDText[GetItemID_EN][10] = "Lenguaje fijado a "..GetItemIDColorHG2.." Español"
+
+--ES
+GetItemIDText[GetItemID_ES] = {}
+GetItemIDText[GetItemID_ES][1] = "ID objeto en mano: " 
+GetItemIDText[GetItemID_ES][2] = GetItemIDColorHG.."ID Objeto: ".."#n"
+GetItemIDText[GetItemID_ES][3] = "ID bloque roto: "
+GetItemIDText[GetItemID_ES][4] = GetItemIDColorHG.."ID Bloque: ".."#n"
+GetItemIDText[GetItemID_ES][5] = "Coordenadas del lugar: "
+GetItemIDText[GetItemID_ES][6] = "ID estado añadido: "
+GetItemIDText[GetItemID_ES][7] = GetItemIDColorHG.."ID Estado: ".."#n"
+GetItemIDText[GetItemID_ES][8] = " Nivel: "
+GetItemIDText[GetItemID_ES][9] = GetItemIDColorHG2.." Niv. ".."#n"
+GetItemIDText[GetItemID_ES][10] = "Languaje set to "..GetItemIDColorHG2.." English"
+
+
+--Change the languaje
+function GetItemIDChangeLang(playerid,newLanguaje)
+    GetItemIDLanCustom[playerid] = newLanguaje
+    Chat:sendSystemMsg(GetItemIDText[GetItemIDLan][10],playerid)
+    Player:notifyGameInfo2Self(playerid,"#b"..GetItemIDText[GetItemIDLan][10])
+end
+
+--Start up Auto Languaje Sync
+function GetItemIDAutoLang(e)
+    local playerid = e.eventobjid
+    GetItemIDChangeLang(playerid,GetItemIDLanGlob)
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=],GetItemIDAutoLang)
+
+
+
+--Get the id of the item in the hand
+function GetItemID(e)
+    local itemid = e.itemid
+    local playerid = e.eventobjid
+    local GetItemIDLan = GetItemIDLanCustom[playerid]
     local result,iiname = Item:getItemName(itemid)
-    Chat:sendSystemMsg("Hand Item ID: "..itemid,0)
+    Chat:sendSystemMsg(GetItemIDText[GetItemIDLan][1]..itemid,playerid)
+    Player:notifyGameInfo2Self(playerid,GetItemIDText[GetItemIDLan][2]..itemid)
 end
 ScriptSupportEvent:registerEvent([=[Player.SelectShortcut]=],GetItemID)
 
+--Get the id of last break block
+BreakBlockID = function(e)
+    local playerid = e.eventobjid
+    local block = e.blockid
+    local GetItemIDLan = GetItemIDLanCustom[playerid]
+    Chat:sendSystemMsg(GetItemIDText[GetItemIDLan][3]..block,playerid)
+    Player:notifyGameInfo2Self(playerid,GetItemIDText[GetItemIDLan][4]..block)
+    
+end 
+ScriptSupportEvent:registerEvent([=[Block.Dig.Cancel]=],BreakBlockID)
+ScriptSupportEvent:registerEvent([=[Block.Dig.End]=],BreakBlockID)
+
+--Get the coordinates of the last clicked point
 function CheckBlockID(e)
 	local x = e.x
-    	local y = e.y
-    	local z = e.z
-    	Chat:sendSystemMsg("x "..x.." / y "..y.." / z "..z,0)
+    local y = e.y
+    local z = e.z
+    local playerid = e.eventobjid
+    local GetItemIDLan = GetItemIDLanCustom[playerid]
+
+    Chat:sendSystemMsg(GetItemIDText[GetItemIDLan][5].."#BX "..x.."#n / #RY "..y.."#n / Z #G"..z,playerid)
+    --Player:notifyGameInfo2Self(playerid,"#BX "..x.."#n / #RY "..y.."#n / Z #G")
 end
 ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],CheckBlockID)
 
-BreakBlockID = function( parameters )
-    local playerid = parameters.eventobjid
-    local block = parameters.blockid
-    Chat:sendSystemMsg("blockid: "..block,playerid)
-end 
-ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=],BreakBlockID)
+--Get the last buff added
+AddBuffBlockID = function( e )
+	local playerid = e.eventobjid
+	local buff = e.buffid
+	local lvl = e.bufflvl
+    local GetItemIDLan = GetItemIDLanCustom[playerid]
 
-AddBuffBlockID = function( event )
-	local playerid = event.eventobjid
-	local buff = event.buffid
-	local lvl = event.bufflvl
-	Chat:sendSystemMsg("Buff #Gid: "..buff.."#n and #Rlvl: "..lvl,playerid)
+	Chat:sendSystemMsg(GetItemIDText[GetItemIDLan][6]..buff..GetItemIDText[GetItemIDLan][8]..lvl,playerid)
+    Player:notifyGameInfo2Self(playerid,GetItemIDText[GetItemIDLan][7]..buff..GetItemIDText[GetItemIDLan][9]..lvl)
 end
 ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], AddBuffBlockID)
