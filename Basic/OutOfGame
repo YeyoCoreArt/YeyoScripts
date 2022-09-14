@@ -50,7 +50,7 @@ Outofgame = function(e)
 	if out == false then return 0 end --Check x axis
 	local result,Chp=Player:getAttr(playerid,PLAYERATTR.CUR_HP)
 	if Chp <= 0 then  return 0 end
-    --	Player:teleportHome(playerid)
+    	--	Player:teleportHome(playerid)
 	Actor:killSelf(playerid)
 	
 	-- if eliminination mode is on
