@@ -1,3 +1,12 @@
+------------------------------------------------------------------------------------
+
+--              Auto-Colorear Bloques
+
+--Cambia automaticamente el color de lso bloques blancos de acuerdo al equipo del jugador que los coloca, ademas los jugadores pueden roper los bloques de su equipo con 1 golpe
+--https://github.com/YeyoCoreArt/YeyoScripts/edit/master/Basic/AutoColorCube
+
+------------------------------------------------------------------------------------
+
 
 AutoColorCubeDestroyTeamblocks = true
 
