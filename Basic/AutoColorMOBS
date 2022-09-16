@@ -3,7 +3,6 @@
 --              Auto-Colorear MOBS 
 
 --Cambia automaticamente el color del nombre del mob de acuerdo al equipo al que pertence, ademas le agrega el nombre del equipo
---Changes automatically the color of the name of any mob according to the owner team, also adds a tag with the team name
 --https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/AutoColorMOBS
 
 ------------------------------------------------------------------------------------
@@ -20,6 +19,19 @@ function RTSItem2Mob_CreateMob(e)
 
 end
 ScriptSupportEvent:registerEvent([=[Actor.Create]=], RTSItem2Mob_CreateMob)
+
+function RTSItem2Mob_Hurt(e)
+    local mobtarget = e.eventobjid
+    local result,team = Creature:getTeam(mobtarget)
+    local teamcolor,teamname = RTSItem2MobgetTeamColor(team)
+    local result,tempname = Creature:getActorName(mobtarget)
+    tempname = teamcolor..teamname.." "..tempname --RTSItem2MobName[itemid]
+
+    --How name and team
+    Actor:shownickname(mobtarget, true)
+    Actor:setnickname(mobtarget, tempname)
+end
+ScriptSupportEvent:registerEvent([=[Actor.BeHurt]=], RTSItem2Mob_Hurt)
 
 
 RTSItem2MobgetTeamColor = function(team) -- Get target player color by team
