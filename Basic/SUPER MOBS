@@ -1,0 +1,239 @@
+--[[
+
+    SUPER MOBS 2.1
+        https://www.youtube.com/multiverseeditor
+            UID: 2769323
+        Ultima version: https://github.com/YeyoCoreArt/YeyoScripts/edit/master/Basic/Respawn%20Random%20Offer
+
+    Descripcion: 
+        Cada mob tendra un % de probabilidad de aparecer como SINGULAR, ALFA, ELITE o LEGENDARIO multiplicando su poder,velocidad,tamaño y defensas
+
+    Instrucciones: 
+        1.- Copia y Pega el script en tu mapa, la configuracion es opcional
+        2.- Baja hasta la linea que dice: CONFIGURACION
+        3.- Cambia los valores que quieras, todo el texto que esta despues de -- en cada linea es la explicacion
+
+
+    Mas scripts: https://github.com/YeyoCoreArt/YeyoScripts
+-]]
+            SuperMobsSingular = 1 -- No modificar
+            SuperMobsAlpha = 2 -- No modificar
+            SuperMobsElite = 3 -- No modificar
+            SuperMobsLegendary = 4 -- No modificar
+            SuperMobsMobChance  = {} -- No modificar
+            SuperMobsMobPower = {} -- No modificar
+            SuperMobsMobFx = {} -- No modificar
+            SuperMobsMobName = {} -- No modificar
+            SuperMobsMobByPass = {} -- No modificar
+
+
+-------------------------------------
+--          ↓↓↓  CONFIGURACION  ↓↓↓
+-------------------------------------
+
+--Singular Mobs (Nivel 1)
+SuperMobsMobName[SuperMobsSingular] = "#c47E0D9Singular " --Nombre del super mob
+SuperMobsMobChance[SuperMobsSingular] = 10 --Probabilidad de spawnear (de 0% a 100%)
+SuperMobsMobPower[SuperMobsSingular] = 3 --Multiplicador de poder
+SuperMobsMobFx[SuperMobsSingular] = 1555 --Efecto especial 
+
+--Alpha Mobs  (Nivel 2)
+SuperMobsMobName[SuperMobsAlpha] = "#c4755E0Alpha " --Nombre del super mob
+SuperMobsMobChance[SuperMobsAlpha] = 5 --Probabilidad de spawnear (de 0% a 100%)
+SuperMobsMobPower[SuperMobsAlpha] = 5 --Multiplicador de poder
+SuperMobsMobFx[SuperMobsAlpha] = 1498 --Efecto especial 
+
+--Elite Mobs  (Nivel 3)
+SuperMobsMobName[SuperMobsElite] = "#cDB47E0Elite " --nivel 3 
+SuperMobsMobChance[SuperMobsElite] = 1 --Probabilidad de spawnear (de 0% a 100%)
+SuperMobsMobPower[SuperMobsElite] = 10 --Multiplicador de poder
+SuperMobsMobFx[SuperMobsElite] = 1495 --Efecto especial  
+
+--Legendary Mobs  (Nivel 4)
+SuperMobsMobName[SuperMobsLegendary] = "#cFA7746Legandary " --nivel 4
+SuperMobsMobChance[SuperMobsLegendary] = 0.2 --Probabilidad de spawnear (de 0% a 100%)
+SuperMobsMobPower[SuperMobsLegendary] = 20 --Multiplicador de poder 
+SuperMobsMobFx[SuperMobsLegendary] = 1497 --Efecto especial  
+
+--Lista de mobs ignorados por el sistema, agrega una linea y pon la id de cada mob que no quieres que se convierta
+SuperMobsMobByPass[1] = 3401 --
+SuperMobsMobByPass[2] = 3402
+SuperMobsMobByPass[3] = 31
+SuperMobsMobByPass[4] = 33
+SuperMobsMobByPass[5] = 40
+SuperMobsMobByPass[6] = 12
+SuperMobsMobByPass[8] = 4
+SuperMobsMobByPass[9] = 2
+SuperMobsMobByPass[10] = 5
+SuperMobsMobByPass[11] = 16
+SuperMobsMobByPass[12] = 14
+
+
+-------------------------------------------------------------
+--   ⚠⚠⚠ FIN DE CONFIGURACION, NO CAMBIAR NADA A PARTIR DE AQUI ⚠⚠⚠
+-------------------------------------------------------------
+
+--Mob Handler
+SuperMobsMobRariyHandler = {}
+SuperMobsMobRariyHandlerSize = {}
+
+function SuperMobsMobGet(e) 
+    local Mob = e.eventobjid
+    local result,Mobid = Creature:getActorID(Mob)
+
+    --list of mobs who does not have elite
+    for i=1, #SuperMobsMobByPass do if Mobid == SuperMobsMobByPass[i] then return end end
+ 
+    --Check Mob Chances
+    local EliteRChances = math.random(0,100)
+    local EliteRChancesFloat = (math.random(0,10)) / 100
+    local EliteRChancesFull = EliteRChances + EliteRChancesFloat
+    if EliteRChancesFull > SuperMobsMobChance[SuperMobsSingular] then return end -- No rarity
+    
+    --msg("EliteDetected ok")
+    local EliteRarity = 0
+    if EliteRChancesFull < SuperMobsMobChance[SuperMobsLegendary] then EliteRarity = SuperMobsLegendary 
+    elseif EliteRChancesFull < SuperMobsMobChance[SuperMobsElite] then  EliteRarity = SuperMobsElite
+    elseif EliteRChancesFull < SuperMobsMobChance[SuperMobsAlpha] then  EliteRarity = SuperMobsAlpha
+    else EliteRarity = SuperMobsSingular end
+
+    --Save creature
+    SuperMobsMobRariyHandler[Mob] = EliteRarity -- Add to Handler
+    local result,size = Creature:getAttr(Mob,CREATUREATTR.DIMENSION)
+    SuperMobsMobRariyHandlerSize[Mob] = size
+
+   --Change MOB
+    SuperMobsMobGetFx(Mob) -- FX
+    SuperMobsMobPowerUp(Mob) -- Mob Bonus
+
+    --Obtain special atributes
+    --Dodge
+
+end
+ScriptSupportEvent:registerEvent([=[Actor.Create]=], SuperMobsMobGet)
+
+
+function SuperMobsMobPowerUp(Mob) 
+    if SuperMobsMobRariyHandler[Mob] == nil then return ErrorCode.FAILED end
+    local EliteRarity = SuperMobsMobRariyHandler[Mob]
+
+     --SetLife, multiply hp and max hp
+     local result,HPMax = Creature:getAttr(Mob,CREATUREATTR.MAX_HP)
+     local result,HPcur = Creature:getAttr(Mob,CREATUREATTR.CUR_HP)
+     HPMax = math.max(HPMax,1)
+     local lifePorcent = HPcur / HPMax
+     HPMax = (HPMax * SuperMobsMobPower[EliteRarity])
+     Creature:setAttr(Mob,CREATUREATTR.MAX_HP,HPMax)
+     Creature:setAttr(Mob,CREATUREATTR.CUR_HP,HPMax*lifePorcent)
+     
+     --SetDamage, obtain bonus of damage
+     local damagebonus = SuperMobsMobPower[EliteRarity] * 0.10
+     local result,DamageMel = Creature:getPunchAttack(Mob)
+     local result,DamageRem = Creature:getRangeAttack(Mob)
+     DamageMel = DamageMel + (DamageMel * damagebonus)
+     DamageRem = DamageRem + (DamageRem * damagebonus)
+     Creature:setAttr(Mob,CREATUREATTR.ATK_MELEE,DamageMel)
+     Creature:setAttr(Mob,CREATUREATTR.ATK_REMOTE,DamageRem)
+
+     --SetArmor, obtain bonus of damage, by luck up to 3 armors
+     local Defesebonus = SuperMobsMobPower[EliteRarity] * 0.10
+     local result,DefeseMel = Creature:getPunchDefense(Mob)
+     local result,DefeseRem = Creature:getRangeDefense(Mob)
+     DefeseMel = DefeseMel + (DefeseMel * Defesebonus)
+     DefeseRem = DefeseRem + (DefeseRem * Defesebonus)
+     Creature:setAttr(Mob,CREATUREATTR.DEF_MELEE,DefeseMel)
+     Creature:setAttr(Mob,CREATUREATTR.DEF_REMOTE,DefeseRem)
+     
+     --SetSpeed, obtain bonus of speed
+     local SpeedbonusBase = 0.10 * SuperMobsMobPower[EliteRarity]
+     local result,Speed1 = Creature:getWalkSpeed(Mob)
+     Speed1 = Speed1 + (SpeedbonusBase * Speed1)
+     Creature:setWalkSpeed(Mob,Speed1)
+
+     --Dodge
+     local Dodgebonus = SuperMobsMobPower[EliteRarity] * 7
+     local NewDodge = 10 + Dodgebonus
+     Creature:setDodge(Mob,NewDodge)
+
+     return ErrorCode.OK
+end
+
+
+function SuperMobsMobGetFx(Mob) 
+    if SuperMobsMobRariyHandler[Mob] == nil then return ErrorCode.FAILED end
+    local EliteRarity = SuperMobsMobRariyHandler[Mob]
+
+    --Transformation FX
+    local result,x,y,z=Actor:getPosition(Mob)
+    World:playParticalEffect(x,y,z,1007,3) -- FX explosion
+    World:playParticalEffect(x,y,z,1472,1) -- FX floor smoke
+    World:playParticalEffect(x,y,z,1450,3) -- FX dark waves
+    
+
+    --Size
+    local size = SuperMobsMobRariyHandlerSize[Mob]
+    size = size * (1.0 + (0.10 * EliteRarity))
+    Creature:setAttr(Mob,CREATUREATTR.DIMENSION,size)
+
+    --Nik
+    local result,MOBnickname = Creature:getActorName(Mob)
+    MOBnickname = SuperMobsMobName[EliteRarity].." "..MOBnickname
+    local result = Actor:setnickname(Mob, MOBnickname)
+    Actor:shownickname(Mob, true)
+
+    --Fx
+    Actor:playBodyEffect(Mob,SuperMobsMobFx[EliteRarity]) --Rarity FX
+    local spitch = ( math.random(8,13) / 10 )
+    local svolume = 70 + (20 * EliteRarity)
+    Actor:playSoundEffectById(Mob,10078,svolume,spitch,false)--Sound 
+    Actor:playAct(Mob,4)   --Expresions
+  
+    return ErrorCode.OK
+
+end
+
+function SuperMobsReTransform(e) 
+    if SuperMobsMobRariyHandler[e.eventobjid] == nil then return ErrorCode.FAILED end
+    local Mob = e.eventobjid
+
+    --Check Size
+    local result,size = Creature:getAttr(Mob,CREATUREATTR.DIMENSION)
+    if size <= SuperMobsMobRariyHandlerSize[Mob] then 
+        SuperMobsMobGetFx(Mob) 
+        SuperMobsMobPowerUp(Mob) -- Mob Bonus
+        --Chat:sendChat("Re Power UP",0)
+    end
+end
+ScriptSupportEvent:registerEvent([=[Actor.BeHurt]=], SuperMobsReTransform)
+
+function SuperMobsDie(e) 
+    SuperMobsMobRariyHandler[e.eventobjid] = nil 
+    SuperMobsMobRariyHandlerSize[e.eventobjid] = nil
+    local Mob = e.eventobjid
+end
+ScriptSupportEvent:registerEvent([=[Actor.Die]=], SuperMobsDie)
+
+
+function SuperMobsPlayerDie(e) 
+    local killer = e.eventobjid
+    local killed = e.toobjid
+    --Chat:sendSystemMsg("killer "..killer,0)
+    --Chat:sendSystemMsg("killed "..killed,0)
+    local result = Actor:isPlayer(killed)
+    if result ~= ErrorCode.OK then return end 
+
+    local result,NickName = Player:getNickname(killed)
+    local result,KillerName = Creature:getActorName(killer)
+    if SuperMobsMobRariyHandler[killer] ~= nil then 
+        local EliteRarity = SuperMobsMobRariyHandler[killer]
+        KillerName = SuperMobsMobName[EliteRarity]..KillerName
+    end
+
+    local result,num,players=World:getAllPlayers(-1)
+    for i,a in ipairs(players) do
+        local playerid = players[i]
+        Chat:sendSystemMsg("⊗ - #R"..NickName.."#n has been killed by a "..KillerName,playerid)
+    end
+
+end
+--ScriptSupportEvent:registerEvent([=[Actor.Beat]=], SuperMobsPlayerDie)
