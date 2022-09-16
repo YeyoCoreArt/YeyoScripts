@@ -6,7 +6,7 @@
         Ultima version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
 
     Descripcion: 
-        Cada mob tendra un % de probabilidad de aparecer como SINGULAR, ALFA, ELITE o LEGENDARIO multiplicando su poder,velocidad,tamaño y defensas
+        Cada mob tendrá un % de probabilidad de aparecer como SINGULAR, ALFA, ELITE o LEGENDARIO multiplicando su poder,velocidad, tamaño y defensas. 
 
     Instrucciones: 
         1.- Copia y Pega el script en tu mapa, la configuracion es opcional
