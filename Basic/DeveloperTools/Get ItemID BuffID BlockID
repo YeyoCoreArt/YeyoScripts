@@ -2,11 +2,12 @@
 --Update 1.2 (10/7/2021): Get Block id by breaking a block
 --Update 1.3 (10/7/2021): Get Buff id & level by adding a buff to your self
 --Update 1.4 (8/10/2022): Fix bufs, and showing floating, multilanguje support
+--Update 1.5 (8/10/2022): Fix bufs, click to get actor id, and model id for scripts
 
 -------------------------------------------
 --SET UP HERE
 -------------------------------------------
-GetItemIDLanGlob = 1 -- 1 = english, 0 = español
+GetItemIDLanGlob = 2 -- 1 = english, 2 = español
 
 -------------------------------------------
 --DO NOT CHANGE ANYTHING AFTER THIS
@@ -30,7 +31,9 @@ GetItemIDText[GetItemID_EN][6] = "Added Buff ID: "
 GetItemIDText[GetItemID_EN][7] = GetItemIDColorHG.."Buff ID: ".."#n"
 GetItemIDText[GetItemID_EN][8] = " Level: "
 GetItemIDText[GetItemID_EN][9] = GetItemIDColorHG2.." Lvl: ".."#n"
-GetItemIDText[GetItemID_EN][10] = "Lenguaje fijado a "..GetItemIDColorHG2.." Español"
+GetItemIDText[GetItemID_EN][10] = "Languaje set to "..GetItemIDColorHG2.." English"
+GetItemIDText[GetItemID_EN][11] = "Creature ID: "
+GetItemIDText[GetItemID_EN][12] = "Model Name (Scripts): "
 
 --ES
 GetItemIDText[GetItemID_ES] = {}
@@ -43,7 +46,9 @@ GetItemIDText[GetItemID_ES][6] = "ID estado añadido: "
 GetItemIDText[GetItemID_ES][7] = GetItemIDColorHG.."ID Estado: ".."#n"
 GetItemIDText[GetItemID_ES][8] = " Nivel: "
 GetItemIDText[GetItemID_ES][9] = GetItemIDColorHG2.." Niv. ".."#n"
-GetItemIDText[GetItemID_ES][10] = "Languaje set to "..GetItemIDColorHG2.." English"
+GetItemIDText[GetItemID_ES][10] = "Lenguaje fijado a "..GetItemIDColorHG2.." Español"
+GetItemIDText[GetItemID_ES][11] = "ID Criatura: "
+GetItemIDText[GetItemID_ES][12] = "Nombre del Modelo (Scripts): "
 
 
 --Change the languaje
@@ -63,7 +68,8 @@ ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=],GetItemIDAutoLan
 
 
 --Get the id of the item in the hand
-function GetItemID(e)
+function GetItemID(e)   
+    if e.itemid == 0 then return end
     local itemid = e.itemid
     local playerid = e.eventobjid
     local GetItemIDLan = GetItemIDLanCustom[playerid]
@@ -109,3 +115,20 @@ AddBuffBlockID = function( e )
     Player:notifyGameInfo2Self(playerid,GetItemIDText[GetItemIDLan][7]..buff..GetItemIDText[GetItemIDLan][9]..lvl)
 end
 ScriptSupportEvent:registerEvent([=[Player.AddBuff]=], AddBuffBlockID)
+
+--Get MOB ID by clicking
+AddBuffMobID = function( e )
+	local playerid = e.eventobjid
+    local mobid = e.toobjid
+    local GetItemIDLan = GetItemIDLanCustom[playerid]
+
+    --Get ID
+    local result,actorid = Creature:getActorID(mobid)
+    --Get Actor Fancade
+    local result,ModelName = Actor:getActorFacade(mobid)
+
+
+	Chat:sendSystemMsg(GetItemIDText[GetItemIDLan][11]..GetItemIDColorHG..actorid.."#n // "..GetItemIDText[GetItemIDLan][12]..GetItemIDColorHG..ModelName,playerid)
+    Player:notifyGameInfo2Self(playerid,GetItemIDText[GetItemIDLan][11]..actorid)
+end
+ScriptSupportEvent:registerEvent([=[Player.ClickActor]=], AddBuffMobID)
