@@ -1,6 +1,6 @@
 --[[
 
-    SUPER MOBS 2.1
+    SUPER MOBS 2.2
         https://www.youtube.com/multiverseeditor
             UID: 2769323
         Ultima version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
@@ -77,6 +77,8 @@ SuperMobsMobByPass[12] = 14
 SuperMobsMobRariyHandler = {}
 SuperMobsMobRariyHandlerSize = {}
 
+
+
 function SuperMobsMobGet(e) 
     local Mob = e.eventobjid
     local result,Mobid = Creature:getActorID(Mob)
@@ -151,8 +153,9 @@ function SuperMobsMobPowerUp(Mob)
      Creature:setWalkSpeed(Mob,Speed1)
 
      --Dodge
-     local Dodgebonus = SuperMobsMobPower[EliteRarity] * 7
-     local NewDodge = 10 + Dodgebonus
+     local Dodgemax = 40
+     local Dodgebonus = math.floor(Dodgemax / (5 - SuperMobsMobPower[EliteRarity]))
+     local NewDodge = Dodgebonus
      Creature:setDodge(Mob,NewDodge)
 
      return ErrorCode.OK
@@ -207,9 +210,12 @@ end
 ScriptSupportEvent:registerEvent([=[Actor.BeHurt]=], SuperMobsReTransform)
 
 function SuperMobsDie(e) 
+    local EliteRarity = SuperMobsMobRariyHandler[e.eventobjid]
     SuperMobsMobRariyHandler[e.eventobjid] = nil 
     SuperMobsMobRariyHandlerSize[e.eventobjid] = nil
-    local Mob = e.eventobjid
+    if SuperMobsRewardAddon == nil then return end 
+    SuperMobsRewardDie(e.eventobjid,EliteRarity) --Add on rewards
+
 end
 ScriptSupportEvent:registerEvent([=[Actor.Die]=], SuperMobsDie)
 
@@ -236,4 +242,8 @@ function SuperMobsPlayerDie(e)
     end
 
 end
---ScriptSupportEvent:registerEvent([=[Actor.Beat]=], SuperMobsPlayerDie)
+ScriptSupportEvent:registerEvent([=[Actor.Beat]=], SuperMobsPlayerDie)
+
+
+
+
