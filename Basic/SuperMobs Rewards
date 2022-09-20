@@ -1,0 +1,93 @@
+--[[
+
+    SUPER MOBS REWARDS (super mobs add on )
+        https://www.youtube.com/multiverseeditor
+        UID: 2769323
+        Ultima version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
+
+    Descripcion: 
+        este script es un add on que mejora el script SUPER MOBS. tienes que tener primero el scrip SUPER MOBS
+        permite configurar el dropeo de objetos extra si muere un mob convertido en  SINGULAR, ALFA, ELITE o LEGENDARIO. 
+
+    Instrucciones: 
+        REQUISITO PREVIO: tener el script SUPER MOBS en tu mapa: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
+        1.- Copia y Pega el script en tu mapa.
+        2.- Baja hasta la linea que dice: CONFIGURACION
+        3.- Para agregar objetos de dropeo agrega la linea: SuperMobsRewardRegister(rarityTable,itemid,amount)
+        3.- repalza los valores de la linea que copiaste:
+            rarityTable = que tipo de mob lo dropeara, 1 =  Singular, 2 = Alpha, 3 = Elite, 4 = Legendary
+            itemid = Id del objeto que dropearan, por ejemplo 100 es el id del bloque de tierra
+            amount = Cantidad de cargas que caeran, para colocar cantidades al azar, escribe un numero negativo (-5 hara que mob deje caer un numero al azar de entre 1 y 5 cargas)
+
+    Mas scripts: https://github.com/YeyoCoreArt/YeyoScripts
+-]]
+
+                SuperMobsRewardAddon = 2.2
+                SuperMobsRewardList = {}
+                SuperMobsRewardList[SuperMobsSingular] ={}
+                SuperMobsRewardList[SuperMobsAlpha] ={}
+                SuperMobsRewardList[SuperMobsElite] ={}
+                SuperMobsRewardList[SuperMobsLegendary] ={}
+                SuperMobsRewardListAmount = {}
+                SuperMobsRewardListAmount[SuperMobsSingular] ={}
+                SuperMobsRewardListAmount[SuperMobsAlpha] ={}
+                SuperMobsRewardListAmount[SuperMobsElite] ={}
+                SuperMobsRewardListAmount[SuperMobsLegendary] ={}
+                function SuperMobsRewardIni() 
+
+-------------------------------------
+--          ↓↓↓  CONFIGURACION  ↓↓↓
+-------------------------------------
+--Agrega los objetos aqui
+
+
+    --SuperMobsRewardRegister(rarityTable,itemid,amount)
+    --rarityTable = 1 =  Singular, 2 = Alpha, 3 = Elite, 4 = Legendary
+    --SuperMobsRewardRegister(1,100,5)  Ejemplo, si un mob [Singular] muere soltara [Bloques de tierra] em una [cantidad] de 5
+    --SuperMobsRewardRegister(2,100,10)  Ejemplo, si un mob [Alpha] muere soltara [Bloques de tierra] em una [cantidad] de 10
+    --SuperMobsRewardRegister(3,100,13)  Ejemplo, si un mob [Elite] muere soltara [Bloques de tierra] em una [cantidad] de 13
+    --SuperMobsRewardRegister(4,100,17) Ejemplo, si un mob [Legendario] muere soltara [Bloques de tierra] em una [cantidad] de 17
+
+    SuperMobsRewardRegister(1,10001,5) -- borrar para agregar nuevos
+
+
+
+-------------------------------------------------------------
+--   ⚠⚠⚠ FIN DE CONFIGURACION, NO CAMBIAR NADA A PARTIR DE AQUI ⚠⚠⚠
+-------------------------------------------------------------
+
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=], SuperMobsRewardIni)
+
+
+ 
+--Drop items when mob dies
+function SuperMobsRewardDie(mobid,EliteRarity) 
+    --Niling vars
+    SuperMobsMobRariyHandler[mobid] = nil 
+    SuperMobsMobRariyHandlerSize[mobid] = nil
+    
+    --Get Reward List 
+    local rewardMax = #SuperMobsRewardList[EliteRarity]
+    local rewardRandon = math.random(1,rewardMax)
+    local rewardItem = SuperMobsRewardList[EliteRarity][rewardRandon]
+    local rewardAmount = SuperMobsRewardListAmount[EliteRarity][rewardRandon]
+    if rewardAmount == nil then rewardAmount = 1 end 
+    if rewardAmount == 0 then rewardAmount = 1 end 
+    if rewardAmount < 0 then rewardAmount = math.random(1,rewardAmount * -1) end 
+
+    --Drop special drop
+    local result,x,y,z=Actor:getPosition(mobid)
+    for i=1, rewardAmount do
+        World:spawnItem(x,y,z,rewardItem,1)
+    end
+    
+end
+
+--Register Table
+function SuperMobsRewardRegister(rarity,item,amount) 
+    local idx = #SuperMobsRewardList[rarity] + 1
+    SuperMobsRewardList[rarity][idx] = item
+    SuperMobsRewardListAmount[rarity][idx] = amount
+end
+
