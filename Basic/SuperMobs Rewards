@@ -42,7 +42,7 @@
 
 
     --SuperMobsRewardRegister(rarityTable,itemid,amount)
-    --rarityTable = 1 =  Singular, 2 = Alpha, 3 = Elite, 4 = Legendary
+    --rarityTable: 1 =  Singular, 2 = Alpha, 3 = Elite, 4 = Legendary
     --SuperMobsRewardRegister(1,100,5)  Ejemplo, si un mob [Singular] muere soltara [Bloques de tierra] em una [cantidad] de 5
     --SuperMobsRewardRegister(2,100,10)  Ejemplo, si un mob [Alpha] muere soltara [Bloques de tierra] em una [cantidad] de 10
     --SuperMobsRewardRegister(3,100,13)  Ejemplo, si un mob [Elite] muere soltara [Bloques de tierra] em una [cantidad] de 13
