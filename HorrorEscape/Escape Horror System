@@ -46,7 +46,7 @@ EscapeHorrorMSG6 = "#G"..EscapeHorrorNameVictims.." had escaped!." -- chat when 
 --  DO NOT MODIFY ANYTHING BELOW THIS TEXT
 --  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 ------------------------------------------------------------------------------
-local Team = class.Team.new()
+--local Team = class.Team.new()
 --Gamerules
 GameRule.MaxPlayers = 6
 GameRule.BlockDestroy = 0
