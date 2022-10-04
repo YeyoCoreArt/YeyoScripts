@@ -1,0 +1,14 @@
+--Borrara cualquier bloque que el jugador recoja
+--If player pick ups any block will be removed from inventory
+
+
+function AntiPickUpBlocks(e) 
+    local itemid = e.itemid
+   
+    if itemid > 2000 then return end
+    local itemstacks = e.itemnum
+    local playerid = e.eventobjid
+    Player:removeBackpackItem(playerid,itemid,itemstacks)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.PickUpItem]=],AntiPickUpBlocks)
