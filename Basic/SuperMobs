@@ -45,7 +45,7 @@ SuperMobsMobFx[SuperMobsAlpha] = 1498 --Efecto especial
 
 --Elite Mobs  (Nivel 3)
 SuperMobsMobName[SuperMobsElite] = "#cDB47E0Elite " --nivel 3 
-SuperMobsMobChance[SuperMobsElite] = 1 --Probabilidad de spawnear (de 0% a 100%)
+SuperMobsMobChance[SuperMobsElite] = 1.2 --Probabilidad de spawnear (de 0% a 100%)
 SuperMobsMobPower[SuperMobsElite] = 10 --Multiplicador de poder
 SuperMobsMobFx[SuperMobsElite] = 1495 --Efecto especial  
 
@@ -88,8 +88,9 @@ function SuperMobsMobGet(e)
  
     --Check Mob Chances
     local EliteRChances = math.random(0,100)
-    local EliteRChancesFloat = (math.random(0,10)) / 100
-    local EliteRChancesFull = EliteRChances + EliteRChancesFloat
+    local EliteRChancesFloat = (math.random(0,10)) / 10
+    local EliteRChancesFloat2 = (math.random(0,10)) / 100
+    local EliteRChancesFull = EliteRChances + EliteRChancesFloat + EliteRChancesFloat2
     if EliteRChancesFull > SuperMobsMobChance[SuperMobsSingular] then return end -- No rarity
     
     --msg("EliteDetected ok")
