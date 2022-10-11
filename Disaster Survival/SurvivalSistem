@@ -35,7 +35,7 @@ PlayerPointsMaxY = 47 -- Max height // Altura maxima
 --  DO NOT MODIFY ANYTHING BELOW THIS TEXT
 --  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 ------------------------------------------------------------------------------
-local GameRule = class.GameRule.new()
+--local GameRule = class.GameRule.new()
 PlayerPointsSound = {};
 PlayerPointsSound[1] = 10948 --RESURECTION SOUND
 PlayerPointsSound[2] = 10102
