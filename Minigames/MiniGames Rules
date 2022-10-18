@@ -22,7 +22,7 @@ MinigameGameRulesMSG4 = "Now you are an observer" --Observer Text // Texto para 
 --  DO NOT MODIFY ANYTHING BELOW THIS TEXT
 --  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
 ------------------------------------------------------------------------------
-local Team = class.Team.new()
+--local Team = class.Team.new()
 MINIGAMERULES = 1.0
 --Gamerules
 GameRule.MaxPlayers = 8
