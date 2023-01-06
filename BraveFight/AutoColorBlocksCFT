@@ -6,7 +6,7 @@
 --Changes the coolor for Wool, Hardsand and Glass blocks automaticaly for player team color.
 --Players will be able to destroy any color of his team
 --All block picked up will be turn into wool blocks
---https://github.com/YeyoCoreArt/YeyoScripts/edit/master/Basic/AutoColorCube
+--get the last version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/BraveFight/AutoColorBlocksCFT
 
 ------------------------------------------------------------------------------------
 
