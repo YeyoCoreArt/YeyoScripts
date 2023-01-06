@@ -1,0 +1,143 @@
+------------------------------------------------------------------------------------
+
+--              Auto-Color Blocks CFT
+
+--Cambia automaticamente el color de lso bloques blancos de acuerdo al equipo del jugador que los coloca, ademas los jugadores pueden roper los bloques de su equipo con 1 golpe
+--Changes the coolor for Wool, Hardsand and Glass blocks automaticaly for player team color.
+--Players will be able to destroy any color of his team
+--All block picked up will be turn into wool blocks
+--https://github.com/YeyoCoreArt/YeyoScripts/edit/master/Basic/AutoColorCube
+
+------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+-- SET UP
+------------------------------------------------------------------------------
+
+AutoColorCubeDestroyTeamblocks = true -- set as true to allow players to destroy blocks of their own team easly
+AutoColorCubeTransformBlocks = true -- set as true if you want to tasform any pickable block into wool
+
+
+
+
+
+------------------------------------------------------------------------------
+-- /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+--  DO NOT MODIFY ANYTHING BELOW THIS TEXT
+--  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\  /!\ 
+------------------------------------------------------------------------------
+
+--Constants
+AutoColorCubeBase = 10
+AutoColorCubeRed = 1
+AutoColorCubeBlue = 2
+AutoColorCubeYellow = 3
+AutoColorCubeGreen = 4
+AutoColorCubeOrange = 5
+AutoColorCubePurple = 6
+
+--Tables
+AutoColorCube = {}
+AutoColorCube[AutoColorCubeBase] = {}
+AutoColorCube[AutoColorCubeRed] = {}
+AutoColorCube[AutoColorCubeBlue] = {}
+AutoColorCube[AutoColorCubeYellow] = {}
+AutoColorCube[AutoColorCubeGreen] = {}
+AutoColorCube[AutoColorCubeOrange] = {}
+AutoColorCube[AutoColorCubePurple] = {}
+--FirstCubes
+AutoColorCube[AutoColorCubeBase][1] = 666
+AutoColorCube[AutoColorCubeRed][1] = 681
+AutoColorCube[AutoColorCubeBlue][1] = 678
+AutoColorCube[AutoColorCubeYellow][1] = 671
+AutoColorCube[AutoColorCubeGreen][1] = 676
+AutoColorCube[AutoColorCubeOrange][1] = 668
+AutoColorCube[AutoColorCubePurple][1] = 669
+
+
+--Register
+function RegisterAutoCube(cBase,cRed,cBlue,cYellow,cGreen,cOrange,cPurple)
+    local ACdbKey = #AutoColorCube[AutoColorCubeBase] + 1
+    AutoColorCube[AutoColorCubeBase][ACdbKey] = cBase
+    AutoColorCube[AutoColorCubeRed][ACdbKey] = cRed
+    AutoColorCube[AutoColorCubeBlue][ACdbKey] = cBlue
+    AutoColorCube[AutoColorCubeYellow][ACdbKey] = cYellow
+    AutoColorCube[AutoColorCubeGreen][ACdbKey] = cGreen
+    AutoColorCube[AutoColorCubeOrange][ACdbKey] = cOrange
+    AutoColorCube[AutoColorCubePurple][ACdbKey] = cPurple
+
+    return ErrorCode.OK
+end
+
+--IniRegistration
+function IniAutoColorCubeDataBase()
+    --RegisterAutoCube(666,681,678,671,676,668,669) -- Hardsand
+    RegisterAutoCube(600,614,611,604,609,601,602) -- Lana
+    RegisterAutoCube(632,647,644,637,646,634,635) -- Glass
+    RegisterAutoCube(1120,1134,1131,1124,1129,1121,1122) -- Steel
+    RegisterAutoCube(616,630,627,620,625,617,618) -- Carpet
+    RegisterAutoCube(925,919,920,922,921,923,924) -- Carpet
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=], IniAutoColorCubeDataBase)
+
+--ChangeBlocks
+function AutoColorCubeSwitch(e)
+    local blockid = e.blockid
+    local kkey = 0
+    for i = 1, #AutoColorCube[AutoColorCubeBase] do
+        if blockid == AutoColorCube[AutoColorCubeBase][i] then 
+            kkey = i
+        end
+    end
+    if kkey == 0 then return ErrorCode.FAILED end -- Exit
+
+    local x,y,z = e.x,e.y,e.z
+    local playerid = e.eventobjid
+    local result,pteam = Player:getTeam(playerid)
+    local newCube = AutoColorCube[pteam][kkey]
+    Block:destroyBlock(x,y,z,false)
+    Block:placeBlock(newCube,x,y,z,0)
+
+    return ErrorCode.OK
+
+end
+ScriptSupportEvent:registerEvent([=[Block.PlaceBy]=], AutoColorCubeSwitch)
+
+
+--Destroy blocks if players is form same team
+function AutoColorCubeDestroy(e)
+    if AutoColorCubeDestroyTeamblocks == false then return end --Safe Exit
+    local playerid = e.eventobjid
+    local result,pteam = Player:getTeam(playerid)
+    local blockid = e.blockid
+
+    local kkey = 0
+    for i = 1, #AutoColorCube[pteam] do
+        if blockid == AutoColorCube[pteam][i] then 
+            kkey = i
+        end
+    end
+    if kkey == 0 then return ErrorCode.FAILED end -- Exit
+
+    local x,y,z = e.x,e.y,e.z
+    Block:destroyBlock(x,y,z,false)
+    local newCube = AutoColorCube[AutoColorCubeBase][kkey]
+    local result,objid = World:spawnItem(x,y,z,newCube,1)
+
+    return ErrorCode.OK
+
+end
+ScriptSupportEvent:registerEvent([=[Block.Dig.Begin]=], AutoColorCubeDestroy)
+
+function BlockPickToSand(e)
+    if e.itemid > 2000 then return end 
+    if e.itemid == 600 then return end 
+    local itemid = e.itemid
+    local playerid = e.eventobjid
+    local itemamount = e.itemnum
+    
+    Player:removeBackpackItem(playerid,itemid,itemamount)
+    Player:gainItems(playerid,600,itemamount,1)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.AddItem]=], BlockPickToSand)
