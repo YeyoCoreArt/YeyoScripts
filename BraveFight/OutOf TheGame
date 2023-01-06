@@ -1,0 +1,68 @@
+--[[
+	OUT OF THE GAME 3.0
+		Limit playable Map by YeyoCore. from Youtube channel https://www.youtube.com/multiverseeditor
+	
+	Description: 
+		this script will kill the players, and send players back to spawn if they exit from the playable zone
+		
+	If You want to support me, go to my channel and subscribe or give it a like!
+	
+]]
+
+---------------------------------
+-- SET UP
+---------------------------------
+-- Y (height)
+LIMIT_MIN_Y = 76 -- minimun Y(height) coordinate // cordenanda menor Y
+LIMIT_MAX_Y = 9999 -- maximun Y(height) coordinate // cordenanda mayor Y
+
+-- X and Z
+LIMIT_MIN_X = -9999 -- minimun X coordinate // cordenanda menor X
+LIMIT_MAX_X = 9999 -- maximun X coordinate // cordenanda mayor X
+LIMIT_MIN_Z = -9999 -- minimun z coordinate // cordenanda menor Z
+LIMIT_MAX_Z = 9999 -- maximun z coordinate // cordenanda mayor Z
+
+
+OutofgameDeadColor = '#c00FF76' -- Color of death text // Color de texto muerte
+OutofgameDeadText = 'falls into the abyss#b_' -- death text // // texto muerte
+
+OutofgameElimination = false -- if activated player will bypass after first kill // si esta activado, inora a los jugadores que ya murieron la primera vez
+
+---------------------------------
+-- Do not modify anything after this point
+---------------------------------
+OutofgamePlayerEliminated = {}
+OutofgameON = false
+OutofgameActivate = function(e)
+	OutofgameON = true
+end
+ScriptSupportEvent:registerEvent([=[Game.Start]=], OutofgameActivate) 
+
+Outofgame = function(e)
+	if OutofgameON == false then return 0 end
+	local playerid =  e.eventobjid
+	if OutofgamePlayerEliminated[playerid] ~= nil then return 0 end-- if eliminination mode is on skip
+	
+	local ret, x,y,z = Player:getPosition(playerid) --actual position
+	local out = false;
+	if x < LIMIT_MIN_X or x > LIMIT_MAX_X then out = true end
+	if z < LIMIT_MIN_Z or z > LIMIT_MAX_Z then out = true end
+	if y < LIMIT_MIN_Y or y > LIMIT_MAX_Y  then out = true end
+	--if out == true then return 0 end --Check x axis
+	if out == false then return 0 end --Check x axis
+	local result,Chp=Player:getAttr(playerid,PLAYERATTR.CUR_HP)
+	if Chp <= 0 then  return 0 end
+    	--	Player:teleportHome(playerid)
+	Actor:killSelf(playerid)
+	
+	-- if eliminination mode is on
+	if OutofgameElimination == true then 
+	    OutofgamePlayerEliminated[playerid] = true
+	    return 0
+	end
+	
+	local ret, nicknamekill = Player:getNickname(playerid)
+	Chat:sendSystemMsg(OutofgameDeadColor..nicknamekill..' '..OutofgameDeadText, 0)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.MoveOneBlockSize]=], Outofgame)
