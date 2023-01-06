@@ -130,6 +130,7 @@ end
 ScriptSupportEvent:registerEvent([=[Block.Dig.Begin]=], AutoColorCubeDestroy)
 
 function BlockPickToSand(e)
+    if AutoColorCubeTransformBlocks == false then return end
     if e.itemid > 2000 then return end 
     if e.itemid == 600 then return end 
     local itemid = e.itemid
