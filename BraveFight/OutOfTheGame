@@ -1,6 +1,7 @@
 --[[
 	OUT OF THE GAME 3.0
 		Limit playable Map by YeyoCore. from Youtube channel https://www.youtube.com/multiverseeditor
+		get the last version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/BraveFight/OutOfTheGame
 	
 	Description: 
 		this script will kill the players, and send players back to spawn if they exit from the playable zone
