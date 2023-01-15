@@ -1,0 +1,164 @@
+--[[
+
+    RANDOM LOOT BOX CHEST 1.0
+            https://www.youtube.com/multiverseeditor
+            UID: 2769323
+            Last Version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
+            More scripts: https://github.com/YeyoCoreArt/YeyoScripts
+
+    〈 Description: 〉
+        Make box (chest) blocks to have random loot when you open the box by first time 
+
+    〈 Instructions: 〉
+        1.- Copy and paste this script into your map, be sure auto-translation is off on your web browser
+        2.- (optional) Scroll down until the set up section, and your set ups
+        3.- Create a new script to add items, copy RandomChestRegiterItem(rarity,itemid,charges) for register new items (read api)
+
+    〈 API: 〉
+
+        RandomChestRegiterItem(rarity,itemid,charges)
+
+                use to Add items to the random list
+                    rarity: 1 = common, 2 = rare, 3 = epic, 4 = legendary 
+                    itemid: id of the item you want to add 
+                    charges: amount of charges of the item, use negative numbers to get random amout
+                Example
+                    add 5 dirt blocks (id 100) to the common rarity list (1), RandomChestRegiterItem(1,100,5) 
+                    add random (up to 7) dirt blocks to the rarity list common, RandomChestRegiterItem(1,100,-7) 
+
+
+    
+-]]
+
+--------------------------------------------
+--          ↓↓↓     SET UP        ↓↓↓
+--------------------------------------------
+RandomChestBlockID = 801 -- ChestBlockId
+RandomChestMixAmountItems = 3 -- Minimun random Amout items in chest
+RandomChestMaxAmountItems = 15 -- Maximun random Amount items in chest
+--
+RandomChestChanceRare = 30 --%
+RandomChestChanceEpic = 10 --%
+RandomChestChanceLegendary = 3 --%
+--
+RandomChestSound = 10947-- Already Open
+RandomChestFx = 1180 -- Find items
+
+
+
+
+-------------------------------------------------------------
+--   ⚠⚠⚠ SET UP END, DO NOT MODIFY ANYTHING BELOW HERE ⚠⚠⚠
+-------------------------------------------------------------
+--Default Config
+RandomChestCommon = 1
+RandomChestRare = 2
+RandomChestEpic = 3
+RandomChestLegendary = 4
+--Tables
+RandomChestClaimedTable = {}
+RandomChestTable = {} --Global table
+RandomChestTable[RandomChestCommon] = {} --Table Common
+RandomChestTable[RandomChestRare] = {} -- Table Rare
+RandomChestTable[RandomChestEpic] = {} -- Table Epic
+RandomChestTable[RandomChestLegendary] = {} -- Table Legendary
+--AutoFixes
+RandomChestChanceCommon = math.max(0,100 - (RandomChestChanceRare + RandomChestChanceEpic + RandomChestChanceLegendary))
+RandomChestMixAmountItems = math.max(0,RandomChestMixAmountItems)
+RandomChestMaxAmountItems = math.min(32,RandomChestMaxAmountItems)
+
+
+--Allow you to add item to random item list
+function RandomChestRegiterItem(rarity,itemid,charges)
+    --local idx = #RandomChestTable[rarity] + 1
+    table.insert(RandomChestTable[rarity],{})
+    local idx = #RandomChestTable[rarity]
+    RandomChestTable[rarity][idx][1] = itemid
+    RandomChestTable[rarity][idx][2] = charges
+    --msg("New reg: "..itemid.." charges ".." ")
+end
+
+function OpenRandomChest(e)
+	if e.blockid ~= RandomChestBlockID then return end
+    if RandomChestClaim(e.x,e.y,e.z) == false then return end
+	local playerid = e.eventobjid
+    
+    local SpawnItemsAmount = math.random(RandomChestMixAmountItems,RandomChestMaxAmountItems)
+    local SpawnPorcent = 0
+    
+    --Create items
+    for i=1, SpawnItemsAmount do
+
+        --Get rarity
+        SpawnPorcent = math.random(0,100)
+        local SpawnItemRarity = RandomChestCommon
+        if SpawnPorcent < RandomChestChanceLegendary then  SpawnItemRarity = RandomChestLegendary
+        elseif SpawnPorcent < RandomChestChanceEpic then  SpawnItemRarity = RandomChestEpic
+        elseif SpawnPorcent < RandomChestChanceRare then  SpawnItemRarity = RandomChestRare
+        end
+        
+        --Get random item from table
+        local ChestRandomItemID = math.random(1,#RandomChestTable[SpawnItemRarity])
+        local itemid = 	RandomChestTable[SpawnItemRarity][ChestRandomItemID][1]
+        local itemcharges = RandomChestTable[SpawnItemRarity][ChestRandomItemID][2]
+
+        --Fix common errors
+        if itemid == nil then itemid = 100 end -- fix itemid
+        if itemcharges == nil then itemcharges = 1 end -- Fix
+        if itemcharges == 0 then itemcharges = 1 end -- Fix
+        if itemcharges <= -1 then  -- Random Amount of charges
+            itemcharges = itemcharges * -1
+            itemcharges = math.random(0,itemcharges)
+        end
+
+        --Add item to chest
+        local result,relNum = WorldContainer:addStorageItem(e.x,e.y,e.z,itemid,itemcharges)
+   
+
+    end
+
+    --Fx
+    Actor:playBodyEffect(playerid,RandomChestFx)
+    Actor:playSoundEffectById(playerid,RandomChestSound,100,1,false)
+
+end
+ScriptSupportEvent:registerEvent([=[Player.ClickBlock]=], OpenRandomChest) --Tiene que tener el mismo nombre de la funcion
+
+--Claim an a chest
+function RandomChestClaim(x,y,z)
+    x = math.floor(x)
+    y = math.floor(y)
+    z = math.floor(z)
+    
+    local value = x.."ñ"..y.."ñ"..z
+    --playerid = 0 -- Global vars
+    --local vartype = 18 --STRING
+    --local result = Valuegroup:hasValueByName(vartype, RandomChestVarName, value, 0)
+
+    --Find if Already open 
+    local result = ErrorCode.FAILED
+    for i=1, #RandomChestClaimedTable do
+        if RandomChestClaimedTable[i] == value then 
+            result = ErrorCode.OK
+            break;
+        end
+    end
+    
+
+    --Can be claimed
+    if result == ErrorCode.FAILED then 
+        --local ret = Valuegroup:insertInGroupByName(vartype, RandomChestVarName, value, 0) -- mark as claimed
+        table.insert(RandomChestClaimedTable,value)
+        return true 
+   
+    else   --Already claimed
+        return false 
+    end
+
+    Player:notifyGameInfo2Self(playerid,"#RⓍ ".."ERRROOOOR")
+	--local result,value=Valuegroup:getValueNoByName(vartype, RandomChestVarName, index, playerid)
+
+end
+
+
+
