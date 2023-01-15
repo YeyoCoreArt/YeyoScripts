@@ -1,0 +1,116 @@
+--Random Chest Commons
+    local rarity = 1
+    RandomChestRegiterItem(rarity,12051,-10) --arrows
+    RandomChestRegiterItem(rarity,600,-15) --wool blocks
+    RandomChestRegiterItem(rarity,632,-15) --wool blocks
+    RandomChestRegiterItem(rarity,667,-15) --wool blocks
+    RandomChestRegiterItem(rarity,12201,1) --leather armor
+    RandomChestRegiterItem(rarity,12202,1)
+    RandomChestRegiterItem(rarity,12203,1)
+    RandomChestRegiterItem(rarity,12204,1)
+    RandomChestRegiterItem(rarity,12205,1)
+    RandomChestRegiterItem(rarity,11002,1) --Axe
+    RandomChestRegiterItem(rarity,11012,1) --pickAxe
+    RandomChestRegiterItem(rarity,11022,1) --Shovel
+    RandomChestRegiterItem(rarity,11032,1) --Axe
+    RandomChestRegiterItem(rarity,11048,1) --bucket
+    RandomChestRegiterItem(rarity,12540,-2) --longbread
+    RandomChestRegiterItem(rarity,11229,-3) --pinchos
+    RandomChestRegiterItem(rarity,12500,-3) --cherry
+    RandomChestRegiterItem(rarity,12502,-4) --bread
+    RandomChestRegiterItem(rarity,12511,-1) --honey
+    RandomChestRegiterItem(rarity,12002,-2) --Rune
+    RandomChestRegiterItem(rarity,11230,1) --Catcus hammer
+    RandomChestRegiterItem(rarity,15507,-3) --frosty darts
+    RandomChestRegiterItem(rarity,12289,-3) --darts
+    RandomChestRegiterItem(rarity,11326,-3) --sryump
+ 
+ 
+    RandomChestRegiterItem(rarity,11612,1) --Rune
+    RandomChestRegiterItem(rarity,11618,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11621,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11624,1) --Rune Attack beg
+    
+--Random Chest Rare
+    local rarity = 2
+    RandomChestRegiterItem(rarity,12051,-25) --arrows
+    RandomChestRegiterItem(rarity,600,-30) --wood blocks
+    RandomChestRegiterItem(rarity,632,-30) --wool blocks
+    RandomChestRegiterItem(rarity,667,-30) --wool blocks
+    RandomChestRegiterItem(rarity,12216,1) --brass armor
+    RandomChestRegiterItem(rarity,12217,1)
+    RandomChestRegiterItem(rarity,12218,1)
+    RandomChestRegiterItem(rarity,12219,1)
+    RandomChestRegiterItem(rarity,11001,1) --Axe
+    RandomChestRegiterItem(rarity,11011,1) --pickAxe
+    RandomChestRegiterItem(rarity,11021,1) --Shovel
+    RandomChestRegiterItem(rarity,11031,1) --Axe
+    RandomChestRegiterItem(rarity,11049,1) --bucket with water
+    RandomChestRegiterItem(rarity,11055,1) --flint
+    RandomChestRegiterItem(rarity,12288,1) --darts trower
+    RandomChestRegiterItem(rarity,11599,-3) --Banana
+    RandomChestRegiterItem(rarity,12509,-3) --Milk
+    RandomChestRegiterItem(rarity,12529,-3) --rice
+    RandomChestRegiterItem(rarity,12510,-3) --chinken + mushrooms
+    RandomChestRegiterItem(rarity,12507,-3) --wafle
+    RandomChestRegiterItem(rarity,12556,-3) --antifire
+    RandomChestRegiterItem(rarity,12551,1) --tasty ships
+    RandomChestRegiterItem(rarity,12498,-3) --night vision
+    RandomChestRegiterItem(rarity,12576,1) --danjo ball *(bubble)
+    RandomChestRegiterItem(rarity,12560,-3) --food
+    RandomChestRegiterItem(rarity,11095,-5) --food
+    RandomChestRegiterItem(rarity,11095,-5) --food
+    
+    RandomChestRegiterItem(rarity,11612,-2) --Rune
+    RandomChestRegiterItem(rarity,11620,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11623,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11626,1) --Rune Attack beg
+    
+    
+--Random Chest Epic
+    local rarity = 3
+    RandomChestRegiterItem(rarity,12051,-50) --arrows
+    RandomChestRegiterItem(rarity,600,-60) --wood blocks
+    RandomChestRegiterItem(rarity,632,-60) --wool blocks
+    RandomChestRegiterItem(rarity,667,-60) --wool blocks
+    RandomChestRegiterItem(rarity,12221,1) --iron armor
+    RandomChestRegiterItem(rarity,12222,1)
+    RandomChestRegiterItem(rarity,12223,1)
+    RandomChestRegiterItem(rarity,12224,1)
+    RandomChestRegiterItem(rarity,11003,1) --Axe
+    RandomChestRegiterItem(rarity,11013,1) --pickAxe
+    RandomChestRegiterItem(rarity,11023,1) --Shovel
+    RandomChestRegiterItem(rarity,11033,1) --Axe
+    RandomChestRegiterItem(rarity,12287,1) --bubble
+    RandomChestRegiterItem(rarity,12059,-3) --sticky rice
+    RandomChestRegiterItem(rarity,12573,1) --Jump Juice
+    RandomChestRegiterItem(rarity,12501,1) --50 healt
+    RandomChestRegiterItem(rarity,12549,1) --milk candy
+ 
+    RandomChestRegiterItem(rarity,11612,-4) --Rune
+    RandomChestRegiterItem(rarity,11603,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11606,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11609,1) --Rune Attack beg
+    
+--Random Chest Legendary
+    local rarity = 4
+    RandomChestRegiterItem(rarity,12051,-70) --arrows
+    RandomChestRegiterItem(rarity,600,-100) --wood blocks
+    RandomChestRegiterItem(rarity,632,-100) --wool blocks
+    RandomChestRegiterItem(rarity,667,-100) --wool blocks
+    RandomChestRegiterItem(rarity,12231,1) --titanium armor
+    RandomChestRegiterItem(rarity,12232,1)
+    RandomChestRegiterItem(rarity,12233,1)
+    RandomChestRegiterItem(rarity,12234,1)
+    RandomChestRegiterItem(rarity,11004,1) --Axe
+    RandomChestRegiterItem(rarity,11014,1) --pickAxe
+    RandomChestRegiterItem(rarity,11024,1) --Shovel
+    RandomChestRegiterItem(rarity,11034,1) --Axe
+    RandomChestRegiterItem(rarity,11600,1) -- Star banana
+    RandomChestRegiterItem(rarity,12559,1) --burger teasty
+    
+    
+    RandomChestRegiterItem(rarity,11612,-6) --Rune
+    RandomChestRegiterItem(rarity,11605,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11608,1) --Rune Attack beg
+    RandomChestRegiterItem(rarity,11611,1) --Rune Attack beg
