@@ -1,0 +1,205 @@
+-- Easy Stats system v 1.0
+
+--Saveable Profile system
+EPSATTRIBUTEvar = "EPSHERO" -- Name of the trigger variable for Main Atributte
+EPSATTRIBUTEvar = "EPSREMAINPOINTS" -- Name of the trigger variable for reamining attrib points
+EPSATTRIBUTEvar = "EPSATTRIBUTE" -- Name of the trigger variable for Main Atributte
+EPSSTRENGHTvar = "EPSSTRENGHT" -- Name of the trigger variable for Strenght
+EPSAGILITYvar = "EPSAGILITY" -- Name of the trigger variable for Agility
+EPSINTELLIGENCEvar = "EPSINTELLIGENCE" -- Name of the trigger variable for Intelligence
+
+--UI SET UP
+EPSIconStregthIcon = "" -- Icon for Strenght 
+EPSIconAgilityIcon = "" -- Icon for Agility 
+EPSIconIntelligenceIcon = "" -- Icon for Intelligence 
+
+EPSUI = ""
+EPSuielement1 = "" --Ui Life
+EPSuielement2 = "" --Ui Mana
+EPSuielement3 = "" --Ui Remaining points
+EPSuielement4 = "" --Ui Main Atributte
+EPSuielement5 = "" --Ui Shows Current Strength
+EPSuielement6 = "" --Ui [+] button for strength
+EPSuielement7 = "" --Ui Shows Current Agility
+EPSuielement8 = "" --Ui [+] button for Agility
+EPSuielement9 = "" --Ui Shows Current Intelligence
+EPSuielement10 = "" --Ui [+] button for Intelligence
+
+--Optional
+EPSsoundDefault = 0 --Defaultsound fx
+EPSsound1 = 0 --Strenght UP sound f
+EPSsound2 = 0 --Agility UP sound fx
+EPSsound3 = 0 --Intellicence UP sound fx
+EPSFXDefault = 0 --Default special fx
+EPSFX1 = 0 --Strenght UP special fx
+EPSFX2 = 0 --Strenght UP special fx
+EPSFX3 = 0 --Strenght UP special fx
+ 
+EPStats = {} -- Stats handler
+EPSManaRecoveryRate = {} -- Stats handler
+
+--Create class for a new player
+function EPSRegisterPlayer(playerid)
+    EPStats[playerid] = {
+        
+        --General Stats
+        "ATTRIBUTE" = "STRENGTH", -- Wichever is the main atributte will get +1 attack
+        "STRENGTH" = 0, -- Atributte: +25, regen +0.05
+        "AGILITY" = 0, -- Atributte: armor 0.3 + attack Speed +2
+        "INTELLIGENCE" = 0, -- Atributte: =15 mana, mana regen +0.25
+
+        --Damage (adding damage)
+        "DMFIRE" = 0,
+        "DMEXPLOSION" = 0,
+        "DMPHYSICS" = 0,
+        "DMTOXIN" = 0,
+        "DMMAGIC" = 0,
+        "DMFALL" = 0,
+        "DMCACTUS" = 0,
+        "DMASPHYXIA" = 0,
+        "DMDROWN" = 0,
+        
+        --Defenses (reducing damage)
+        "DFFIRE" = 0,
+        "DFEXPLOSION" = 0,
+        "DFPHYSICS" = 0,
+        "DFTOXIN" = 0,
+        "DFMAGIC" = 0,
+        "DFFALL" = 0,
+        "DFCACTUS" = 0,
+        "DFASPHYXIA" = 0,
+        "DFDROWN" = 0
+    }
+
+    EPSManaRecoveryRate[playerid] = 0
+end
+
+
+--Set a stat to specific value
+function EPSSet(playerid,STATSTRING,amount)
+    amount = math.max(newvalue,amount) -- fix max 0
+    EPStats[playerid][STATSTRING] = amount
+
+    --Check strength, agility, intelligence, or atributte
+    local txtSend = "Your new Main Attribute is "
+    local txtSound = EPSsoundDefault
+    local txtFX = EPSFXDefault
+
+    if STATSTRING == "ATTRIBUTE" then 
+        if amount == 1 then 
+            amount = "STRENGTH"
+            --ui 
+            Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconStregthIcon)
+        end
+        if amount == 2 then 
+            amount = "AGILITY"
+            --ui 
+            Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconAgilityIcon)
+        end
+        if amount == 3 then 
+            amount = "INTELLIGENCE" 
+            --ui 
+            Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconIntelligenceIcon)
+        end
+
+        --Ui Update
+    end
+
+    if STATSTRING == "STRENGTH" then 
+        txtSend = "Your #bStrength#n is " =
+        txtSound = EPSsound1
+        txtFX = EPSFX1
+
+        --Ui Update
+        Customui:setText(playerid, EPSUI, EPSuielement5, amount )
+
+        --Life
+        local result,curHPmax = Player:getAttr(playerid,PLAYERATTR.MAX_HP)
+        local result,curHP = Player:getAttr(playerid,PLAYERATTR.CUR_HP)
+        local lifepercent = curHP/curHPmax
+        local strenghp = 25 * EPStats[playerid]["STRENGTH"]
+        local newHpMax = 80 + strenghp
+        local newHpCur = newHpMax * lifepercent
+        newHpCur = math.max(1,newHpCur)
+        Player:setAttr(playerid,PLAYERATTR.MAX_HP,newHpMax)
+        Player:setAttr(playerid,PLAYERATTR.CUR_HP,newHpCur)
+        
+        --Recovery
+        local strengrecover = 0.05 * EPStats[playerid]["STRENGTH"]
+        Player:setAttr(playerid,PLAYERATTR.HP_RECOVER,strengrecover)
+
+
+    end
+    if STATSTRING == "AGILITY" then 
+        txtSend = "Your #bStrength#n is "
+        txtSound = EPSsound2
+        txtFX = EPSFX3
+
+        --Ui Update
+        Customui:setText(playerid, EPSUI, EPSuielement7, amount )
+        
+        --set armor
+        local agilityarmor = 1 + (0.3 * EPStats[playerid]["AGILITY"])
+        Player:setAttr(playerid,PLAYERATTR.DEF_MELEE,agilityarmor)
+        Player:setAttr(playerid,PLAYERATTR.DEF_REMOTE,agilityarmor)
+
+        --Set speed and jump
+        local agilityspeedbase = 8 + (0.2 * EPStats[playerid]["AGILITY"])
+        local agilityspeedrun = agilityspeedbase * 1.0
+        local agilityspeedsneak = agilityspeedbase * 0.7
+        local agilityspeedswim = agilityspeedbase * 0.6
+        Player:setAttr(playerid,PLAYERATTR.WALK_SPEED,agilityspeedbase)
+        Player:setAttr(playerid,PLAYERATTR.RUN_SPEED,agilityspeedrun)
+        Player:setAttr(playerid,PLAYERATTR.SNEAK_SPEED,agilityspeedsneak)
+        Player:setAttr(playerid,PLAYERATTR.SWIN_SPEED,agilityspeedswim)
+
+        local agilityjump = 30 + (3 * EPStats[playerid]["AGILITY"])
+        Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,agilityjump)
+
+
+    end
+    if STATSTRING == "INTELLIGENCE" then 
+        txtSend = "Your #bIntelligence#n is "
+        txtSound = EPSsound2
+        txtFX = EPSFX3
+
+        --set mana + mana recovery
+        local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_HUNGER)
+        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_HUNGER)
+        local manapercent = curMana/curManamax
+        local intelligencemp = 15 * EPStats[playerid]["INTELLIGENCE"]
+        local newManaMax = 80 + intelligencemp
+        local newManaCur = newManaMax * manapercent
+        newManaCur = math.max(1,newManaCur)
+        Player:setAttr(playerid,PLAYERATTR.MAX_HP,newManaMax)
+        Player:setAttr(playerid,PLAYERATTR.CUR_HP,newManaCur)
+
+        --set mana recovery
+        local agilitymanarecovery = 0.05 + (0.05 * EPStats[playerid]["INTELLIGENCE"])
+        EPSManaRecoveryRate[playerid] = agilitymanarecovery
+
+        --Ui Update
+        Customui:setText(playerid, EPSUI, EPSuielement9, amount )
+    end
+
+    --msg
+    Chat:sendSystemMsg(txtSend.."#G"..amount,playerid)
+    Actor:playSoundEffectById(playerid,txtSound,100,1,false)--sound
+    Actor:playBodyEffectById(playerid,txtFX,1)
+
+    return ErrorCode.FAILED
+end
+
+--Add a Value for player
+function EPSSet(playerid,STATSTRING,amount)
+    local curvalue = EPStats[playerid][STATSTRING]
+    local newvalue = curvalue + amount 
+    EPSSet(playerid,STATSTRING,newvalue)
+end
+
+
+--Recovery Mana Points
+function EPSmanaRecovery()
+    
+    
+end
