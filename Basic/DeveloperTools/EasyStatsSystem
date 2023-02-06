@@ -1,7 +1,7 @@
 -- Easy Stats system v 1.0
 
 --Saveable Profile system
-EPSATTRIBUTEvar = "EPSHERO" -- Name of the trigger variable for Main Atributte
+EPSATTRIBUTEvar = "EPSHERO" -- Name of the trigger variable for Main Atributte 
 EPSATTRIBUTEvar = "EPSREMAINPOINTS" -- Name of the trigger variable for reamining attrib points
 EPSATTRIBUTEvar = "EPSATTRIBUTE" -- Name of the trigger variable for Main Atributte
 EPSSTRENGHTvar = "EPSSTRENGHT" -- Name of the trigger variable for Strenght
@@ -254,14 +254,19 @@ function EPSlevelUp(e)
   
   	--UI
 	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
-	Customui:showElement(playerid, EPSUI, EPSuielement12) -- Show notification
+	Customui:showElement(playerid, EPSUI, EPSuielement12) -- Show notification dot
   
   	--UI blink
 	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
 	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+  	threadpool:wait(0.2)
 	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+  	threadpool:wait(0.2)
 	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+	threadpool:wait(0.2)
 	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
 	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
 
 end
