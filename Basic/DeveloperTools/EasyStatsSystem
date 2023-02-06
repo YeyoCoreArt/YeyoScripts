@@ -1,5 +1,10 @@
 -- Easy Stats system v 1.0
 
+--Options
+EPSpointperlevel = 1
+
+
+
 --Saveable Profile system
 EPSATTRIBUTEvar = "EPSHERO" -- Name of the trigger variable for Main Atributte 
 EPSATTRIBUTEvar = "EPSREMAINPOINTS" -- Name of the trigger variable for reamining attrib points
@@ -28,12 +33,18 @@ EPSuielement11 = "" --Stats Button Open
 EPSuielement12 = "" --Stats Notification
 EPSuielement13 = "" --Stats Blinker
 
+EPSButtonColorPressed = "" --Color for button relesased
+EPSButtonColorNormal = "" --Color for button relesased
+EPSButtonColorOff = "" --Color for button relesased
+
 --Optional
 EPSsoundDefault = 0 --Defaultsound fx
 EPSsound1 = 0 --Strenght UP sound f
 EPSsound2 = 0 --Agility UP sound fx
 EPSsound3 = 0 --Intellicence UP sound fx
 EPSsound4 = 0 --Lvl Up Sound
+EPSsound5 = 0 --Button OK Sound
+EPSsound6 = 0 --Button FAIL Sound
 EPSFXDefault = 0 --Default special fx
 EPSFX1 = 0 --Strenght UP special fx
 EPSFX2 = 0 --Strenght UP special fx
@@ -196,7 +207,7 @@ function EPSSet(playerid,STATSTRING,amount)
 end
 
 --Add a Value for player
-function EPSSet(playerid,STATSTRING,amount)
+function EPSAdd(playerid,STATSTRING,amount)
     local curvalue = EPStats[playerid][STATSTRING]
     local nwvalue = curvalue + amount 
     EPSSet(playerid,STATSTRING,newvalue)
@@ -230,7 +241,7 @@ function EPSmanaRecovery(e)
 end
 ScriptSupportEvent:registerEvent([=[Game.Run]=], EPSmanaRecovery)
 
-
+--Uptate level info when level up
 function EPSlevelUp(e)
 	local playerid = e.eventobjid
 	
@@ -252,6 +263,11 @@ function EPSlevelUp(e)
     Actor:playSoundEffectById(playerid,EPSsound4,100,1,false)--sound
     Actor:playBodyEffectById(playerid,EPSFX4,1) --FX
   
+	--Set UI buttons available
+	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
+	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
+	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
+
   	--UI
 	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
 	Customui:showElement(playerid, EPSUI, EPSuielement12) -- Show notification dot
@@ -270,4 +286,44 @@ function EPSlevelUp(e)
 	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
 
 end
-ScriptSupportEvent:registerEvent([=[EPSlevelUp]=], EPSmanaRecovery)
+ScriptSupportEvent:registerEvent([=[]=], EPSlevelUp)
+
+
+--Players clic [+] on stats
+function EPSclickstrenght(e)
+  	if  e.CoustomUI ~= EPSUI then return end
+	if  e.btnelenemt ~= EPSuielement6 and ~= EPSuielement8 and ~= EPSuielement10 then return end
+	local playerid = e.eventobjid
+  	local UIID = e.CoustomUI
+  	local elementid = e.btnelenemt
+
+  	--Check if remaining points
+	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSATTRIBUTEvar)
+  	if remaingStatPoints <= 0 then return end
+	remaingStatPoints = remaingStatPoints - 1
+  	remaingStatPoints = math.max(0,remaingStatPoints)
+	VarLib2:setPlayerVarByName(playerid,3,EPSATTRIBUTEvar,remaingStatPoints)
+  
+  	--Adding STR/AGI/INT 
+  	if btnelenemt == EPSuielement6 then EPSAdd(playerid,"STRENGTH",EPSpointperlevel) end --Add Strenght
+  	if btnelenemt == EPSuielement6 then EPSAdd(playerid,"AGILITY",EPSpointperlevel) end --Add Agility
+  	if btnelenemt == EPSuielement6 then EPSAdd(playerid,"INTELLIGENCE",EPSpointperlevel) end --Add Intelligence
+  	
+	--UI Update remaning points
+	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
+
+	--UI Button down and up
+	Actor:playSoundEffectById(playerid,EPSsound5,80,1,false) --sound
+	Customui:setColor(playerid, UIID,elementid,EPSButtonColorPressed)
+  	threadpool:wait(0.5)
+	Customui:setColor(playerid, UIID,elementid,EPSButtonColorNormal)
+
+	--Check if disable buttons
+	if remaingStatPoints > 0 then return end
+	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
+	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
+	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
+	
+  
+end
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSmanaRecovery)
