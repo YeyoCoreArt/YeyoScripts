@@ -3,8 +3,6 @@
 --Options
 EPSpointperlevel = 1
 
-
-
 --Saveable Profile system
 EPSATTRIBUTEvar = "EPSHERO" -- Name of the trigger variable for Main Atributte 
 EPSATTRIBUTEvar = "EPSREMAINPOINTS" -- Name of the trigger variable for reamining attrib points
