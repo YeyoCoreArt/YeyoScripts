@@ -24,16 +24,21 @@ EPSuielement7 = "" --Ui Shows Current Agility
 EPSuielement8 = "" --Ui [+] button for Agility
 EPSuielement9 = "" --Ui Shows Current Intelligence
 EPSuielement10 = "" --Ui [+] button for Intelligence
+EPSuielement11 = "" --Stats Button Open
+EPSuielement12 = "" --Stats Notification
+EPSuielement13 = "" --Stats Blinker
 
 --Optional
 EPSsoundDefault = 0 --Defaultsound fx
 EPSsound1 = 0 --Strenght UP sound f
 EPSsound2 = 0 --Agility UP sound fx
 EPSsound3 = 0 --Intellicence UP sound fx
+EPSsound4 = 0 --Lvl Up Sound
 EPSFXDefault = 0 --Default special fx
 EPSFX1 = 0 --Strenght UP special fx
 EPSFX2 = 0 --Strenght UP special fx
 EPSFX3 = 0 --Strenght UP special fx
+EPSFX4 = 0 --Lvl UP special fx
  
 EPStats = {} -- Stats handler
 EPSManaRecoveryRate = {} -- Stats handler
@@ -171,8 +176,8 @@ function EPSSet(playerid,STATSTRING,amount)
         local newManaMax = 80 + intelligencemp
         local newManaCur = newManaMax * manapercent
         newManaCur = math.max(1,newManaCur)
-        Player:setAttr(playerid,PLAYERATTR.MAX_HP,newManaMax)
-        Player:setAttr(playerid,PLAYERATTR.CUR_HP,newManaCur)
+        Player:setAttr(playerid,PLAYERATTR.MAX_HUNGER,newManaMax)
+        Player:setAttr(playerid,PLAYERATTR.CUR_HUNGER,newManaCur)
 
         --set mana recovery
         local agilitymanarecovery = 0.05 + (0.05 * EPStats[playerid]["INTELLIGENCE"])
@@ -193,13 +198,71 @@ end
 --Add a Value for player
 function EPSSet(playerid,STATSTRING,amount)
     local curvalue = EPStats[playerid][STATSTRING]
-    local newvalue = curvalue + amount 
+    local nwvalue = curvalue + amount 
     EPSSet(playerid,STATSTRING,newvalue)
 end
 
 
 --Recovery Mana Points
-function EPSmanaRecovery()
+--local result,tempid = MiniTimer:createTimer("EPStimer",nil,falso)
+EPStimerid = 6
+--MiniTimer:startBackwardTimer(EPStimerid,1,true) -- check if works
+
+
+--Heal Mana over time
+function EPSmanaRecovery(e)
+	EPStimerid = EPStimerid - 0.1
+	if EPStimerid > 0 then return end
+	EPStimerid = 6
+
+	local result,num,players=World:getAllPlayers(1) --alive players
+	for i,a in ipairs(players) do
+ 		local playerid = players[i]
+    	local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_HUNGER)
+        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_HUNGER)
+        local newManaCur = curMana + EPSManaRecoveryRate[playerid]
+        curMana = math.min(newManaCur,curManamax)
+
+		Player:setAttr(playerid,PLAYERATTR.CUR_HP,newManaCur)
     
+	end
     
 end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], EPSmanaRecovery)
+
+
+function EPSlevelUp(e)
+	local playerid = e.eventobjid
+	
+	--Adding Remaining points
+	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSATTRIBUTEvar)
+	remaingStatPoints = remaingStatPoints + 1
+	VarLib2:setPlayerVarByName(playerid,3,EPSATTRIBUTEvar,remaingStatPoints)
+	
+
+	--Healing
+	local result,curHPmax = Player:getAttr(playerid,PLAYERATTR.MAX_HP)
+    Player:setAttr(playerid,PLAYERATTR.CUR_HP,curHPmax)
+	--Mana Refill
+    local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_HUNGER)
+    Player:setAttr(playerid,PLAYERATTR.CUR_HUNGER,curManamax)
+	
+	--Lvl up sound and fx
+	Chat:sendSystemMsg("#Level UP!",playerid) -- change for floating
+    Actor:playSoundEffectById(playerid,EPSsound4,100,1,false)--sound
+    Actor:playBodyEffectById(playerid,EPSFX4,1) --FX
+  
+  	--UI
+	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
+	Customui:showElement(playerid, EPSUI, EPSuielement12) -- Show notification
+  
+  	--UI blink
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+
+end
+ScriptSupportEvent:registerEvent([=[EPSlevelUp]=], EPSmanaRecovery)
