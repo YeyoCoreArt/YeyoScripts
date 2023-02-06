@@ -259,7 +259,7 @@ function EPSlevelUp(e)
     Player:setAttr(playerid,PLAYERATTR.CUR_HUNGER,curManamax)
 	
 	--Lvl up sound and fx
-	Chat:sendSystemMsg("#Level UP!",playerid) -- change for floating
+	Chat:sendSystemMsg("#b#GLevel UP!",playerid) -- change for floating
     Actor:playSoundEffectById(playerid,EPSsound4,100,1,false)--sound
     Actor:playBodyEffectById(playerid,EPSFX4,1) --FX
   
@@ -286,7 +286,7 @@ function EPSlevelUp(e)
 	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
 
 end
-ScriptSupportEvent:registerEvent([=[]=], EPSlevelUp)
+ScriptSupportEvent:registerEvent([=[Player.LevelModelUpgrade]=], EPSlevelUp)
 
 
 --Players clic [+] on stats
@@ -299,7 +299,11 @@ function EPSclickstrenght(e)
 
   	--Check if remaining points
 	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSATTRIBUTEvar)
-  	if remaingStatPoints <= 0 then return end
+  	if remaingStatPoints <= 0 then
+		Chat:sendSystemMsg("#RYouNeedMorePoints!",playerid) -- change for floating
+		Actor:playSoundEffectById(playerid,EPSsound6,80,1,false) --sound
+		return 
+	end
 	remaingStatPoints = remaingStatPoints - 1
   	remaingStatPoints = math.max(0,remaingStatPoints)
 	VarLib2:setPlayerVarByName(playerid,3,EPSATTRIBUTEvar,remaingStatPoints)
