@@ -120,7 +120,7 @@ function EPSSet(playerid,STATSTRING,amount)
     end
 
     if STATSTRING == "STRENGTH" then 
-        txtSend = "Your #bStrength#n is " =
+        txtSend = "Your #bStrength#n is "
         txtSound = EPSsound1
         txtFX = EPSFX1
 
@@ -141,6 +141,16 @@ function EPSSet(playerid,STATSTRING,amount)
         --Recovery
         local strengrecover = 0.05 * EPStats[playerid]["STRENGTH"]
         Player:setAttr(playerid,PLAYERATTR.HP_RECOVER,strengrecover)
+
+	--If main atributte, add damage
+	if EPStats[playerid]["ATTRIBUTE"] == "STRENGTH" then
+		local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_MELEE)
+		local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE)
+		CurAtMelee = math.max(CurAtMelee + 1,0) 
+		CurAtRemote = math.max(CurAtRemote + 1,0) 
+		Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+		Player:setAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+	end
 
 
     end
@@ -170,6 +180,15 @@ function EPSSet(playerid,STATSTRING,amount)
         local agilityjump = 30 + (3 * EPStats[playerid]["AGILITY"])
         Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,agilityjump)
 
+	--If main atributte, add damage
+	if EPStats[playerid]["ATTRIBUTE"] == "AGILITY" then
+		local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_MELEE)
+		local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE)
+		CurAtMelee = math.max(CurAtMelee + 1,0) 
+		CurAtRemote = math.max(CurAtRemote + 1,0) 
+		Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+		Player:setAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+	end
 
     end
     if STATSTRING == "INTELLIGENCE" then 
@@ -194,6 +213,17 @@ function EPSSet(playerid,STATSTRING,amount)
 
         --Ui Update
         Customui:setText(playerid, EPSUI, EPSuielement9, amount )
+
+	--If main atributte, add damage
+	if EPStats[playerid]["ATTRIBUTE"] == "INTELLIGENCE" then
+		local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_MELEE)
+		local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE)
+		CurAtMelee = math.max(CurAtMelee + 1,0) 
+		CurAtRemote = math.max(CurAtRemote + 1,0) 
+		Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+		Player:setAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+	end
+
     end
 
     --msg
