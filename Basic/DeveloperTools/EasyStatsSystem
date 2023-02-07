@@ -4,50 +4,50 @@
 EPSpointperlevel = 1
 
 --Saveable Profile system
-EPSATTRIBUTEvar = "EPSHERO" -- Name of the trigger variable for Main Atributte 
-EPSATTRIBUTEvar = "EPSREMAINPOINTS" -- Name of the trigger variable for reamining attrib points
+EPSHEROvar = "EPSHERO" -- Name of the trigger variable for Main Atributte 
+EPSREMAINPOINTSvar = "EPSREMAINPOINTS" -- Name of the trigger variable for reamining attrib points
 EPSATTRIBUTEvar = "EPSATTRIBUTE" -- Name of the trigger variable for Main Atributte
 EPSSTRENGHTvar = "EPSSTRENGHT" -- Name of the trigger variable for Strenght
 EPSAGILITYvar = "EPSAGILITY" -- Name of the trigger variable for Agility
 EPSINTELLIGENCEvar = "EPSINTELLIGENCE" -- Name of the trigger variable for Intelligence
 
 --UI SET UP
-EPSIconStregthIcon = "" -- Icon for Strenght 
-EPSIconAgilityIcon = "" -- Icon for Agility 
-EPSIconIntelligenceIcon = "" -- Icon for Intelligence 
+EPSIconStregthIcon = [[10107]] -- Icon for Strenght 
+EPSIconAgilityIcon = [[10106]] -- Icon for Agility 
+EPSIconIntelligenceIcon = [[10110]] -- Icon for Intelligence 
 
-EPSUI = ""
+EPSUI = [[7197247402385148843]]
 EPSuielement1 = "" --Ui Life
 EPSuielement2 = "" --Ui Mana
-EPSuielement3 = "" --Ui Remaining points
-EPSuielement4 = "" --Ui Main Atributte
-EPSuielement5 = "" --Ui Shows Current Strength
-EPSuielement6 = "" --Ui [+] button for strength
-EPSuielement7 = "" --Ui Shows Current Agility
-EPSuielement8 = "" --Ui [+] button for Agility
-EPSuielement9 = "" --Ui Shows Current Intelligence
-EPSuielement10 = "" --Ui [+] button for Intelligence
-EPSuielement11 = "" --Stats Button Open
-EPSuielement12 = "" --Stats Notification
-EPSuielement13 = "" --Stats Blinker
+EPSuielement3 = [[7197247402385148843_44]] --Ui Remaining points
+EPSuielement4 = [[7197247402385148843_11]] --Ui Main Atributte
+EPSuielement5 = [[7197247402385148843_19]] --Ui Shows Current Strength
+EPSuielement6 = [[7197247402385148843_20]] --Ui [+] button for strength
+EPSuielement7 = [[7197247402385148843_33]] --Ui Shows Current Agility
+EPSuielement8 = [[7197247402385148843_35]] --Ui [+] button for Agility
+EPSuielement9 = [[7197247402385148843_40]] --Ui Shows Current Intelligence
+EPSuielement10 = [[7197247402385148843_42]] --Ui [+] button for Intelligence
+EPSuielement11 = [[7197247402385148843_2]] --Stats Button Open
+EPSuielement12 = [[7197247402385148843_3]] --Stats Notification
+EPSuielement13 = [[7197247402385148843_4]] --Stats Blinker
 
-EPSButtonColorPressed = "" --Color for button relesased
-EPSButtonColorNormal = "" --Color for button relesased
-EPSButtonColorOff = "" --Color for button relesased
+EPSButtonColorPressed = "0x012B00" --Color for button pressed
+EPSButtonColorNormal = "0xFF8000" --Color for button available
+EPSButtonColorOff = "0xFFFFFF" --Color for button unavailable
 
 --Optional
-EPSsoundDefault = 0 --Defaultsound fx
-EPSsound1 = 0 --Strenght UP sound f
-EPSsound2 = 0 --Agility UP sound fx
-EPSsound3 = 0 --Intellicence UP sound fx
-EPSsound4 = 0 --Lvl Up Sound
-EPSsound5 = 0 --Button OK Sound
-EPSsound6 = 0 --Button FAIL Sound
-EPSFXDefault = 0 --Default special fx
-EPSFX1 = 0 --Strenght UP special fx
-EPSFX2 = 0 --Strenght UP special fx
-EPSFX3 = 0 --Strenght UP special fx
-EPSFX4 = 0 --Lvl UP special fx
+EPSsoundDefault = 10078 --Defaultsound fx
+EPSsound1 = 10967 --Strenght UP sound f
+EPSsound2 = 10967--Agility UP sound fx
+EPSsound3 = 10967 --Intellicence UP sound fx
+EPSsound4 = 10081 --Lvl Up Sound
+EPSsound5 = 10116 --Button OK Sound
+EPSsound6 = 10946 --Button FAIL Sound
+EPSFXDefault = 1005 --Default special fx
+EPSFX1 = 1253 --Strenght UP special fx
+EPSFX2 = 1253 --Agility UP special fx
+EPSFX3 = 1253 --Intellicence UP special fx
+EPSFX4 = 1298 --Lvl UP special fx
  
 EPStats = {} -- Stats handler
 EPSManaRecoveryRate = {} -- Stats handler
@@ -55,43 +55,58 @@ EPSManaRecoveryRate = {} -- Stats handler
 --Create class for a new player
 function EPSRegisterPlayer(playerid)
     EPStats[playerid] = {
-        
-        --General Stats
-        "ATTRIBUTE" = "STRENGTH", -- Wichever is the main atributte will get +1 attack
-        "STRENGTH" = 0, -- Atributte: +25, regen +0.05
-        "AGILITY" = 0, -- Atributte: armor 0.3 + attack Speed +2
-        "INTELLIGENCE" = 0, -- Atributte: =15 mana, mana regen +0.25
+        ["ATTRIBUTE"] = "STRENGTH", -- Wichever is the main atributte will get +1 attack
+        ["STRENGTH"] = 0, -- Atributte: +25, regen +0.05
+        ["AGILITY"] = 0, -- Atributte: armor 0.3 + attack Speed +2
+        ["INTELLIGENCE"] = 0, -- Atributte: =15 mana, mana regen +0.25
 
         --Damage (adding damage)
-        "DMFIRE" = 0,
-        "DMEXPLOSION" = 0,
-        "DMPHYSICS" = 0,
-        "DMTOXIN" = 0,
-        "DMMAGIC" = 0,
-        "DMFALL" = 0,
-        "DMCACTUS" = 0,
-        "DMASPHYXIA" = 0,
-        "DMDROWN" = 0,
+        ["DMFIRE"] = 0,
+        ["DMEXPLOSION"] = 0,
+        ["DMPHYSICS"] = 0,
+        ["DMTOXIN"] = 0,
+        ["DMMAGIC"] = 0,
+        ["DMFALL"] = 0,
+        ["DMCACTUS"] = 0,
+        ["DMASPHYXIA"] = 0,
+        ["DMDROWN"] = 0,
         
         --Defenses (reducing damage)
-        "DFFIRE" = 0,
-        "DFEXPLOSION" = 0,
-        "DFPHYSICS" = 0,
-        "DFTOXIN" = 0,
-        "DFMAGIC" = 0,
-        "DFFALL" = 0,
-        "DFCACTUS" = 0,
-        "DFASPHYXIA" = 0,
-        "DFDROWN" = 0
+        ["DFFIRE"] = 0,
+        ["DFEXPLOSION"] = 0,
+        ["DFPHYSICS"] = 0,
+        ["DFTOXIN"] = 0,
+        ["DFMAGIC"] = 0,
+        ["DFFALL"] = 0,
+        ["DFCACTUS"] = 0,
+        ["DFASPHYXIA"] = 0,
+        ["DFDROWN"] = 0
     }
 
     EPSManaRecoveryRate[playerid] = 0
+
+    --ui
+    Customui:setText(playerid, EPSUI, EPSuielement3, 0 )
+    Customui:setColor(playerid, EPSUI,EPSuielement3,EPSButtonColorOff)
+    Customui:setText(playerid, EPSUI, EPSuielement5, 0 )
+    Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
+    Customui:setText(playerid, EPSUI, EPSuielement7, 0 )
+	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
+    Customui:setText(playerid, EPSUI, EPSuielement9, 0 )
+	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
+    
 end
 
+--Autoregister player
+function EPSAutoRegisterPlayer(e)
+    local playerid = e.eventobjid
+    EPSRegisterPlayer(playerid)
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=], EPSAutoRegisterPlayer)
 
 --Set a stat to specific value
 function EPSSet(playerid,STATSTRING,amount)
-    amount = math.max(newvalue,amount) -- fix max 0
+    amount = math.max(0,amount) -- fix max 0
     EPStats[playerid][STATSTRING] = amount
 
     --Check strength, agility, intelligence, or atributte
@@ -197,15 +212,15 @@ function EPSSet(playerid,STATSTRING,amount)
         txtFX = EPSFX3
 
         --set mana + mana recovery
-        local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_HUNGER)
-        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_HUNGER)
+        local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
+        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_STRENGTH)
         local manapercent = curMana/curManamax
         local intelligencemp = 15 * EPStats[playerid]["INTELLIGENCE"]
         local newManaMax = 80 + intelligencemp
         local newManaCur = newManaMax * manapercent
         newManaCur = math.max(1,newManaCur)
-        Player:setAttr(playerid,PLAYERATTR.MAX_HUNGER,newManaMax)
-        Player:setAttr(playerid,PLAYERATTR.CUR_HUNGER,newManaCur)
+        Player:setAttr(playerid,PLAYERATTR.MAX_STRENGTH,newManaMax)
+        Player:setAttr(playerid,PLAYERATTR.CUR_STRENGTH,newManaCur)
 
         --set mana recovery
         local agilitymanarecovery = 0.05 + (0.05 * EPStats[playerid]["INTELLIGENCE"])
@@ -254,13 +269,13 @@ function EPSmanaRecovery(e)
 	if EPStimerid > 0 then return end
 	EPStimerid = 6
 
-	local result,num,players=World:getAllPlayers(1) --alive players
+	local result,num,players = World:getAllPlayers(1) --alive players
 	for i,a in ipairs(players) do
  		local playerid = players[i]
-    	local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_HUNGER)
-        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_HUNGER)
+    	local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
+        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_STRENGTH)
         local newManaCur = curMana + EPSManaRecoveryRate[playerid]
-        curMana = math.min(newManaCur,curManamax)
+        --newManaCur = math.min(newManaCur,curManamax)
 
 		Player:setAttr(playerid,PLAYERATTR.CUR_HP,newManaCur)
     
@@ -274,17 +289,17 @@ function EPSlevelUp(e)
 	local playerid = e.eventobjid
 	
 	--Adding Remaining points
-	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSATTRIBUTEvar)
+	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSREMAINPOINTSvar)
 	remaingStatPoints = remaingStatPoints + 1
-	VarLib2:setPlayerVarByName(playerid,3,EPSATTRIBUTEvar,remaingStatPoints)
+	VarLib2:setPlayerVarByName(playerid,3,EPSREMAINPOINTSvar,remaingStatPoints)
 	
 
 	--Healing
 	local result,curHPmax = Player:getAttr(playerid,PLAYERATTR.MAX_HP)
     Player:setAttr(playerid,PLAYERATTR.CUR_HP,curHPmax)
 	--Mana Refill
-    local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_HUNGER)
-    Player:setAttr(playerid,PLAYERATTR.CUR_HUNGER,curManamax)
+    local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
+    Player:setAttr(playerid,PLAYERATTR.CUR_STRENGTH,curManamax)
 	
 	--Lvl up sound and fx
 	Chat:sendSystemMsg("#b#GLevel UP!",playerid) -- change for floating
@@ -292,9 +307,10 @@ function EPSlevelUp(e)
     Actor:playBodyEffectById(playerid,EPSFX4,1) --FX
   
 	--Set UI buttons available
-	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
-	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
-	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
+    Customui:setColor(playerid, EPSUI,EPSuielement3,EPSButtonColorNormal)
+	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorNormal)
+	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorNormal)
+	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorNormal)
 
   	--UI
 	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
@@ -320,13 +336,13 @@ ScriptSupportEvent:registerEvent([=[Player.LevelModelUpgrade]=], EPSlevelUp)
 --Players clic [+] on stats
 function EPSclickstrenght(e)
   	if  e.CoustomUI ~= EPSUI then return end
-	if  e.btnelenemt ~= EPSuielement6 and ~= EPSuielement8 and ~= EPSuielement10 then return end
+	if  e.btnelenemt ~= EPSuielement6 and e.btnelenemt ~= EPSuielement8 and e.btnelenemt ~= EPSuielement10 then return end
 	local playerid = e.eventobjid
   	local UIID = e.CoustomUI
   	local elementid = e.btnelenemt
 
   	--Check if remaining points
-	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSATTRIBUTEvar)
+	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSREMAINPOINTSvar)
   	if remaingStatPoints <= 0 then
 		Chat:sendSystemMsg("#RYouNeedMorePoints!",playerid) -- change for floating
 		Actor:playSoundEffectById(playerid,EPSsound6,80,1,false) --sound
@@ -334,12 +350,12 @@ function EPSclickstrenght(e)
 	end
 	remaingStatPoints = remaingStatPoints - 1
   	remaingStatPoints = math.max(0,remaingStatPoints)
-	VarLib2:setPlayerVarByName(playerid,3,EPSATTRIBUTEvar,remaingStatPoints)
+	VarLib2:setPlayerVarByName(playerid,3,EPSREMAINPOINTSvar,remaingStatPoints)
   
   	--Adding STR/AGI/INT 
   	if btnelenemt == EPSuielement6 then EPSAdd(playerid,"STRENGTH",EPSpointperlevel) end --Add Strenght
-  	if btnelenemt == EPSuielement6 then EPSAdd(playerid,"AGILITY",EPSpointperlevel) end --Add Agility
-  	if btnelenemt == EPSuielement6 then EPSAdd(playerid,"INTELLIGENCE",EPSpointperlevel) end --Add Intelligence
+  	if btnelenemt == EPSuielement8 then EPSAdd(playerid,"AGILITY",EPSpointperlevel) end --Add Agility
+  	if btnelenemt == EPSuielement10 then EPSAdd(playerid,"INTELLIGENCE",EPSpointperlevel) end --Add Intelligence
   	
 	--UI Update remaning points
 	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
@@ -352,10 +368,23 @@ function EPSclickstrenght(e)
 
 	--Check if disable buttons
 	if remaingStatPoints > 0 then return end
+    Customui:setColor(playerid, EPSUI,EPSuielement3,EPSButtonColorOff)
 	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
 	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
 	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
 	
   
 end
-ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSmanaRecovery)
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickstrenght)
+
+--Autohide notfication when clic
+function EPSclickNotify(e)
+    if  e.CoustomUI ~= EPSUI then return end
+    local playerid = e.eventobjid
+    local UIID = e.CoustomUI
+  
+    Customui:hideElement(playerid, EPSUI, EPSuielement12) -- hide Flash
+    Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+
+end
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickstrenght)
