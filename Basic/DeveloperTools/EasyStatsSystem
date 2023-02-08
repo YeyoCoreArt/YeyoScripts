@@ -30,6 +30,7 @@ EPSuielement10 = [[7197247402385148843_42]] --Ui [+] button for Intelligence
 EPSuielement11 = [[7197247402385148843_2]] --Stats Button Open
 EPSuielement12 = [[7197247402385148843_3]] --Stats Notification
 EPSuielement13 = [[7197247402385148843_4]] --Stats Blinker
+EPSuielement14 = [[7197247402385148843_5]] --Full Panel
 
 EPSButtonColorPressed = "0x012B00" --Color for button pressed
 EPSButtonColorNormal = "0xFF8000" --Color for button available
@@ -55,6 +56,7 @@ EPSManaRecoveryRate = {} -- Stats handler
 --Create class for a new player
 function EPSRegisterPlayer(playerid)
     EPStats[playerid] = {
+        
         ["ATTRIBUTE"] = "STRENGTH", -- Wichever is the main atributte will get +1 attack
         ["STRENGTH"] = 0, -- Atributte: +25, regen +0.05
         ["AGILITY"] = 0, -- Atributte: armor 0.3 + attack Speed +2
@@ -81,8 +83,8 @@ function EPSRegisterPlayer(playerid)
         ["DFCACTUS"] = 0,
         ["DFASPHYXIA"] = 0,
         ["DFDROWN"] = 0
-    }
-
+        
+    } 
     EPSManaRecoveryRate[playerid] = 0
 
     --ui
@@ -106,6 +108,7 @@ ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=], EPSAutoRegister
 
 --Set a stat to specific value
 function EPSSet(playerid,STATSTRING,amount)
+    Chat:sendSystemMsg("____________3 "..playerid)
     amount = math.max(0,amount) -- fix max 0
     EPStats[playerid][STATSTRING] = amount
 
@@ -113,6 +116,7 @@ function EPSSet(playerid,STATSTRING,amount)
     local txtSend = "Your new Main Attribute is "
     local txtSound = EPSsoundDefault
     local txtFX = EPSFXDefault
+    Chat:sendSystemMsg("____________4 "..playerid)
 
     if STATSTRING == "ATTRIBUTE" then 
         if amount == 1 then 
@@ -134,6 +138,8 @@ function EPSSet(playerid,STATSTRING,amount)
         --Ui Update
     end
 
+    Chat:sendSystemMsg("____________5 "..playerid)
+
     if STATSTRING == "STRENGTH" then 
         txtSend = "Your #bStrength#n is "
         txtSound = EPSsound1
@@ -141,7 +147,7 @@ function EPSSet(playerid,STATSTRING,amount)
 
         --Ui Update
         Customui:setText(playerid, EPSUI, EPSuielement5, amount )
-
+        Chat:sendSystemMsg("____________5a "..playerid)
         --Life
         local result,curHPmax = Player:getAttr(playerid,PLAYERATTR.MAX_HP)
         local result,curHP = Player:getAttr(playerid,PLAYERATTR.CUR_HP)
@@ -153,22 +159,26 @@ function EPSSet(playerid,STATSTRING,amount)
         Player:setAttr(playerid,PLAYERATTR.MAX_HP,newHpMax)
         Player:setAttr(playerid,PLAYERATTR.CUR_HP,newHpCur)
         
+        Chat:sendSystemMsg("____________5b "..playerid)
         --Recovery
         local strengrecover = 0.05 * EPStats[playerid]["STRENGTH"]
         Player:setAttr(playerid,PLAYERATTR.HP_RECOVER,strengrecover)
 
-	--If main atributte, add damage
-	if EPStats[playerid]["ATTRIBUTE"] == "STRENGTH" then
-		local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_MELEE)
-		local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE)
-		CurAtMelee = math.max(CurAtMelee + 1,0) 
-		CurAtRemote = math.max(CurAtRemote + 1,0) 
-		Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
-		Player:setAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE,CurAtRemote)		
-	end
-
-
+        Chat:sendSystemMsg("____________5c "..playerid)
+        --If main atributte, add damage
+        if EPStats[playerid]["ATTRIBUTE"] == "STRENGTH" then
+            Chat:sendSystemMsg("____________5d "..playerid)
+            local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
+            local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
+            CurAtMelee = math.max(CurAtMelee + 1,0) 
+            CurAtRemote = math.max(CurAtRemote + 1,0) 
+            Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+        end
     end
+
+    Chat:sendSystemMsg("____________6 "..playerid)
+
     if STATSTRING == "AGILITY" then 
         txtSend = "Your #bStrength#n is "
         txtSound = EPSsound2
@@ -195,17 +205,19 @@ function EPSSet(playerid,STATSTRING,amount)
         local agilityjump = 30 + (3 * EPStats[playerid]["AGILITY"])
         Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,agilityjump)
 
-	--If main atributte, add damage
-	if EPStats[playerid]["ATTRIBUTE"] == "AGILITY" then
-		local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_MELEE)
-		local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE)
-		CurAtMelee = math.max(CurAtMelee + 1,0) 
-		CurAtRemote = math.max(CurAtRemote + 1,0) 
-		Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
-		Player:setAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE,CurAtRemote)		
-	end
+        --If main atributte, add damage
+        if EPStats[playerid]["ATTRIBUTE"] == "AGILITY" then
+            local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
+            local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
+            CurAtMelee = math.max(CurAtMelee + 1,0) 
+            CurAtRemote = math.max(CurAtRemote + 1,0) 
+            Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+        end
 
     end
+
+    Chat:sendSystemMsg("____________8 "..playerid)
     if STATSTRING == "INTELLIGENCE" then 
         txtSend = "Your #bIntelligence#n is "
         txtSound = EPSsound2
@@ -229,19 +241,20 @@ function EPSSet(playerid,STATSTRING,amount)
         --Ui Update
         Customui:setText(playerid, EPSUI, EPSuielement9, amount )
 
-	--If main atributte, add damage
-	if EPStats[playerid]["ATTRIBUTE"] == "INTELLIGENCE" then
-		local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_MELEE)
-		local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE)
-		CurAtMelee = math.max(CurAtMelee + 1,0) 
-		CurAtRemote = math.max(CurAtRemote + 1,0) 
-		Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
-		Player:setAttr(playerid,PLAYERATTR.PLAYERATTR.ATK_REMOTE,CurAtRemote)		
-	end
+        --If main atributte, add damage
+        if EPStats[playerid]["ATTRIBUTE"] == "INTELLIGENCE" then
+            local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
+            local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
+            CurAtMelee = math.max(CurAtMelee + 1,0) 
+            CurAtRemote = math.max(CurAtRemote + 1,0) 
+            Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+        end
 
     end
 
-    --msg
+    Chat:sendSystemMsg("____________9 "..playerid)
+    --Chat:sendSystemMsg
     Chat:sendSystemMsg(txtSend.."#G"..amount,playerid)
     Actor:playSoundEffectById(playerid,txtSound,100,1,false)--sound
     Actor:playBodyEffectById(playerid,txtFX,1)
@@ -252,7 +265,7 @@ end
 --Add a Value for player
 function EPSAdd(playerid,STATSTRING,amount)
     local curvalue = EPStats[playerid][STATSTRING]
-    local nwvalue = curvalue + amount 
+    local newvalue = curvalue + amount 
     EPSSet(playerid,STATSTRING,newvalue)
 end
 
@@ -328,6 +341,15 @@ function EPSlevelUp(e)
 	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
 	threadpool:wait(0.2)
 	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+    threadpool:wait(0.2)
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+    threadpool:wait(0.2)
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+    Actor:stopBodyEffectById(playerid,EPSFX4)
 
 end
 ScriptSupportEvent:registerEvent([=[Player.LevelModelUpgrade]=], EPSlevelUp)
@@ -352,11 +374,21 @@ function EPSclickstrenght(e)
   	remaingStatPoints = math.max(0,remaingStatPoints)
 	VarLib2:setPlayerVarByName(playerid,3,EPSREMAINPOINTSvar,remaingStatPoints)
   
+    Chat:sendSystemMsg("____________ok "..playerid)
   	--Adding STR/AGI/INT 
-  	if btnelenemt == EPSuielement6 then EPSAdd(playerid,"STRENGTH",EPSpointperlevel) end --Add Strenght
-  	if btnelenemt == EPSuielement8 then EPSAdd(playerid,"AGILITY",EPSpointperlevel) end --Add Agility
-  	if btnelenemt == EPSuielement10 then EPSAdd(playerid,"INTELLIGENCE",EPSpointperlevel) end --Add Intelligence
-  	
+  	if elementid == EPSuielement6 then
+        Chat:sendSystemMsg("____________st "..playerid)
+        EPSAdd(playerid,"STRENGTH",EPSpointperlevel) 
+    end --Add Strenght
+  	if elementid == EPSuielement8 then 
+        Chat:sendSystemMsg("____________AG "..playerid)
+        EPSAdd(playerid,"AGILITY",EPSpointperlevel) 
+    end --Add Agility
+  	if elementid == EPSuielement10 then 
+        Chat:sendSystemMsg("____________IT "..playerid)
+        EPSAdd(playerid,"INTELLIGENCE",EPSpointperlevel) 
+    end --Add Intelligence
+  	Chat:sendSystemMsg("____________#Gok2 "..playerid)
 	--UI Update remaning points
 	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
 
@@ -387,4 +419,22 @@ function EPSclickNotify(e)
     Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
 
 end
-ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickstrenght)
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickNotify)
+
+EPSexpanded = false
+--AutoHide / AutoShow bar
+function EPSclickExpand(e)
+    if  e.CoustomUI ~= EPSUI then return end
+    if  e.btnelenemt ~= EPSuielement11 then return end
+    local playerid = e.eventobjid
+
+    if EPSexpanded == false then 
+        EPSexpanded = true
+        Customui:showElement(playerid, EPSUI, EPSuielement14) -- Show Panel
+    else
+        EPSexpanded = false
+        Customui:hideElement(playerid, EPSUI, EPSuielement14) -- hide Panel
+    end
+
+end
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickExpand)
