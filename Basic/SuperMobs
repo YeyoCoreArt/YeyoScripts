@@ -1,250 +1,438 @@
---[[
+-- Easy Stats system v 1.0
 
-    SUPER MOBS 2.2
-        https://www.youtube.com/multiverseeditor
-            UID: 2769323
-        Ultima version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
+--Options
+EPSpointperlevel = 1 -- Points Eran Each level
+EPSpointLevelAtack = 1.0 --Attack added by Main Attribute
+EPSattribLevelHp = 25.0 -- HP added by Strength
+EPSattribLevelReg = 0.05 -- HP regeneration added by Strength
+EPSattribLevelArm = 0.3 -- Armor added by Agility
+EPSattribSpeed = 0.2 -- Speed added by Agility
+EPSattribJump = 3.0 -- Jump added by Agility
+EPSattribMana = 15.0 -- Mana added by Intelligence
+EPSattribManaReg = 0.05 -- Mana regeneration added by Intelligence
 
-    Descripcion: 
-        Cada mob tendrá un % de probabilidad de aparecer como SINGULAR, ALFA, ELITE o LEGENDARIO multiplicando su poder,velocidad, tamaño y defensas. 
+--Saveable Profile system
+EPSHEROvar = "EPSHERO" -- Name of the trigger variable for Main Atributte 
+EPSREMAINPOINTSvar = "EPSREMAINPOINTS" -- Name of the trigger variable for reamining attrib points
+EPSATTRIBUTEvar = "EPSATTRIBUTE" -- Name of the trigger variable for Main Atributte
+EPSSTRENGHTvar = "EPSSTRENGHT" -- Name of the trigger variable for Strenght
+EPSAGILITYvar = "EPSAGILITY" -- Name of the trigger variable for Agility
+EPSINTELLIGENCEvar = "EPSINTELLIGENCE" -- Name of the trigger variable for Intelligence
 
-    Instrucciones: 
-        1.- Copia y Pega el script en tu mapa, la configuracion es opcional
-        2.- Baja hasta la linea que dice: CONFIGURACION
-        3.- Cambia los valores que quieras, todo el texto que esta despues de -- en cada linea es la explicacion
+--UI SET UP
+EPSIconStregthIcon = [[10107]] -- Icon for Strenght 
+EPSIconAgilityIcon = [[10106]] -- Icon for Agility 
+EPSIconIntelligenceIcon = [[10110]] -- Icon for Intelligence 
 
+EPSUI = [[7197247402385148843]]
+EPSuielement1 = "" --Ui Life
+EPSuielement2 = "" --Ui Mana
+EPSuielement3 = [[7197247402385148843_44]] --Ui Remaining points
+EPSuielement4 = [[7197247402385148843_11]] --Ui Main Atributte
+EPSuielement5 = [[7197247402385148843_19]] --Ui Shows Current Strength
+EPSuielement6 = [[7197247402385148843_20]] --Ui [+] button for strength
+EPSuielement7 = [[7197247402385148843_33]] --Ui Shows Current Agility
+EPSuielement8 = [[7197247402385148843_35]] --Ui [+] button for Agility
+EPSuielement9 = [[7197247402385148843_40]] --Ui Shows Current Intelligence
+EPSuielement10 = [[7197247402385148843_42]] --Ui [+] button for Intelligence
+EPSuielement11 = [[7197247402385148843_2]] --Stats Button Open
+EPSuielement12 = [[7197247402385148843_3]] --Stats Notification
+EPSuielement13 = [[7197247402385148843_4]] --Stats Blinker
+EPSuielement14 = [[7197247402385148843_5]] --Full Panel
 
-    Mas scripts: https://github.com/YeyoCoreArt/YeyoScripts
--]]
-            SuperMobsSingular = 1 -- No modificar
-            SuperMobsAlpha = 2 -- No modificar
-            SuperMobsElite = 3 -- No modificar
-            SuperMobsLegendary = 4 -- No modificar
-            SuperMobsMobChance  = {} -- No modificar
-            SuperMobsMobPower = {} -- No modificar
-            SuperMobsMobFx = {} -- No modificar
-            SuperMobsMobName = {} -- No modificar
-            SuperMobsMobByPass = {} -- No modificar
+EPSButtonColorPressed = "0x012B00" --Color for button pressed
+EPSButtonColorNormal = "0xFF8000" --Color for button available
+EPSButtonColorOff = "0xFFFFFF" --Color for button unavailable
 
-
--------------------------------------
---          ↓↓↓  CONFIGURACION  ↓↓↓
--------------------------------------
-
---Singular Mobs (Nivel 1)
-SuperMobsMobName[SuperMobsSingular] = "#c47E0D9Singular " --Nombre del super mob
-SuperMobsMobChance[SuperMobsSingular] = 10 --Probabilidad de spawnear (de 0% a 100%)
-SuperMobsMobPower[SuperMobsSingular] = 3 --Multiplicador de poder
-SuperMobsMobFx[SuperMobsSingular] = 1555 --Efecto especial 
-
---Alpha Mobs  (Nivel 2)
-SuperMobsMobName[SuperMobsAlpha] = "#c4755E0Alpha " --Nombre del super mob
-SuperMobsMobChance[SuperMobsAlpha] = 5 --Probabilidad de spawnear (de 0% a 100%)
-SuperMobsMobPower[SuperMobsAlpha] = 5 --Multiplicador de poder
-SuperMobsMobFx[SuperMobsAlpha] = 1498 --Efecto especial 
-
---Elite Mobs  (Nivel 3)
-SuperMobsMobName[SuperMobsElite] = "#cDB47E0Elite " --nivel 3 
-SuperMobsMobChance[SuperMobsElite] = 1.2 --Probabilidad de spawnear (de 0% a 100%)
-SuperMobsMobPower[SuperMobsElite] = 10 --Multiplicador de poder
-SuperMobsMobFx[SuperMobsElite] = 1495 --Efecto especial  
-
---Legendary Mobs  (Nivel 4)
-SuperMobsMobName[SuperMobsLegendary] = "#cFA7746Legandary " --nivel 4
-SuperMobsMobChance[SuperMobsLegendary] = 0.2 --Probabilidad de spawnear (de 0% a 100%)
-SuperMobsMobPower[SuperMobsLegendary] = 20 --Multiplicador de poder 
-SuperMobsMobFx[SuperMobsLegendary] = 1497 --Efecto especial  
-
---Lista de mobs ignorados por el sistema, agrega una linea y pon la id de cada mob que no quieres que se convierta
-SuperMobsMobByPass[1] = 3401 --
-SuperMobsMobByPass[2] = 3402
-SuperMobsMobByPass[3] = 31
-SuperMobsMobByPass[4] = 33
-SuperMobsMobByPass[5] = 40
-SuperMobsMobByPass[6] = 12
-SuperMobsMobByPass[8] = 4
-SuperMobsMobByPass[9] = 2
-SuperMobsMobByPass[10] = 5
-SuperMobsMobByPass[11] = 16
-SuperMobsMobByPass[12] = 14
-
-
--------------------------------------------------------------
---   ⚠⚠⚠ FIN DE CONFIGURACION, NO CAMBIAR NADA A PARTIR DE AQUI ⚠⚠⚠
--------------------------------------------------------------
-
---Mob Handler
-SuperMobsMobRariyHandler = {}
-SuperMobsMobRariyHandlerSize = {}
-
-
-
-function SuperMobsMobGet(e) 
-    local Mob = e.eventobjid
-    local result,Mobid = Creature:getActorID(Mob)
-
-    --list of mobs who does not have elite
-    for i=1, #SuperMobsMobByPass do if Mobid == SuperMobsMobByPass[i] then return end end
+--Optional
+EPSsoundDefault = 10078 --Defaultsound fx
+EPSsound1 = 10967 --Strenght UP sound f
+EPSsound2 = 10967--Agility UP sound fx
+EPSsound3 = 10967 --Intellicence UP sound fx
+EPSsound4 = 10081 --Lvl Up Sound
+EPSsound5 = 10116 --Button OK Sound
+EPSsound6 = 10946 --Button FAIL Sound
+EPSFXDefault = 1005 --Default special fx
+EPSFX1 = 1253 --Strenght UP special fx
+EPSFX2 = 1253 --Agility UP special fx
+EPSFX3 = 1253 --Intellicence UP special fx
+EPSFX4 = 1298 --Lvl UP special fx
  
-    --Check Mob Chances
-    local EliteRChances = math.random(0,100)
-    local EliteRChancesFloat = (math.random(0,10)) / 10
-    local EliteRChancesFloat2 = (math.random(0,10)) / 100
-    local EliteRChancesFull = EliteRChances + EliteRChancesFloat + EliteRChancesFloat2
-    if EliteRChancesFull > SuperMobsMobChance[SuperMobsSingular] then return end -- No rarity
+EPStats = {} -- Stats handler
+EPSManaRecoveryRate = {} -- Stats handler
+
+--Create class for a new player
+function EPSRegisterPlayer(playerid)
+    EPStats[playerid] = {
+        
+        ["ATTRIBUTE"] = "STRENGTH", -- Wichever is the main atributte will get +1 attack
+        ["STRENGTH"] = 0, -- Atributte: +25, regen +0.05
+        ["AGILITY"] = 0, -- Atributte: armor 0.3 + attack Speed +2
+        ["INTELLIGENCE"] = 0, -- Atributte: +15 mana, mana regen +0.25
+
+        --Damage (adding damage)
+        ["DMFIRE"] = 0,
+        ["DMEXPLOSION"] = 0,
+        ["DMPHYSICS"] = 0,
+        ["DMTOXIN"] = 0,
+        ["DMMAGIC"] = 0,
+        ["DMFALL"] = 0,
+        ["DMCACTUS"] = 0,
+        ["DMASPHYXIA"] = 0,
+        ["DMDROWN"] = 0,
+        
+        --Defenses (reducing damage)
+        ["DFFIRE"] = 0,
+        ["DFEXPLOSION"] = 0,
+        ["DFPHYSICS"] = 0,
+        ["DFTOXIN"] = 0,
+        ["DFMAGIC"] = 0,
+        ["DFFALL"] = 0,
+        ["DFCACTUS"] = 0,
+        ["DFASPHYXIA"] = 0,
+        ["DFDROWN"] = 0
+        
+    } 
+    EPSManaRecoveryRate[playerid] = 0
+
+    --ui
+    Customui:setText(playerid, EPSUI, EPSuielement3, 0 )
+    Customui:setColor(playerid, EPSUI,EPSuielement3,EPSButtonColorOff)
+    Customui:setText(playerid, EPSUI, EPSuielement5, 0 )
+    Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
+    Customui:setText(playerid, EPSUI, EPSuielement7, 0 )
+	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
+    Customui:setText(playerid, EPSUI, EPSuielement9, 0 )
+	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
     
-    --msg("EliteDetected ok")
-    local EliteRarity = 0
-    if EliteRChancesFull < SuperMobsMobChance[SuperMobsLegendary] then EliteRarity = SuperMobsLegendary 
-    elseif EliteRChancesFull < SuperMobsMobChance[SuperMobsElite] then  EliteRarity = SuperMobsElite
-    elseif EliteRChancesFull < SuperMobsMobChance[SuperMobsAlpha] then  EliteRarity = SuperMobsAlpha
-    else EliteRarity = SuperMobsSingular end
-
-    --Save creature
-    SuperMobsMobRariyHandler[Mob] = EliteRarity -- Add to Handler
-    local result,size = Creature:getAttr(Mob,CREATUREATTR.DIMENSION)
-    SuperMobsMobRariyHandlerSize[Mob] = size
-
-   --Change MOB
-    SuperMobsMobGetFx(Mob) -- FX
-    SuperMobsMobPowerUp(Mob) -- Mob Bonus
-
-    --Obtain special atributes
-    --Dodge
-
-end
-ScriptSupportEvent:registerEvent([=[Actor.Create]=], SuperMobsMobGet)
-
-
-function SuperMobsMobPowerUp(Mob) 
-    if SuperMobsMobRariyHandler[Mob] == nil then return ErrorCode.FAILED end
-    local EliteRarity = SuperMobsMobRariyHandler[Mob]
-
-     --SetLife, multiply hp and max hp
-     local result,HPMax = Creature:getAttr(Mob,CREATUREATTR.MAX_HP)
-     local result,HPcur = Creature:getAttr(Mob,CREATUREATTR.CUR_HP)
-     HPMax = math.max(HPMax,1)
-     local lifePorcent = HPcur / HPMax
-     HPMax = (HPMax * SuperMobsMobPower[EliteRarity])
-     Creature:setAttr(Mob,CREATUREATTR.MAX_HP,HPMax)
-     Creature:setAttr(Mob,CREATUREATTR.CUR_HP,HPMax*lifePorcent)
-     
-     --SetDamage, obtain bonus of damage
-     local damagebonus = SuperMobsMobPower[EliteRarity] * 0.10
-     local result,DamageMel = Creature:getPunchAttack(Mob)
-     local result,DamageRem = Creature:getRangeAttack(Mob)
-     DamageMel = DamageMel + (DamageMel * damagebonus)
-     DamageRem = DamageRem + (DamageRem * damagebonus)
-     Creature:setAttr(Mob,CREATUREATTR.ATK_MELEE,DamageMel)
-     Creature:setAttr(Mob,CREATUREATTR.ATK_REMOTE,DamageRem)
-
-     --SetArmor, obtain bonus of damage, by luck up to 3 armors
-     local Defesebonus = SuperMobsMobPower[EliteRarity] * 0.10
-     local result,DefeseMel = Creature:getPunchDefense(Mob)
-     local result,DefeseRem = Creature:getRangeDefense(Mob)
-     DefeseMel = DefeseMel + (DefeseMel * Defesebonus)
-     DefeseRem = DefeseRem + (DefeseRem * Defesebonus)
-     Creature:setAttr(Mob,CREATUREATTR.DEF_MELEE,DefeseMel)
-     Creature:setAttr(Mob,CREATUREATTR.DEF_REMOTE,DefeseRem)
-     
-     --SetSpeed, obtain bonus of speed
-     local SpeedbonusBase = 0.10 * SuperMobsMobPower[EliteRarity]
-     local result,Speed1 = Creature:getWalkSpeed(Mob)
-     Speed1 = Speed1 + (SpeedbonusBase * Speed1)
-     Creature:setWalkSpeed(Mob,Speed1)
-
-     --Dodge
-     local Dodgemax = 40
-     local Dodgebonus = math.floor(Dodgemax / (5 - SuperMobsMobPower[EliteRarity]))
-     local NewDodge = Dodgebonus
-     Creature:setDodge(Mob,NewDodge)
-
-     return ErrorCode.OK
 end
 
+--Autoregister player
+function EPSAutoRegisterPlayer(e)
+    local playerid = e.eventobjid
+    EPSRegisterPlayer(playerid)
+end
+ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=], EPSAutoRegisterPlayer)
 
-function SuperMobsMobGetFx(Mob) 
-    if SuperMobsMobRariyHandler[Mob] == nil then return ErrorCode.FAILED end
-    local EliteRarity = SuperMobsMobRariyHandler[Mob]
+--Set a stat to specific value
+function EPSSet(playerid,STATSTRING,amount)
+    amount = math.max(0,amount) -- fix max 0
+    EPStats[playerid][STATSTRING] = amount
 
-    --Transformation FX
-    local result,x,y,z=Actor:getPosition(Mob)
-    World:playParticalEffect(x,y,z,1007,3) -- FX explosion
-    World:playParticalEffect(x,y,z,1472,1) -- FX floor smoke
-    World:playParticalEffect(x,y,z,1450,3) -- FX dark waves
+    --Check strength, agility, intelligence, or atributte
+    local txtSend = "Your new Main Attribute is "
+    local txtSound = EPSsoundDefault
+    local txtFX = EPSFXDefault
+   
+    if STATSTRING == "ATTRIBUTE" then 
+        if amount == 1 then 
+            amount = "STRENGTH"
+            --ui 
+            Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconStregthIcon)
+        end
+        if amount == 2 then 
+            amount = "AGILITY"
+            --ui 
+            Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconAgilityIcon)
+        end
+        if amount == 3 then 
+            amount = "INTELLIGENCE"
+            --ui 
+            Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconIntelligenceIcon)
+        end
+
+        --Ui Update
+    end
+
+
+    if STATSTRING == "STRENGTH" then 
+        txtSend = "Your #bStrength#n is "
+        txtSound = EPSsound1
+        txtFX = EPSFX1
+
+        --Ui Update
+        Customui:setText(playerid, EPSUI, EPSuielement5, amount )
+        --Life
+        local result,curHPmax = Player:getAttr(playerid,PLAYERATTR.MAX_HP)
+        local result,curHP = Player:getAttr(playerid,PLAYERATTR.CUR_HP)
+        local lifepercent = curHP/curHPmax
+        local strenghp = EPSattribLevelHp * EPStats[playerid]["STRENGTH"]
+        local newHpMax = 80 + strenghp
+        local newHpCur = newHpMax * lifepercent
+        newHpCur = math.max(1,newHpCur)
+        Player:setAttr(playerid,PLAYERATTR.MAX_HP,newHpMax)
+        Player:setAttr(playerid,PLAYERATTR.CUR_HP,newHpCur)
+        
+        --Recovery
+        local strengrecover = EPSattribLevelReg * EPStats[playerid]["STRENGTH"]
+        Player:setAttr(playerid,PLAYERATTR.HP_RECOVER,strengrecover)
+
+        --If main atributte, add damage
+        if EPStats[playerid]["ATTRIBUTE"] == "STRENGTH" then
+            Player:notifyGameInfo2Self(playerid,"+1 attack")
+            local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
+            local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
+            CurAtMelee = math.max(CurAtMelee + EPSpointLevelAtack ) 
+            CurAtRemote = math.max(CurAtRemote + EPSpointLevelAtack ) 
+            Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+        end
+    end
+
+
+    if STATSTRING == "AGILITY" then 
+        txtSend = "Your #bAgility#n is "
+        txtSound = EPSsound2
+        txtFX = EPSFX3
+
+        --Ui Update
+        Customui:setText(playerid, EPSUI, EPSuielement7, amount )
+        
+        --set armor
+        local agilityarmor = 1 + (EPSattribLevelArm  * EPStats[playerid]["AGILITY"])
+        Player:setAttr(playerid,PLAYERATTR.DEF_MELEE,agilityarmor)
+        Player:setAttr(playerid,PLAYERATTR.DEF_REMOTE,agilityarmor)
+
+        --Set speed and jump
+        local agilityspeedbase = 8 + (EPSattribSpeed  * EPStats[playerid]["AGILITY"])
+        local agilityspeedrun = agilityspeedbase * 1.0
+        local agilityspeedsneak = agilityspeedbase * 0.7
+        local agilityspeedswim = agilityspeedbase * 0.6
+        Player:setAttr(playerid,PLAYERATTR.WALK_SPEED,agilityspeedbase)
+        Player:setAttr(playerid,PLAYERATTR.RUN_SPEED,agilityspeedrun)
+        Player:setAttr(playerid,PLAYERATTR.SNEAK_SPEED,agilityspeedsneak)
+        Player:setAttr(playerid,PLAYERATTR.SWIN_SPEED,agilityspeedswim)
+
+        local agilityjump = 30 + (EPSattribJump * EPStats[playerid]["AGILITY"])
+        Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,agilityjump)
+
+        --If main attribute, add damage
+        if EPStats[playerid]["ATTRIBUTE"] == "AGILITY" then
+            local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
+            local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
+            CurAtMelee = math.max(CurAtMelee + EPSpointLevelAtack) 
+            CurAtRemote = math.max(CurAtRemote + EPSpointLevelAtack ) 
+            Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)
+            Player:notifyGameInfo2Self(playerid,"+1 attack")
+        end
+
+    end
+
+    if STATSTRING == "INTELLIGENCE" then 
+        txtSend = "Your #bIntelligence#n is "
+        txtSound = EPSsound2
+        txtFX = EPSFX3
+
+        --set mana + mana recovery
+        local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
+        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_STRENGTH)
+        local manapercent = curMana/curManamax
+        local intelligencemp = EPSattribMana * EPStats[playerid]["INTELLIGENCE"]
+        local newManaMax = 80 + intelligencemp
+        local newManaCur = newManaMax * manapercent
+        newManaCur = math.max(1,newManaCur)
+        Player:setAttr(playerid,PLAYERATTR.MAX_STRENGTH,newManaMax)
+        Player:setAttr(playerid,PLAYERATTR.CUR_STRENGTH,newManaCur)
+
+        --set mana recovery
+        local agilitymanarecovery = 0.05 + (EPSattribManaReg * EPStats[playerid]["INTELLIGENCE"])
+        EPSManaRecoveryRate[playerid] = agilitymanarecovery
+
+        --Ui Update
+        Customui:setText(playerid, EPSUI, EPSuielement9, amount )
+
+        --If main atributte, add damage
+        if EPStats[playerid]["ATTRIBUTE"] == "INTELLIGENCE" then
+            local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
+            local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
+            CurAtMelee = math.max(CurAtMelee + EPSpointLevelAtack) 
+            CurAtRemote = math.max(CurAtRemote + EPSpointLevelAtack) 
+            Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
+            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+            Player:notifyGameInfo2Self(playerid,"+1 attack")
+        end
+
+    end
+
+    --Chat:sendSystemMsg
+    Player:notifyGameInfo2Self(playerid,txtSend.."#G"..amount)
+    ---Chat:sendSystemMsg(txtSend.."#G"..amount,playerid)
+    Actor:playSoundEffectById(playerid,txtSound,100,1,false)--sound
+    Actor:playBodyEffectById(playerid,txtFX,1)
+
+    return ErrorCode.FAILED
+end
+
+--Add a Value for player
+function EPSAdd(playerid,STATSTRING,amount)
+    local curvalue = EPStats[playerid][STATSTRING]
+    local newvalue = curvalue + amount 
+    EPSSet(playerid,STATSTRING,newvalue)
+end
+
+
+--Recovery Mana Points
+--local result,tempid = MiniTimer:createTimer("EPStimer",nil,falso)
+EPStimerid = 6
+--MiniTimer:startBackwardTimer(EPStimerid,1,true) -- check if works
+
+
+--Heal Mana over time
+function EPSmanaRecovery(e)
+	EPStimerid = EPStimerid - 0.1
+	if EPStimerid > 0 then return end
+	EPStimerid = 6
+
+	local result,num,players = World:getAllPlayers(1) --alive players
+	for i,a in ipairs(players) do
+ 		local playerid = players[i]
+    	local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
+        local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_STRENGTH)
+        local newManaCur = curMana + EPSManaRecoveryRate[playerid]
+        newManaCur = math.min(newManaCur,curManamax)
+
+		Player:setAttr(playerid,PLAYERATTR.CUR_HP,newManaCur)
     
+	end
+    
+end
+ScriptSupportEvent:registerEvent([=[Game.Run]=], EPSmanaRecovery)
 
-    --Size
-    local size = SuperMobsMobRariyHandlerSize[Mob]
-    size = size * (1.0 + (0.10 * EliteRarity))
-    Creature:setAttr(Mob,CREATUREATTR.DIMENSION,size)
+--Uptate level info when level up
+function EPSlevelUp(e)
+	local playerid = e.eventobjid
+	
+	--Adding Remaining points
+	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSREMAINPOINTSvar)
+	remaingStatPoints = remaingStatPoints + 1
+	VarLib2:setPlayerVarByName(playerid,3,EPSREMAINPOINTSvar,remaingStatPoints)
+	
 
-    --Nik
-    local result,MOBnickname = Creature:getActorName(Mob)
-    MOBnickname = SuperMobsMobName[EliteRarity].." "..MOBnickname
-    local result = Actor:setnickname(Mob, MOBnickname)
-    Actor:shownickname(Mob, true)
-
-    --Fx
-    Actor:playBodyEffect(Mob,SuperMobsMobFx[EliteRarity]) --Rarity FX
-    local spitch = ( math.random(8,13) / 10 )
-    local svolume = 70 + (20 * EliteRarity)
-    Actor:playSoundEffectById(Mob,10078,svolume,spitch,false)--Sound 
-    Actor:playAct(Mob,4)   --Expresions
+	--Healing
+	local result,curHPmax = Player:getAttr(playerid,PLAYERATTR.MAX_HP)
+    Player:setAttr(playerid,PLAYERATTR.CUR_HP,curHPmax)
+	--Mana Refill
+    local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
+    Player:setAttr(playerid,PLAYERATTR.CUR_STRENGTH,curManamax)
+	
+	--Lvl up sound and fx
+	Chat:sendSystemMsg("#b#GLevel UP!",playerid) -- change for floating
+    Actor:playSoundEffectById(playerid,EPSsound4,100,1,false)--sound
+    Actor:playBodyEffectById(playerid,EPSFX4,1) --FX
   
-    return ErrorCode.OK
+	--Set UI buttons available
+    Customui:setColor(playerid, EPSUI,EPSuielement3,EPSButtonColorNormal)
+	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorNormal)
+	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorNormal)
+	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorNormal)
+
+  	--UI
+	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
+	Customui:showElement(playerid, EPSUI, EPSuielement12) -- Show notification dot
+  
+  	--UI blink
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+  	threadpool:wait(0.2)
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+  	threadpool:wait(0.2)
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+	threadpool:wait(0.2)
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+    threadpool:wait(0.2)
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+    threadpool:wait(0.2)
+	Customui:showElement(playerid, EPSUI, EPSuielement13) -- Show Flash
+	threadpool:wait(0.2)
+	Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+    Actor:stopBodyEffectById(playerid,EPSFX4)
 
 end
+ScriptSupportEvent:registerEvent([=[Player.LevelModelUpgrade]=], EPSlevelUp)
 
-function SuperMobsReTransform(e) 
-    if SuperMobsMobRariyHandler[e.eventobjid] == nil then return ErrorCode.FAILED end
-    local Mob = e.eventobjid
 
-    --Check Size
-    local result,size = Creature:getAttr(Mob,CREATUREATTR.DIMENSION)
-    if size <= SuperMobsMobRariyHandlerSize[Mob] then 
-        SuperMobsMobGetFx(Mob) 
-        SuperMobsMobPowerUp(Mob) -- Mob Bonus
-        --Chat:sendChat("Re Power UP",0)
+--Players clic [+] on stats
+function EPSclickstrenght(e)
+  	if  e.CoustomUI ~= EPSUI then return end
+	if  e.btnelenemt ~= EPSuielement6 and e.btnelenemt ~= EPSuielement8 and e.btnelenemt ~= EPSuielement10 then return end
+	local playerid = e.eventobjid
+  	local UIID = e.CoustomUI
+  	local elementid = e.btnelenemt
+
+  	--Check if remaining points
+	local result,remaingStatPoints = VarLib2:getPlayerVarByName(playerid,3,EPSREMAINPOINTSvar)
+  	if remaingStatPoints <= 0 then
+		Chat:sendSystemMsg("#RYouNeedMorePoints!",playerid) -- change for floating
+		Actor:playSoundEffectById(playerid,EPSsound6,80,1,false) --sound
+		return 
+	end
+	remaingStatPoints = remaingStatPoints - 1
+  	remaingStatPoints = math.max(0,remaingStatPoints)
+	VarLib2:setPlayerVarByName(playerid,3,EPSREMAINPOINTSvar,remaingStatPoints)
+  
+  	--Adding STR/AGI/INT 
+  	if elementid == EPSuielement6 then
+        EPSAdd(playerid,"STRENGTH",EPSpointperlevel) 
+    end --Add Strenght
+  	if elementid == EPSuielement8 then 
+        EPSAdd(playerid,"AGILITY",EPSpointperlevel) 
+    end --Add Agility
+  	if elementid == EPSuielement10 then 
+        EPSAdd(playerid,"INTELLIGENCE",EPSpointperlevel) 
+    end --Add Intelligence
+	--UI Update remaning points
+	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
+
+	--UI Button down and up
+	Actor:playSoundEffectById(playerid,EPSsound5,80,1,false) --sound
+	Customui:setColor(playerid, UIID,elementid,EPSButtonColorPressed)
+  threadpool:wait(0.5)
+	Customui:setColor(playerid, UIID,elementid,EPSButtonColorNormal)
+
+	--Check if disable buttons
+	if remaingStatPoints > 0 then return end
+    Customui:setColor(playerid, EPSUI,EPSuielement3,EPSButtonColorOff)
+	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
+	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
+	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
+	
+  
+end
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickstrenght)
+
+--Autohide notfication when clic
+function EPSclickNotify(e)
+    if  e.CoustomUI ~= EPSUI then return end
+    local playerid = e.eventobjid
+    local UIID = e.CoustomUI
+  
+    Customui:hideElement(playerid, EPSUI, EPSuielement12) -- hide Flash
+    Customui:hideElement(playerid, EPSUI, EPSuielement13) -- hide Flash
+
+end
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickNotify)
+
+-- Expand the menu or hide when you click on the shorcut
+EPSexpanded = false
+--AutoHide / AutoShow bar
+function EPSclickExpand(e)
+    if  e.CoustomUI ~= EPSUI then return end
+    if  e.btnelenemt ~= EPSuielement11 then return end
+    local playerid = e.eventobjid
+
+    if EPSexpanded == false then 
+        EPSexpanded = true
+        Customui:showElement(playerid, EPSUI, EPSuielement14) -- Show Panel
+    else
+        EPSexpanded = false
+        Customui:hideElement(playerid, EPSUI, EPSuielement14) -- hide Panel
     end
-end
-ScriptSupportEvent:registerEvent([=[Actor.BeHurt]=], SuperMobsReTransform)
-
-function SuperMobsDie(e) 
-    local EliteRarity = SuperMobsMobRariyHandler[e.eventobjid]
-    SuperMobsMobRariyHandler[e.eventobjid] = nil 
-    SuperMobsMobRariyHandlerSize[e.eventobjid] = nil
-    if SuperMobsRewardAddon == nil then return end 
-    SuperMobsRewardDie(e.eventobjid,EliteRarity) --Add on rewards
 
 end
-ScriptSupportEvent:registerEvent([=[Actor.Die]=], SuperMobsDie)
-
-
-function SuperMobsPlayerDie(e) 
-    local killer = e.eventobjid
-    local killed = e.toobjid
-    --Chat:sendSystemMsg("killer "..killer,0)
-    --Chat:sendSystemMsg("killed "..killed,0)
-    local result = Actor:isPlayer(killed)
-    if result ~= ErrorCode.OK then return end 
-
-    local result,NickName = Player:getNickname(killed)
-    local result,KillerName = Creature:getActorName(killer)
-    if SuperMobsMobRariyHandler[killer] ~= nil then 
-        local EliteRarity = SuperMobsMobRariyHandler[killer]
-        KillerName = SuperMobsMobName[EliteRarity]..KillerName
-    end
-
-    local result,num,players=World:getAllPlayers(-1)
-    for i,a in ipairs(players) do
-        local playerid = players[i]
-        Chat:sendSystemMsg("⊗ - #R"..NickName.."#n has been killed by a "..KillerName,playerid)
-    end
-
-end
-ScriptSupportEvent:registerEvent([=[Actor.Beat]=], SuperMobsPlayerDie)
-
-
-
-
+ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickExpand)
