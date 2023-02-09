@@ -1,7 +1,15 @@
 -- Easy Stats system v 1.0
 
 --Options
-EPSpointperlevel = 1
+EPSpointperlevel = 1 -- Points Eran Each level
+EPSpointLevelAtack = 1.0 --Attack added by Main Attribute
+EPSattribLevelHp = 25.0 -- HP added by Strength
+EPSattribLevelReg = 0.05 -- HP regeneration added by Strength
+EPSattribLevelArm = 0.3 -- Armor added by Agility
+EPSattribSpeed = 0.2 -- Speed added by Agility
+EPSattribJump = 3.0 -- Jump added by Agility
+EPSattribMana = 15.0 -- Mana added by Intelligence
+EPSattribManaReg = 0.05 -- Mana regeneration added by Intelligence
 
 --Saveable Profile system
 EPSHEROvar = "EPSHERO" -- Name of the trigger variable for Main Atributte 
@@ -60,7 +68,7 @@ function EPSRegisterPlayer(playerid)
         ["ATTRIBUTE"] = "STRENGTH", -- Wichever is the main atributte will get +1 attack
         ["STRENGTH"] = 0, -- Atributte: +25, regen +0.05
         ["AGILITY"] = 0, -- Atributte: armor 0.3 + attack Speed +2
-        ["INTELLIGENCE"] = 0, -- Atributte: =15 mana, mana regen +0.25
+        ["INTELLIGENCE"] = 0, -- Atributte: +15 mana, mana regen +0.25
 
         --Damage (adding damage)
         ["DMFIRE"] = 0,
@@ -108,7 +116,6 @@ ScriptSupportEvent:registerEvent([=[Game.AnyPlayer.EnterGame]=], EPSAutoRegister
 
 --Set a stat to specific value
 function EPSSet(playerid,STATSTRING,amount)
-    Chat:sendSystemMsg("____________3 "..playerid)
     amount = math.max(0,amount) -- fix max 0
     EPStats[playerid][STATSTRING] = amount
 
@@ -116,8 +123,7 @@ function EPSSet(playerid,STATSTRING,amount)
     local txtSend = "Your new Main Attribute is "
     local txtSound = EPSsoundDefault
     local txtFX = EPSFXDefault
-    Chat:sendSystemMsg("____________4 "..playerid)
-
+   
     if STATSTRING == "ATTRIBUTE" then 
         if amount == 1 then 
             amount = "STRENGTH"
@@ -130,7 +136,7 @@ function EPSSet(playerid,STATSTRING,amount)
             Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconAgilityIcon)
         end
         if amount == 3 then 
-            amount = "INTELLIGENCE" 
+            amount = "INTELLIGENCE"
             --ui 
             Customui:setTexture(playerid, EPSUI, EPSuielement4, EPSIconIntelligenceIcon)
         end
@@ -138,7 +144,6 @@ function EPSSet(playerid,STATSTRING,amount)
         --Ui Update
     end
 
-    Chat:sendSystemMsg("____________5 "..playerid)
 
     if STATSTRING == "STRENGTH" then 
         txtSend = "Your #bStrength#n is "
@@ -147,40 +152,36 @@ function EPSSet(playerid,STATSTRING,amount)
 
         --Ui Update
         Customui:setText(playerid, EPSUI, EPSuielement5, amount )
-        Chat:sendSystemMsg("____________5a "..playerid)
         --Life
         local result,curHPmax = Player:getAttr(playerid,PLAYERATTR.MAX_HP)
         local result,curHP = Player:getAttr(playerid,PLAYERATTR.CUR_HP)
         local lifepercent = curHP/curHPmax
-        local strenghp = 25 * EPStats[playerid]["STRENGTH"]
+        local strenghp = EPSattribLevelHp * EPStats[playerid]["STRENGTH"]
         local newHpMax = 80 + strenghp
         local newHpCur = newHpMax * lifepercent
         newHpCur = math.max(1,newHpCur)
         Player:setAttr(playerid,PLAYERATTR.MAX_HP,newHpMax)
         Player:setAttr(playerid,PLAYERATTR.CUR_HP,newHpCur)
         
-        Chat:sendSystemMsg("____________5b "..playerid)
         --Recovery
-        local strengrecover = 0.05 * EPStats[playerid]["STRENGTH"]
+        local strengrecover = EPSattribLevelReg * EPStats[playerid]["STRENGTH"]
         Player:setAttr(playerid,PLAYERATTR.HP_RECOVER,strengrecover)
 
-        Chat:sendSystemMsg("____________5c "..playerid)
         --If main atributte, add damage
         if EPStats[playerid]["ATTRIBUTE"] == "STRENGTH" then
-            Chat:sendSystemMsg("____________5d "..playerid)
+            Player:notifyGameInfo2Self(playerid,"+1 attack")
             local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
             local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
-            CurAtMelee = math.max(CurAtMelee + 1,0) 
-            CurAtRemote = math.max(CurAtRemote + 1,0) 
+            CurAtMelee = math.max(CurAtMelee + EPSpointLevelAtack ) 
+            CurAtRemote = math.max(CurAtRemote + EPSpointLevelAtack ) 
             Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
             Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
         end
     end
 
-    Chat:sendSystemMsg("____________6 "..playerid)
 
     if STATSTRING == "AGILITY" then 
-        txtSend = "Your #bStrength#n is "
+        txtSend = "Your #bAgility#n is "
         txtSound = EPSsound2
         txtFX = EPSFX3
 
@@ -188,12 +189,12 @@ function EPSSet(playerid,STATSTRING,amount)
         Customui:setText(playerid, EPSUI, EPSuielement7, amount )
         
         --set armor
-        local agilityarmor = 1 + (0.3 * EPStats[playerid]["AGILITY"])
+        local agilityarmor = 1 + (EPSattribLevelArm  * EPStats[playerid]["AGILITY"])
         Player:setAttr(playerid,PLAYERATTR.DEF_MELEE,agilityarmor)
         Player:setAttr(playerid,PLAYERATTR.DEF_REMOTE,agilityarmor)
 
         --Set speed and jump
-        local agilityspeedbase = 8 + (0.2 * EPStats[playerid]["AGILITY"])
+        local agilityspeedbase = 8 + (EPSattribSpeed  * EPStats[playerid]["AGILITY"])
         local agilityspeedrun = agilityspeedbase * 1.0
         local agilityspeedsneak = agilityspeedbase * 0.7
         local agilityspeedswim = agilityspeedbase * 0.6
@@ -202,22 +203,22 @@ function EPSSet(playerid,STATSTRING,amount)
         Player:setAttr(playerid,PLAYERATTR.SNEAK_SPEED,agilityspeedsneak)
         Player:setAttr(playerid,PLAYERATTR.SWIN_SPEED,agilityspeedswim)
 
-        local agilityjump = 30 + (3 * EPStats[playerid]["AGILITY"])
+        local agilityjump = 30 + (EPSattribJump * EPStats[playerid]["AGILITY"])
         Player:setAttr(playerid,PLAYERATTR.JUMP_POWER,agilityjump)
 
-        --If main atributte, add damage
+        --If main attribute, add damage
         if EPStats[playerid]["ATTRIBUTE"] == "AGILITY" then
             local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
             local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
-            CurAtMelee = math.max(CurAtMelee + 1,0) 
-            CurAtRemote = math.max(CurAtRemote + 1,0) 
+            CurAtMelee = math.max(CurAtMelee + EPSpointLevelAtack) 
+            CurAtRemote = math.max(CurAtRemote + EPSpointLevelAtack ) 
             Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
-            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+            Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)
+            Player:notifyGameInfo2Self(playerid,"+1 attack")
         end
 
     end
 
-    Chat:sendSystemMsg("____________8 "..playerid)
     if STATSTRING == "INTELLIGENCE" then 
         txtSend = "Your #bIntelligence#n is "
         txtSound = EPSsound2
@@ -227,7 +228,7 @@ function EPSSet(playerid,STATSTRING,amount)
         local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
         local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_STRENGTH)
         local manapercent = curMana/curManamax
-        local intelligencemp = 15 * EPStats[playerid]["INTELLIGENCE"]
+        local intelligencemp = EPSattribMana * EPStats[playerid]["INTELLIGENCE"]
         local newManaMax = 80 + intelligencemp
         local newManaCur = newManaMax * manapercent
         newManaCur = math.max(1,newManaCur)
@@ -235,7 +236,7 @@ function EPSSet(playerid,STATSTRING,amount)
         Player:setAttr(playerid,PLAYERATTR.CUR_STRENGTH,newManaCur)
 
         --set mana recovery
-        local agilitymanarecovery = 0.05 + (0.05 * EPStats[playerid]["INTELLIGENCE"])
+        local agilitymanarecovery = 0.05 + (EPSattribManaReg * EPStats[playerid]["INTELLIGENCE"])
         EPSManaRecoveryRate[playerid] = agilitymanarecovery
 
         --Ui Update
@@ -245,17 +246,18 @@ function EPSSet(playerid,STATSTRING,amount)
         if EPStats[playerid]["ATTRIBUTE"] == "INTELLIGENCE" then
             local result,CurAtMelee = Player:getAttr(playerid,PLAYERATTR.ATK_MELEE)
             local result,CurAtRemote = Player:getAttr(playerid,PLAYERATTR.ATK_REMOTE)
-            CurAtMelee = math.max(CurAtMelee + 1,0) 
-            CurAtRemote = math.max(CurAtRemote + 1,0) 
+            CurAtMelee = math.max(CurAtMelee + EPSpointLevelAtack) 
+            CurAtRemote = math.max(CurAtRemote + EPSpointLevelAtack) 
             Player:setAttr(playerid,PLAYERATTR.ATK_MELEE,CurAtMelee)
             Player:setAttr(playerid,PLAYERATTR.ATK_REMOTE,CurAtRemote)		
+            Player:notifyGameInfo2Self(playerid,"+1 attack")
         end
 
     end
 
-    Chat:sendSystemMsg("____________9 "..playerid)
     --Chat:sendSystemMsg
-    Chat:sendSystemMsg(txtSend.."#G"..amount,playerid)
+    Player:notifyGameInfo2Self(playerid,txtSend.."#G"..amount)
+    ---Chat:sendSystemMsg(txtSend.."#G"..amount,playerid)
     Actor:playSoundEffectById(playerid,txtSound,100,1,false)--sound
     Actor:playBodyEffectById(playerid,txtFX,1)
 
@@ -288,7 +290,7 @@ function EPSmanaRecovery(e)
     	local result,curManamax = Player:getAttr(playerid,PLAYERATTR.MAX_STRENGTH)
         local result,curMana = Player:getAttr(playerid,PLAYERATTR.CUR_STRENGTH)
         local newManaCur = curMana + EPSManaRecoveryRate[playerid]
-        --newManaCur = math.min(newManaCur,curManamax)
+        newManaCur = math.min(newManaCur,curManamax)
 
 		Player:setAttr(playerid,PLAYERATTR.CUR_HP,newManaCur)
     
@@ -374,28 +376,23 @@ function EPSclickstrenght(e)
   	remaingStatPoints = math.max(0,remaingStatPoints)
 	VarLib2:setPlayerVarByName(playerid,3,EPSREMAINPOINTSvar,remaingStatPoints)
   
-    Chat:sendSystemMsg("____________ok "..playerid)
   	--Adding STR/AGI/INT 
   	if elementid == EPSuielement6 then
-        Chat:sendSystemMsg("____________st "..playerid)
         EPSAdd(playerid,"STRENGTH",EPSpointperlevel) 
     end --Add Strenght
   	if elementid == EPSuielement8 then 
-        Chat:sendSystemMsg("____________AG "..playerid)
         EPSAdd(playerid,"AGILITY",EPSpointperlevel) 
     end --Add Agility
   	if elementid == EPSuielement10 then 
-        Chat:sendSystemMsg("____________IT "..playerid)
         EPSAdd(playerid,"INTELLIGENCE",EPSpointperlevel) 
     end --Add Intelligence
-  	Chat:sendSystemMsg("____________#Gok2 "..playerid)
 	--UI Update remaning points
 	Customui:setText(playerid, EPSUI, EPSuielement3, remaingStatPoints) -- Left points UI
 
 	--UI Button down and up
 	Actor:playSoundEffectById(playerid,EPSsound5,80,1,false) --sound
 	Customui:setColor(playerid, UIID,elementid,EPSButtonColorPressed)
-  	threadpool:wait(0.5)
+  threadpool:wait(0.5)
 	Customui:setColor(playerid, UIID,elementid,EPSButtonColorNormal)
 
 	--Check if disable buttons
@@ -404,7 +401,8 @@ function EPSclickstrenght(e)
 	Customui:setColor(playerid, EPSUI,EPSuielement6,EPSButtonColorOff)
 	Customui:setColor(playerid, EPSUI,EPSuielement8,EPSButtonColorOff)
 	Customui:setColor(playerid, EPSUI,EPSuielement10,EPSButtonColorOff)
-	
+	EPSexpanded = false
+    Customui:hideElement(playerid, EPSUI, EPSuielement14) -- hide Panel
   
 end
 ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickstrenght)
@@ -421,6 +419,7 @@ function EPSclickNotify(e)
 end
 ScriptSupportEvent:registerEvent([=[UI.Button.Click]=], EPSclickNotify)
 
+-- Expand the menu or hide when you click on the shorcut
 EPSexpanded = false
 --AutoHide / AutoShow bar
 function EPSclickExpand(e)
