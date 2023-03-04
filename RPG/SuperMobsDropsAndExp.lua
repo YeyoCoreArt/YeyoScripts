@@ -1,7 +1,7 @@
 --[[ SuperMobsDropsAndExp 3.0
             https://www.youtube.com/multiverseeditor
             UID: 2769323
-            Last Version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/BraveFight/RandomLootBox
+            Last Version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/RPG/SuperMobsDropsAndExp.lua
             More scripts: https://github.com/YeyoCoreArt/YeyoScripts
 
     〈 Description: 〉
