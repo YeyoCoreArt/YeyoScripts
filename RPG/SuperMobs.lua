@@ -1,7 +1,7 @@
 --[[ SUPER MOBS 3.0
         https://www.youtube.com/multiverseeditor
         UID: 2769323
-        Last version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
+        Last version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/RPG/SuperMobs.lua
 
     Descripcion: 
         Automatically make powerfull variations of your mobs: SINGULAR, ALFA, ELITE o LEGENDARIO wich change the life,speed, size and defenses. 
@@ -56,22 +56,10 @@ SuperMobsMobChance[SuperMobsLegendary] = 0.2 -- Probailiry to spawn % (de 0% a 1
 SuperMobsMobPower[SuperMobsLegendary] = 20 -- Power multiply
 SuperMobsMobFx[SuperMobsLegendary] = 1497 -- special fx
 
--- Lista de mobs ignorados por el sistema, agrega una linea y pon la id de cada mob que no quieres que se convierta
-SuperMobsMobByPass[1] = 3852 --
-SuperMobsMobByPass[2] = 3418 --
-SuperMobsMobByPass[3] = 2 -- NPC
-SuperMobsMobByPass[4] = 3 --- NPC
-SuperMobsMobByPass[5] = 4 -- NPC
-SuperMobsMobByPass[6] = 5 -- NPC
-SuperMobsMobByPass[7] = 6 -- NPC
-SuperMobsMobByPass[8] = 15 -- civilian
-SuperMobsMobByPass[9] = 16 -- researcher
-SuperMobsMobByPass[10] = 17 -- soldier
-SuperMobsMobByPass[11] = 3423 -- guard
-SuperMobsMobByPass[12] = 18 --sCOUT
-SuperMobsMobByPass[13] = 3408 --sCOUT
-SuperMobsMobByPass[14] = 19 --boss toxin Goblin
-SuperMobsMobByPass[15] = 20 --boss toxin Goblin bullets
+-- List of ignored mobs
+SuperMobsMobByPass[1] = 3852 -- roster
+SuperMobsMobByPass[2] = 3418 -- dog
+
 -------------------------------------------------------------
 --   ⚠⚠⚠ DO NOT MODIFY ANYTHING BELLOW THIS LINE ⚠⚠⚠
 -------------------------------------------------------------
