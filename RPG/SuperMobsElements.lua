@@ -1,7 +1,7 @@
 --[[ SUPER MOBS ELEMENTS 3.0
         https://www.youtube.com/multiverseeditor
         UID: 2769323
-        Last version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobs
+        Last version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/Basic/SuperMobsElements
 
     Description: 
         Automatically ADD elemental variations of your mobs, and add your own elements 
