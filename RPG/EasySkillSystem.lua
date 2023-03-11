@@ -1,10 +1,36 @@
---set up
-ESLElement = {}
-ESLElement["button"] = {} --Ui Skill 
-ESLElement["icon"] = {} --Ui 
-ESLElement["text"] = {} --Ui 
-ESLElement["item"] = {} --Ui 
+--[[ Easy Skill System v 2.0
+    https://www.youtube.com/multiverseeditor
+    UID: 2769323
+    Last Version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/RPG/EasyStats.lua
+    More scripts: https://github.com/YeyoCoreArt/YeyoScripts
 
+    〈 Description: 〉
+        Make easy leveleable skills for your map
+    〈 Instructions: 〉
+        1.- Copy and paste this script into your map, be sure auto-translation is off on your web browser
+
+        2.- create triger privates (integers (numbers)) ESLHERO,ESLUSEDPOINTS
+        3.- Scroll down to the set up section, link there your ui and variables with the script
+        4.- (optional) Scroll down to optional set up section, and modify the optional things
+
+    〈 API: 〉
+        ESLSRegisterSkill(heroid,itemid,unlocklvl)
+       		register a skill(itemid) for the hero (heroid) that can be unlock at level number (unlocklvl)
+            Examples:
+                    ESLSRegisterSkill(1,11052,5) -- for hero kight(id 1) unlock lava buck (item id 11052 )at level (5)
+      
+
+--]]
+			
+			ESLElement = {} --Do not modify
+			ESLElement["button"] = {} --Do not modify
+			ESLElement["icon"] = {} --Do not modify
+			ESLElement["text"] = {} --Do not modify
+			ESLElement["item"] = {} --Do not modify
+
+--------------------------------------------
+--          ↓↓↓     SET UP        ↓↓↓
+--------------------------------------------
 ESLHERO = "ESLHERO" -- Name of the trigger variable for Main Atributte 
 ESLUSEDPOINTS = "ESLUSEDPOINTS" -- Name of the trigger variable for Used Points
 
@@ -29,7 +55,10 @@ ESLElement["button"][4] = [[7197247402385148843_149]] --Ui Elementid for skill 4
 ESLElement["icon"][4] = [[7197247402385148843_142]] --Ui Elementid for skill 4 Icon
 ESLElement["text"][4] = [[7197247402385148843_94]] --Ui Elementid for skill 4 description text
 
----Optional
+-----------------------------------------------------
+-- OPTIONS: You can change this values if you want 
+-----------------------------------------------------
+
 ESLSkillsLevelInterval = 2 -- how many level to won 1 skill point
 ESLUUIempyicon = [[10086]] -- Icon when no skills
 ESLsound1 = 10078 --Button OK Sound
@@ -37,7 +66,12 @@ ESLsound2 = 10946 --Button FAIL Sound
 ESLButtonColorOn =  "0x00FF00" --On Color for text
 ESLButtonColorOff = "0x6E6E6E" --Off color
 
---Constants
+
+
+
+-------------------------------------------------------------
+--   ⚠⚠⚠ DO NOT MODIFY ANYTHING BELLOW THIS LINE ⚠⚠⚠
+-------------------------------------------------------------
 ESLSkillListItem = {} --List of skills can be discovered with lvl up
 ESLSkillListUnlockLVL = {}
 ESLSkillUnlocked = {} --list of current available skills for player
