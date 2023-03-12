@@ -17,7 +17,7 @@
         ESLRegisterSkill(heroid,itemid,unlocklvl)
        		register a skill(itemid) for the hero (heroid) that can be unlock at level number (unlocklvl)
             Examples:
-                    ESLRegisterSkill(1,11052,5) -- for hero kight(id 1) unlock lava buck (item id 11052 )at level (5)
+                ESLRegisterSkill(1,11052,5) -- for hero kight(id 1) unlock lava buck (item id 11052 )at level (5)
       
 
 --]]
