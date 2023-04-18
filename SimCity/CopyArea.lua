@@ -2,7 +2,7 @@
     
         https://www.youtube.com/multiverseeditor
         UID: 2769323
-        Last Version: https://github.com/YeyoCoreArt/YeyoScripts/blob/master/RPG/EasySkillSystem.lua
+        Last Version: https://github.com/YeyoCoreArt/YeyoScripts/edit/master/SimCity/CopyArea.lua
         More scripts: https://github.com/YeyoCoreArt/YeyoScripts
 
         〈 Description: 〉
@@ -15,23 +15,20 @@
                         DBABlockType --> a global block type variable
                         DBAAreaCopy  --> a global area variable
                         DBAAreaPaste  --> a global area variable
-                        DBALayers  --> a global value (number) variable
 
         〈 API: 〉
-            DBACopyBlock()
-            first, set in your triggers DBABlockType to the block you want to copy, then set DBAAreaCopy to the area you want to copy, and DBAAreaPaste to the area you want past into. set DBALayers to the layer number you wanto copy. then add a custom script on your triger copy an paste DBACopyBlock().
-                
+            DBACopyBlock(layersRange,repeatLayers)
+            first, set in your triggers DBABlockType to the block you want to copy, then set DBAAreaCopy to the area you want to copy, and DBAAreaPaste to the area you want past into. then add a custom script on your triger copy an paste DBACopyBlock().
+                    special set ups:    
+                        DBABlockType = air -- to copy all block in the layer
+                        layersRange = how many layers us going to take and copy, default 1
+                        repeatLayers = how many times is going to repet copied layers to adove
+
                 Examples:
-                    DBACopyBlock() -- copy random layer DBALayers from DBAAreaCopy into DBAAreaPaste
-                    DBACopyBlock(1,5) -- copy random layer 5 times DBALayers from DBAAreaCopy into DBAAreaPaste
-                          DBABlockType = air -- to copy all block in the layer
-                          DBALayers = 0 -- to copy all the blocks in an area the area
-
-    --Bugs
-    sometimes copy all items
-
-
-
+                    ESLRegisterSkill() -- copy blocks DBABlockType in random layer from DBAAreaCopy into DBAAreaPaste
+                    ESLRegisterSkill(3) -- copy blocks DBABlockType in random layer with 3 height from DBAAreaCopy into DBAAreaPaste
+                    ESLRegisterSkill(1,5) -- copy blocks DBABlockType in random layer from DBAAreaCopy into DBAAreaPaste
+                        
     ]]
 
     -------------------------------------------------------------
