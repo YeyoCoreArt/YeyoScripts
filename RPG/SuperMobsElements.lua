@@ -24,7 +24,6 @@ function inielements() -- do not modify
 --          ↓↓↓  SET UP  ↓↓↓
 -------------------------------------
 SuperMobsElSpawnChanceBse = 30 --Element chance %
-
 --Premade Elements
 --SuperMobsElementsRegister("ElementName",buffid,fx,chances,durationtics)
 SuperMobsElementsRegister("#cFF5500Fire",33,1003,50,35) --Burn
@@ -74,9 +73,9 @@ end
 --mob attacks, attach fx
 function SuperMobsElementsAttackBuff(e)
     local mobid = e.eventobjid
+    if SuperMobsEMobAtt[mobid] == nil then return end --safe exit
     local target = e.toobjid
     local dmg = e.hurtlv
-    if SuperMobsEMobAtt[mobid] == nil then return end --safe exit
 
     --Check chances for buff up
     local element = SuperMobsEMobAtt[mobid]
@@ -89,31 +88,31 @@ function SuperMobsElementsAttackBuff(e)
     if SuperMobsEMobAtt[target] ~= nil then 
         local element2 = SuperMobsEMobAtt[target]
         if element == element2 then  --Has Inmunity
-            local isAPlayerQ = Actor:isPlayer(target)
-            local checkImmune = false
-            if isAPlayerQ == ErrorCode.OK then --Player
-                    -- Check innmunity with level of protection
-                    local  buffItem = SuperMobsEAtributes[element2]["item"]
-                    local result,itemnum1,arr = Backpack:getItemNumByBackpackBar(target,1,buffItem)
-                    local result,itemnum2,arr = Backpack:getItemNumByBackpackBar(target,2,buffItem)
-                    local targetBuffLevel = itemnum1 + itemnum2
-                    local baseImmunity  = 8.0 + (2*targetBuffLevel)
-                    if math.random(0,100) <= baseImmunity then checkImmune = true end
-            else
-                checkImmune = true
-            end
+                local isAPlayerQ = Actor:isPlayer(target)
+                local checkImmune = false
+                if isAPlayerQ == ErrorCode.OK then --Player
+                        -- Check innmunity with level of protection
+                        local  buffItem = SuperMobsEAtributes[element2]["item"]
+                        local result,itemnum1,arr = Backpack:getItemNumByBackpackBar(target,1,buffItem)
+                        local result,itemnum2,arr = Backpack:getItemNumByBackpackBar(target,2,buffItem)
+                        local targetBuffLevel = itemnum1 + itemnum2
+                        local baseImmunity  = 8.0 + (2*targetBuffLevel)
+                        if math.random(0,100) <= baseImmunity then checkImmune = true end
+                else
+                        checkImmune = true
+                end
 
-            -- Its inmmune, exit
-            if checkImmune == true then 
-                local graphicsInfo = Graphics:makeflotageText("#cD8D8D8Immune", 15, 1) 
-                    local dir={x=0,y=0,z=0}
-                    local offset=0
-                    local x2,y2=0,0
-                    local result,graphid = Graphics:createflotageTextByActor(target, graphicsInfo, dir, offset, x2, y2)
-                threadpool:wait(0.5)
-                Graphics:removeGraphicsByObjID(target, 1, 2)
-                return  
-            end
+                -- Its inmmune, exit
+                if checkImmune == true then 
+                        local graphicsInfo = Graphics:makeflotageText("#cD8D8D8Immune", 15, 1) 
+                        local dir={x=0,y=0,z=0}
+                        local offset=0
+                        local x2,y2=0,0
+                        local result,graphid = Graphics:createflotageTextByActor(target, graphicsInfo, dir, offset, x2, y2)
+                        threadpool:wait(0.5)
+                        Graphics:removeGraphicsByObjID(target, 1, 2)
+                        return  
+                end
 
         end
     end
@@ -123,6 +122,7 @@ function SuperMobsElementsAttackBuff(e)
     local bonusdur =  (dur * 0.10) * SuperMobsEMobAttLvl[mobid]
     dur = dur + bonusdur
 
+    --Retrive Information 
     local buffname = SuperMobsEAtributes[element]["name"]
     local buffid = SuperMobsEAtributes[element]["buff"]
     local fx = SuperMobsEAtributes[element]["fx"]
